@@ -24,17 +24,17 @@ class RecipeListPage extends StatelessWidget {
       appBar: AppBar(title: Text('Project Quiche')),
       body: ListView(
         children: _recipes.map((recipe) {
-          return RecipeListTile(recipe);
+          return RecipeListItem(recipe);
         }).toList(),
       ),
     );
   }
 }
 
-class RecipeListTile extends StatelessWidget {
+class RecipeListItem extends StatelessWidget {
   final Recipe recipe;
 
-  RecipeListTile(this.recipe);
+  RecipeListItem(this.recipe);
 
   @override
   Widget build(BuildContext context) {
@@ -50,26 +50,70 @@ class RecipeListTile extends StatelessWidget {
       return Scaffold(
         appBar: AppBar(title: Text(recipe.name)),
         body: ListView(
-          children: recipe.ingredients.map((ingredient) {
-            return IngredientListTile(ingredient);
-          }).toList(),
-        ),
+            children: []
+              ..add(_makeIngredientsList())
+              ..addAll(_makeStepList())),
       );
     }));
   }
+
+  Iterable<PreparationStepListItem> _makeStepList() {
+    var i = 1;
+    return recipe.steps.map((step) {
+      return PreparationStepListItem(i++, step);
+    });
+  }
+
+  Widget _makeIngredientsList() {
+    return Container(
+        height: 90,
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          children: recipe.ingredients
+              .map((ingredient) => IngredientListItem(ingredient))
+              .toList(),
+        ));
+  }
 }
 
-class IngredientListTile extends StatelessWidget {
+class IngredientListItem extends StatelessWidget {
   final Ingredient ingredient;
 
-  IngredientListTile(this.ingredient);
+  IngredientListItem(this.ingredient);
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(ingredient.product +
-          (ingredient.qualifier != null ? ' (${ingredient.qualifier})' : '')),
-      subtitle: Text(ingredient.unit.toDisplayString(ingredient.quantity)),
+    return Container(
+        height: 90,
+        child: Padding(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              children: <Widget>[
+                Text(
+                  ingredient.product +
+                      (ingredient.qualifier != null
+                          ? ' (${ingredient.qualifier})'
+                          : ''),
+                  style: TextStyle(fontSize: 18),
+                ),
+                Text(ingredient.unit.toDisplayString(ingredient.quantity))
+              ],
+            )));
+  }
+}
+
+class PreparationStepListItem extends StatelessWidget {
+  final int index;
+  final PreparationStep step;
+
+  PreparationStepListItem(this.index, this.step);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(16),
+      child: Text(
+          '#$index ${step.title != null ? step.title : ''}\n${step.instructions}'),
     );
   }
 }
