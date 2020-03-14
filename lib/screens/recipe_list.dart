@@ -22,8 +22,7 @@ class RecipeListPage extends StatelessWidget {
   }
 
   void _openRecipe(BuildContext context, Recipe recipe) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return RecipePage(recipe);
-    }));
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => RecipePage(recipe)));
   }
 }

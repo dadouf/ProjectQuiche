@@ -23,14 +23,16 @@ class RecipePage extends StatelessWidget {
   }
 
   Widget _makeIngredientsCarousel() {
+    var ingredients = _recipe.ingredients.toList();
     return Container(
-        height: 90,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: _recipe.ingredients
-              .map((ingredient) => IngredientListItem(ingredient))
-              .toList(),
-        ));
+        // There's no way around assigning a fixed height,
+        // see https://stackoverflow.com/q/50155738/2291104
+        height: 80,
+        child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: ingredients.length,
+            itemBuilder: (context, position) =>
+                IngredientListItem(ingredients[position])));
   }
 }
 
@@ -41,22 +43,22 @@ class IngredientListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        height: 90,
-        child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              children: <Widget>[
-                Text(
-                  _ingredient.product +
-                      (_ingredient.qualifier != null
-                          ? ' (${_ingredient.qualifier})'
-                          : ''),
-                  style: TextStyle(fontSize: 18),
-                ),
-                Text(_ingredient.unit.toDisplayString(_ingredient.quantity))
-              ],
-            )));
+    return Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              _ingredient.product +
+                  (_ingredient.qualifier != null
+                      ? ' (${_ingredient.qualifier})'
+                      : ''),
+              style: TextStyle(fontSize: 18),
+            ),
+            Text(_ingredient.unit.toDisplayString(_ingredient.quantity))
+          ],
+        ));
   }
 }
 
