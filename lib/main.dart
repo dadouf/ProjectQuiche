@@ -21,55 +21,51 @@ class RecipeListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Project Quiche')),
-      body: ListView(
-        children: _recipes.map((recipe) {
-          return RecipeListItem(recipe);
-        }).toList(),
-      ),
-    );
+        appBar: AppBar(title: Text('Project Quiche')),
+        body: ListView.builder(
+            itemCount: _recipes.length,
+            itemBuilder: (context, position) {
+              return RecipeListItem(_recipes[position]);
+            }));
   }
 }
 
 class RecipeListItem extends StatelessWidget {
-  final Recipe recipe;
+  final Recipe _recipe;
 
-  RecipeListItem(this.recipe);
+  RecipeListItem(this._recipe);
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-        title: Text(recipe.name),
-        onTap: () {
-          _openRecipe(context);
-        });
+      title: Text(_recipe.name),
+      onTap: () => _openRecipe(context),
+    );
   }
 
   void _openRecipe(BuildContext context) {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       return Scaffold(
-        appBar: AppBar(title: Text(recipe.name)),
-        body: ListView(
-            children: []
-              ..add(_makeIngredientsList())
-              ..addAll(_makeStepList())),
-      );
+          appBar: AppBar(title: Text(_recipe.name)),
+          body: ListView.builder(
+              itemCount: _recipe.steps.length + 1,
+              itemBuilder: (context, position) {
+                if (position == 0) {
+                  return _makeIngredientsCarousel();
+                } else {
+                  return PreparationStepListItem(
+                      position, _recipe.steps[position - 1]);
+                }
+              }));
     }));
   }
 
-  Iterable<PreparationStepListItem> _makeStepList() {
-    var i = 1;
-    return recipe.steps.map((step) {
-      return PreparationStepListItem(i++, step);
-    });
-  }
-
-  Widget _makeIngredientsList() {
+  Widget _makeIngredientsCarousel() {
     return Container(
         height: 90,
         child: ListView(
           scrollDirection: Axis.horizontal,
-          children: recipe.ingredients
+          children: _recipe.ingredients
               .map((ingredient) => IngredientListItem(ingredient))
               .toList(),
         ));
