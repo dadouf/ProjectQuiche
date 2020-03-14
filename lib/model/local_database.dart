@@ -1,4 +1,6 @@
-import 'package:projectquiche/models.dart';
+import 'package:projectquiche/model/models.dart';
+
+// "Database" but really just hardcoded variables for now
 
 var cremeVichyssoise = Recipe(
   name: 'Crème Vichyssoise',
