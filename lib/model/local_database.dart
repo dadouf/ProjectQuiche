@@ -2,6 +2,8 @@ import 'package:projectquiche/model/models.dart';
 
 // "Database" but really just hardcoded variables for now
 
+var allRecipes = [cremeVichyssoise, tortillaDePatatas];
+
 var cremeVichyssoise = Recipe(
   name: 'Crème Vichyssoise',
   ingredients: {
@@ -17,7 +19,7 @@ var cremeVichyssoise = Recipe(
   },
   steps: [
     PreparationStep(
-      title: 'Prepare produce',
+      title: 'Mise en place',
       instructions:
           'Clean the leeks, keeping only the white part. Thinly slice. Cut potatoes into small cubes. Finely chop chives.',
     ),
@@ -52,5 +54,37 @@ var cremeVichyssoise = Recipe(
       instructions:
           'If to be served chilled transfer soup to the mixing bowl an chill over the ice bath, stirring occasionally. When soup is at Room temperature, and only at room temperature, cover in plastic wrap and put into the refrigerator to cool. Check seasoning, sprinkle with chives and serve in chilled bowls.',
     ),
+  ],
+);
+
+var tortillaDePatatas = Recipe(
+  name: "Tortilla de patatas",
+  ingredients: {
+    Ingredient('Eggs', 5, QuantityUnit.item),
+    Ingredient('Potatoes', 4, QuantityUnit.item /*, qualifier: '3 if large'*/),
+    Ingredient('Onion', 1, QuantityUnit.item),
+    Ingredient('Milk', 0.25, QuantityUnit.cup),
+    Ingredient('Salt', 1, QuantityUnit.item)
+  },
+  steps: [
+    PreparationStep(
+        title: 'Mise en place',
+        instructions:
+            'Peel potatoes, cut in small pieces. Cut onions in small pieces.'),
+    PreparationStep(
+        instructions:
+            'Heat a drizzle of olive oil in large flat pan on medium-high heat. Fry potatoes and onions together, until they\'re soft and golden/brown. Add salt to taste. Transfer to a large bowl.'),
+    PreparationStep(
+        instructions:
+            'Beat eggs then pour into the bowl. Add milk. Add salt to taste.'),
+    PreparationStep(
+        instructions:
+            'Pour mixture into the same pan, on medium high heat (add another drizzle of oil if not enough remains). Rotate the pan continuously left and right so that contents don\'t stick, until sides are cooked (check with a fork that they detach easily from sides).'),
+    PreparationStep(
+        instructions:
+            'Cover pan with a large plate, and in one swift movement, flip the pan inside down. Carefully transfer the tortilla back to the pan and continue cooking with the same left-and-right rotation. Finish cooking the tortilla on both sides, flipping it twice more. In the end, it must be just cooked on the outside.'),
+    PreparationStep(
+        instructions:
+            'Leave it to rest, and enjoy it with a good baguette. Keep it in the oven (not in the fridge). Tortilla is also delicious cold.'),
   ],
 );

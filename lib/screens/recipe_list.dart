@@ -4,7 +4,7 @@ import 'package:projectquiche/model/models.dart';
 import 'package:projectquiche/screens/recipe.dart';
 
 class RecipeListPage extends StatelessWidget {
-  final _recipes = <Recipe>[cremeVichyssoise];
+  final _recipes = allRecipes;
 
   @override
   Widget build(BuildContext context) {

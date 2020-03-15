@@ -9,7 +9,7 @@ class Recipe {
 class Ingredient {
   final String qualifier;
   final String product;
-  final int quantity;
+  final num quantity;
   final QuantityUnit unit;
 
   Ingredient(this.product, this.quantity, this.unit, {this.qualifier});
@@ -26,7 +26,7 @@ class QuantityUnit {
 
   const QuantityUnit(this.singular, this.plural);
 
-  String toDisplayString(int quantity) {
+  String toDisplayString(num quantity) {
     if (quantity > 1) {
       return '$quantity $plural';
     } else {

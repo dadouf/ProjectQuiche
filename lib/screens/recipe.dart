@@ -10,8 +10,15 @@ class RecipePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: Text(_recipe.name)),
-        body: ListView.builder(
+        body: ListView.separated(
             itemCount: _recipe.steps.length + 1,
+            padding: EdgeInsets.all(16),
+            separatorBuilder: (context, position) {
+              return Divider(
+                thickness: 8,
+                color: Colors.transparent,
+              );
+            },
             itemBuilder: (context, position) {
               if (position == 0) {
                 return _makeIngredientsCarousel();
@@ -28,9 +35,12 @@ class RecipePage extends StatelessWidget {
         // There's no way around assigning a fixed height,
         // see https://stackoverflow.com/q/50155738/2291104
         height: 80,
-        child: ListView.builder(
+        child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: ingredients.length,
+            separatorBuilder: (context, position) {
+              return Divider(thickness: 8);
+            },
             itemBuilder: (context, position) =>
                 IngredientListItem(ingredients[position])));
   }
@@ -70,10 +80,7 @@ class PreparationStepListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(16),
-      child: Text(
-          '#$_index ${_step.title != null ? _step.title : ''}\n${_step.instructions}'),
-    );
+    return Text(
+        '#$_index ${_step.title != null ? _step.title : ''}\n${_step.instructions}');
   }
 }
