@@ -70,7 +70,7 @@ var tortillaDePatatas = Recipe(
     PreparationStep(
         title: 'Mise en place',
         instructions:
-            'Peel potatoes, cut in small pieces. Cut onions in small pieces.'),
+            'Peel potatoes, cut in very small pieces. Cut onions in small pieces.'),
     PreparationStep(
         instructions:
             'Heat a drizzle of olive oil in large flat pan on medium-high heat. Fry potatoes and onions together, until they\'re soft and golden/brown. Add salt to taste. Transfer to a large bowl.'),
@@ -79,10 +79,10 @@ var tortillaDePatatas = Recipe(
             'Beat eggs then pour into the bowl. Add milk. Add salt to taste.'),
     PreparationStep(
         instructions:
-            'Pour mixture into the same pan, on medium high heat (add another drizzle of oil if not enough remains). Rotate the pan continuously left and right so that contents don\'t stick, until sides are cooked (check with a fork that they detach easily from sides).'),
+            'Pour mixture into the same pan, on medium high heat (add another drizzle of oil if not enough remains). Rotate the pan continuously left and right so that contents don\'t stick, until sides are cooked and tortilla can move around freely. Use the tip of a fork to help the sides detach.'),
     PreparationStep(
         instructions:
-            'Cover pan with a large plate, and in one swift movement, flip the pan inside down. Carefully transfer the tortilla back to the pan and continue cooking with the same left-and-right rotation. Finish cooking the tortilla on both sides, flipping it twice more. In the end, it must be just cooked on the outside.'),
+            'Cover pan with a large plate, and in one swift movement, flip the pan inside down. Carefully transfer the tortilla back to the pan and continue cooking with the same left-and-right rotation. Finish cooking the tortilla on both sides, flipping it twice more. In the end, it must be just cooked on the outside and still creamy on the inside.'),
     PreparationStep(
         instructions:
             'Leave it to rest, and enjoy it with a good baguette. Keep it in the oven (not in the fridge). Tortilla is also delicious cold.'),
