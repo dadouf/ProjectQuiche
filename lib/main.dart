@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:projectquiche/screens/authenticate.dart';
-import 'package:projectquiche/screens/cloud_recipe_list.dart';
+
+import 'screens/authenticate.dart';
+import 'screens/recipe_list.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -31,8 +32,7 @@ class QuicheApp extends StatelessWidget {
       stream: _auth.authStateChanges(),
       builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
         if (snapshot.hasData && !snapshot.data.isAnonymous) {
-          return CloudRecipeListPage();
-          // return RecipeListPage();
+          return RecipeListPage();
         }
 
         return AuthenticatePage();

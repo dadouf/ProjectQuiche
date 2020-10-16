@@ -1,10 +1,4 @@
-class Recipe {
-  final String name;
-  final Set<Ingredient> ingredients;
-  final List<PreparationStep> steps;
-
-  const Recipe({this.name, this.ingredients, this.steps});
-}
+import 'dart:convert';
 
 class Ingredient {
   final String qualifier;
@@ -33,11 +27,26 @@ class QuantityUnit {
       return '$quantity $singular';
     }
   }
+
+  static QuantityUnit from(String s) {
+    if (s == "tbsp") {
+      return tbsp;
+    } else if (s == "cup") {
+      return cup;
+    } else if (s == "pinch") {
+      return pinch;
+    } else {
+      return item;
+    }
+  }
 }
 
-class PreparationStep {
-  final String title;
-  final String instructions;
-
-  const PreparationStep({this.title, this.instructions});
+class IngredientsConverter extends Converter<List, Set<Ingredient>> {
+  @override
+  Set<Ingredient> convert(List<dynamic> input) {
+    return input
+        .map((item) => Ingredient(
+            item['name'], item['qty'], QuantityUnit.from(item['unit'])))
+        .toSet();
+  }
 }
