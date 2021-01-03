@@ -21,12 +21,12 @@ class _AuthenticatePageState extends State<AuthenticatePage> {
           Text('Authenticated: ' + _displayName),
           RaisedButton(
             child: Text('Authenticate with Google'),
-            onPressed: signInWithGoogle,
+            onPressed: _signInWithGoogle,
           )
         ]));
   }
 
-  Future<UserCredential> signInWithGoogle() async {
+  Future<UserCredential> _signInWithGoogle() async {
     // Trigger the authentication flow
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
 

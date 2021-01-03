@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 class Ingredient {
   final String qualifier;
@@ -7,6 +8,8 @@ class Ingredient {
   final QuantityUnit unit;
 
   Ingredient(this.product, this.quantity, this.unit, {this.qualifier});
+
+  toJson() {}
 }
 
 class QuantityUnit {
@@ -44,6 +47,11 @@ class QuantityUnit {
 class IngredientsConverter extends Converter<List, Set<Ingredient>> {
   @override
   Set<Ingredient> convert(List<dynamic> input) {
+    if (input == null) {
+      log("No ingredients for recipe");
+      return {};
+    }
+
     return input
         .map((item) => Ingredient(
             item['name'], item['qty'], QuantityUnit.from(item['unit'])))

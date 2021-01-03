@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:projectquiche/model/recipe.dart';
+import 'package:projectquiche/screens/new_recipe.dart';
 import 'package:projectquiche/screens/recipe.dart';
 
 class RecipeListPage extends StatefulWidget {
@@ -12,7 +15,7 @@ class RecipeListPage extends StatefulWidget {
 class _RecipeListPageState extends State<RecipeListPage>
     with StreamSubscriberMixin {
   final _recipesDbRef =
-      FirebaseDatabase.instance.reference().child("v1/recipes");
+  FirebaseDatabase.instance.reference().child("v1/recipes");
   final _recipesDbConverter = RecipesConverter();
 
   List<Recipe> _recipes = [];
@@ -29,7 +32,11 @@ class _RecipeListPageState extends State<RecipeListPage>
                 title: Text(_recipe.name),
                 onTap: () => _openRecipe(context, _recipe),
               );
-            }));
+            }),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.plus_one),
+          onPressed: () => _addStuff(),
+        ));
   }
 
   @override
@@ -40,7 +47,9 @@ class _RecipeListPageState extends State<RecipeListPage>
         _recipesDbRef.onValue,
         (event) => setState(() {
               _recipes = _recipesDbConverter.convert(event.snapshot.value);
-            }));
+            }), onError: (error) {
+      log("Error while listening to recipe list", error: error);
+    });
   }
 
   @override
@@ -53,5 +62,10 @@ class _RecipeListPageState extends State<RecipeListPage>
   void _openRecipe(BuildContext context, Recipe recipe) {
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => RecipePage(recipe)));
+  }
+
+  void _addStuff() {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => NewRecipePage()));
   }
 }

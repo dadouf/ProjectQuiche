@@ -10,6 +10,14 @@ class Recipe {
   final List<PreparationStep> steps;
 
   const Recipe({this.id, this.name, this.ingredients, this.steps});
+
+  toJson() {
+    return {
+      "name": name,
+      "ingredients": ingredients.map((e) => e.toJson()),
+      "steps": steps.map((e) => e.toJson())
+    };
+  }
 }
 
 class RecipesConverter extends Converter<Map, List<Recipe>> {
