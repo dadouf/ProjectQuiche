@@ -1,8 +1,10 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:projectquiche/model/recipe.dart';
 import 'package:projectquiche/screens/new_recipe.dart';
 import 'package:projectquiche/screens/recipe.dart';
@@ -15,7 +17,7 @@ class RecipeListPage extends StatefulWidget {
 class _RecipeListPageState extends State<RecipeListPage>
     with StreamSubscriberMixin {
   final _recipesDbRef =
-  FirebaseDatabase.instance.reference().child("v1/recipes");
+      FirebaseDatabase.instance.reference().child("v1/recipes");
   final _recipesDbConverter = RecipesConverter();
 
   List<Recipe> _recipes = [];
@@ -23,7 +25,15 @@ class _RecipeListPageState extends State<RecipeListPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('Project Quiche')),
+        appBar: AppBar(
+          title: Text('Project Quiche'),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.logout),
+              onPressed: () => _logout(),
+            )
+          ],
+        ),
         body: ListView.builder(
             itemCount: _recipes.length,
             itemBuilder: (context, position) {
@@ -67,5 +77,13 @@ class _RecipeListPageState extends State<RecipeListPage>
   void _addStuff() {
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => NewRecipePage()));
+  }
+
+  void _logout() {
+    FirebaseAuth.instance
+        .signOut(); // this is enough to go back to Login screen
+    GoogleSignIn().signOut(); // this is needed in order to PROMPT user again
+
+    // ... causes callback in main.app
   }
 }

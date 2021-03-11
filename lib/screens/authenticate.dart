@@ -16,14 +16,21 @@ class _AuthenticatePageState extends State<AuthenticatePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: Text('Project Quiche')),
-        body: Column(children: [
-          Text('Bonjour'),
-          Text('Authenticated: ' + _displayName),
-          RaisedButton(
-            child: Text('Authenticate with Google'),
-            onPressed: _signInWithGoogle,
-          )
-        ]));
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Welcome!'),
+              Padding(
+                child: ElevatedButton(
+                  child: Text('Sign in with Google'),
+                  onPressed: _signInWithGoogle,
+                ),
+                padding: EdgeInsets.all(16),
+              ),
+            ],
+          ),
+        ));
   }
 
   Future<UserCredential> _signInWithGoogle() async {
