@@ -1,0 +1,145 @@
+{
+  "v1": {
+    "recipes": {
+      "tor": {
+        "ingredients": [
+          {
+            "name": "Eggs",
+            "qty": 4,
+            "unit": "item"
+          },
+          {
+            "name": "Potatoes",
+            "qty": 4,
+            "unit": "item"
+          },
+          {
+            "name": "Onion",
+            "qty": 1,
+            "unit": "item"
+          },
+          {
+            "name": "Milk",
+            "qty": 0.25,
+            "unit": "cup"
+          },
+          {
+            "name": "Salt",
+            "qty": 1,
+            "unit": "item"
+          }
+        ],
+        "name": "Tortilla de patatas",
+        "steps": [
+          {
+            "instructions": "Peel potatoes, cut in very small pieces. Cut onions in small pieces.",
+            "title": "Mise en place"
+          },
+          {
+            "instructions": "Heat a drizzle of olive oil in large flat pan on medium-high heat. Fry potatoes and onions together, until they"
+          },
+          {
+            "instructions": "Beat eggs then pour into the bowl. Add milk. Add salt to taste."
+          },
+          {
+            "instructions": "Pour mixture into the same pan, on medium high heat (add another drizzle of oil if not enough remains). Rotate the pan continuously left and right so that contents don\\'t stick, until sides are cooked and tortilla can move around freely. Use the tip of a fork to help the sides detach."
+          },
+          {
+            "instructions": "Cover pan with a large plate, and in one swift movement, flip the pan inside down. Carefully transfer the tortilla back to the pan and continue cooking with the same left-and-right rotation. Finish cooking the tortilla on both sides, flipping it twice more. In the end, it must be just cooked on the outside and still creamy on the inside."
+          },
+          {
+            "instructions": "Leave it to rest, and enjoy it with a good baguette. Keep it in the oven (not in the fridge). Tortilla is also delicious cold."
+          }
+        ]
+      },
+      "vic": {
+        "ingredients": [
+          {
+            "name": "Butter",
+            "qty": 4,
+            "unit": "tbsp"
+          },
+          {
+            "name": "Leeks",
+            "qty": 8,
+            "unit": "item"
+          },
+          {
+            "name": "Potatoes",
+            "qty": 2,
+            "qualifier": "medium",
+            "unit": "item"
+          },
+          {
+            "name": "Chicken stock",
+            "qty": 2,
+            "unit": "cup"
+          },
+          {
+            "name": "Heavy cream",
+            "qty": 2,
+            "unit": "cup"
+          },
+          {
+            "name": "Chives",
+            "qty": 4,
+            "qualifier": "fresh",
+            "unit": "item"
+          },
+          {
+            "name": "Nutmeg",
+            "qty": 1,
+            "unit": "pinch"
+          },
+          {
+            "name": "Salt",
+            "qty": 1,
+            "unit": "item"
+          },
+          {
+            "name": "Pepper",
+            "qty": 1,
+            "qualifier": "fresh",
+            "unit": "item"
+          }
+        ],
+        "name": "Crème Vichyssoise",
+        "steps": [
+          {
+            "instructions": "Clean the leeks, keeping only the white part. Thinly slice. Cut potatoes into small cubes. Finely chop chives.",
+            "title": "Mise en place"
+          },
+          {
+            "instructions": "In a large, heavy bottom pot, melt butter over medium-low heat. Once butter is melted, add the leeks and sweat for 5 minutes, making sure they do not take on any color."
+          },
+          {
+            "instructions": "Add potatoes and cook for a minute or two, stirring a few times."
+          },
+          {
+            "instructions": "Stir in the chicken broth and bring to a boil."
+          },
+          {
+            "instructions": "Reduce heat to a simmer. Cook on low heat, gently simmering for 35 minutes, or until the leeks and potatoes are very soft. Allow to cool for a few minutes."
+          },
+          {
+            "instructions": "Slowly, and in SMALL batches, puree the soup at a high speed in the blender. Do this bit by bit, never filling the blender too high. Make sure the benders lid is on, and lean on the top when you turn on. If not the burn you will get is awful, and a most frequent accident in even professional kitchens."
+          },
+          {
+            "instructions": "Return soup to the cooking pot and whisk in cream and nutmeg. Season with salt and pepper. Return to a boil, reduce to simmer and cook 5 minutes. If you want to thin soup out, add more broth, if needed."
+          },
+          {
+            "instructions": "If desired warm, then just serve sprinkling some chives on top."
+          },
+          {
+            "instructions": "If to be served chilled transfer soup to the mixing bowl an chill over the ice bath, stirring occasionally. When soup is at Room temperature, and only at room temperature, cover in plastic wrap and put into the refrigerator to cool. Check seasoning, sprinkle with chives and serve in chilled bowls."
+          }
+        ]
+      }
+    },
+    "users": {
+      "david": {
+        "name": "David"
+      }
+    }
+  }
+}

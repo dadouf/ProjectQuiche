@@ -1,10 +1,24 @@
+import 'dart:developer';
+
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
 import 'package:flutter/material.dart';
-import 'package:projectquiche/model/local_database.dart';
-import 'package:projectquiche/model/models.dart';
+import 'package:projectquiche/model/recipe.dart';
+import 'package:projectquiche/screens/new_recipe.dart';
 import 'package:projectquiche/screens/recipe.dart';
 
-class RecipeListPage extends StatelessWidget {
-  final _recipes = allRecipes;
+class RecipeListPage extends StatefulWidget {
+  @override
+  _RecipeListPageState createState() => _RecipeListPageState();
+}
+
+class _RecipeListPageState extends State<RecipeListPage>
+    with StreamSubscriberMixin {
+  final _recipesDbRef =
+  FirebaseDatabase.instance.reference().child("v1/recipes");
+  final _recipesDbConverter = RecipesConverter();
+
+  List<Recipe> _recipes = [];
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +32,40 @@ class RecipeListPage extends StatelessWidget {
                 title: Text(_recipe.name),
                 onTap: () => _openRecipe(context, _recipe),
               );
-            }));
+            }),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.plus_one),
+          onPressed: () => _addStuff(),
+        ));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    listen(
+        _recipesDbRef.onValue,
+        (event) => setState(() {
+              _recipes = _recipesDbConverter.convert(event.snapshot.value);
+            }), onError: (error) {
+      log("Error while listening to recipe list", error: error);
+    });
+  }
+
+  @override
+  void dispose() {
+    cancelSubscriptions();
+
+    super.dispose();
   }
 
   void _openRecipe(BuildContext context, Recipe recipe) {
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => RecipePage(recipe)));
+  }
+
+  void _addStuff() {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => NewRecipePage()));
   }
 }

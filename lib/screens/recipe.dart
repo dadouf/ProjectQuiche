@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:projectquiche/model/models.dart';
+import 'package:projectquiche/model/ingredient.dart';
+import 'package:projectquiche/model/preparation_step.dart';
+import 'package:projectquiche/model/recipe.dart';
 
 class RecipePage extends StatelessWidget {
   final Recipe _recipe;
