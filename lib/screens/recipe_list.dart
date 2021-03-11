@@ -22,18 +22,46 @@ class _RecipeListPageState extends State<RecipeListPage>
 
   List<Recipe> _recipes = [];
 
+  String _currentPageTitle = "All Recipes";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Project Quiche'),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.logout),
-              onPressed: () => _logout(),
-            )
-          ],
+          title: Text(_currentPageTitle),
         ),
+        drawer: Container(
+            color: Color(0xFF404040),
+            margin: EdgeInsets.only(right: 72),
+            // width: 250,
+            child: ListView(
+              children: [
+                ListTile(
+                  title: Text("All Recipes"),
+                  onTap: () {
+                    setState(() {
+                      _currentPageTitle = "All Recipes";
+                    });
+                    Navigator.of(context).pop();
+                  },
+                ),
+                ListTile(
+                  title: Text("My Recipes"),
+                  onTap: () {
+                    setState(() {
+                      _currentPageTitle = "My Recipes";
+                    });
+                    Navigator.of(context).pop();
+                  },
+                ),
+                ListTile(
+                  title: Row(
+                    children: [Icon(Icons.logout), Text("Log out")],
+                  ),
+                  onTap: _logout,
+                )
+              ],
+            )),
         body: ListView.builder(
             itemCount: _recipes.length,
             itemBuilder: (context, position) {

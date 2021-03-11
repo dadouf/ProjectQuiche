@@ -10,8 +10,6 @@ class AuthenticatePage extends StatefulWidget {
 }
 
 class _AuthenticatePageState extends State<AuthenticatePage> {
-  String _displayName = '???';
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,10 +48,6 @@ class _AuthenticatePageState extends State<AuthenticatePage> {
     // Once signed in, return the UserCredential
     final userCredential =
         await FirebaseAuth.instance.signInWithCredential(credential);
-
-    setState(() {
-      _displayName = userCredential.user.displayName;
-    });
 
     return userCredential;
   }
