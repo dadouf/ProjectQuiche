@@ -3,9 +3,8 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-
-import 'screens/authenticate.dart';
-import 'screens/recipe_list.dart';
+import 'package:projectquiche/pages/authenticate.dart';
+import 'package:projectquiche/pages/main_app_scaffold.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -36,7 +35,7 @@ class QuicheApp extends StatelessWidget {
         log("Logged in user ID: ${snapshot.data?.uid}, email: ${snapshot.data?.email}");
 
         if (snapshot.hasData && !snapshot.data.isAnonymous) {
-          return RecipeListPage();
+          return MainAppScaffold();
         }
 
         return AuthenticatePage();
