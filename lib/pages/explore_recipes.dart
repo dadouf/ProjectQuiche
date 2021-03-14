@@ -6,8 +6,8 @@ import 'package:projectquiche/pages/recipe.dart';
 class ExploreRecipesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    CollectionReference recipes =
-        FirebaseFirestore.instance.collection("recipes");
+    Query recipes =
+        FirebaseFirestore.instance.collection("recipes").orderBy("name");
 
     return StreamBuilder<QuerySnapshot>(
       stream: recipes.snapshots(),
@@ -22,7 +22,7 @@ class ExploreRecipesPage extends StatelessWidget {
 
         return new ListView(
           children: snapshot.data!.docs.map((DocumentSnapshot document) {
-            var recipe = Recipe.fromJson(document.data()!);
+            var recipe = Recipe.fromDocument(document);
             return ListTile(
               title: Text(recipe.name ?? "No name"),
               onTap: () => _openRecipe(context, recipe),

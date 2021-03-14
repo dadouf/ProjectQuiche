@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Recipe {
   final String? id;
   final String? name;
@@ -16,11 +18,14 @@ class Recipe {
     };
   }
 
-  static Recipe fromJson(Map<String, dynamic> data) => Recipe(
-        id: data["id"],
-        name: data["name"],
-        ingredients: data["ingredients"],
-        steps: data["steps"],
-        tips: data["tips"],
-      );
+  static Recipe fromDocument(DocumentSnapshot doc) {
+    var data = doc.data()!;
+    return Recipe(
+      id: doc.id,
+      name: data["name"],
+      ingredients: data["ingredients"],
+      steps: data["steps"],
+      tips: data["tips"],
+    );
+  }
 }
