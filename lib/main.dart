@@ -29,12 +29,12 @@ class QuicheApp extends StatelessWidget {
   }
 
   Widget getLandingPage() {
-    return StreamBuilder<User>(
+    return StreamBuilder<User?>(
       stream: _auth.authStateChanges(),
-      builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
         log("Logged in user ID: ${snapshot.data?.uid}, email: ${snapshot.data?.email}");
 
-        if (snapshot.hasData && !snapshot.data.isAnonymous) {
+        if (snapshot.hasData && snapshot.data?.isAnonymous != true) {
           return MainAppScaffold();
         }
 

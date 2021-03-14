@@ -1,38 +1,26 @@
-import 'dart:convert';
-
-import 'ingredient.dart';
-import 'preparation_step.dart';
-
 class Recipe {
-  final String id;
-  final String name;
-  final Set<Ingredient> ingredients;
-  final List<PreparationStep> steps;
+  final String? id;
+  final String? name;
+  final String? ingredients;
+  final String? steps;
+  final String? tips;
 
-  const Recipe({this.id, this.name, this.ingredients, this.steps});
+  const Recipe({this.id, this.name, this.ingredients, this.steps, this.tips});
 
   toJson() {
     return {
       "name": name,
-      "ingredients": ingredients.map((e) => e.toJson()),
-      "steps": steps.map((e) => e.toJson())
+      "ingredients": ingredients,
+      "steps": steps,
+      "tips": tips,
     };
   }
-}
 
-class RecipesConverter extends Converter<Map, List<Recipe>> {
-  final _ingredientsConverter = IngredientsConverter();
-  final _stepsConverter = PreparationStepsConverter();
-
-  @override
-  List<Recipe> convert(Map<dynamic, dynamic> input) {
-    return input.keys
-        .map((key) => new Recipe(
-            id: key,
-            name: input[key]['name'],
-            ingredients:
-                _ingredientsConverter.convert(input[key]['ingredients']),
-            steps: _stepsConverter.convert(input[key]['steps'])))
-        .toList();
-  }
+  static Recipe fromJson(Map<String, dynamic> data) => Recipe(
+        id: data["id"],
+        name: data["name"],
+        ingredients: data["ingredients"],
+        steps: data["steps"],
+        tips: data["tips"],
+      );
 }

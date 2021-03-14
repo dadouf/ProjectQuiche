@@ -1,9 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class NewRecipePage extends StatefulWidget {
-  const NewRecipePage({Key key}) : super(key: key);
+  const NewRecipePage({Key? key}) : super(key: key);
 
   @override
   _NewRecipePageState createState() => _NewRecipePageState();
@@ -21,7 +21,7 @@ class _NewRecipePageState extends State<NewRecipePage> {
             TextField(
               onChanged: _onTextChanged,
             ),
-            RaisedButton(
+            ElevatedButton(
               child: Text('Add'),
               onPressed: _postNewRecipe,
             )
@@ -30,10 +30,16 @@ class _NewRecipePageState extends State<NewRecipePage> {
   }
 
   void _postNewRecipe() {
-    FirebaseDatabase.instance.reference().child("v1/recipes").push().set({
-      "name": _recipeName,
-      "created_by": FirebaseAuth.instance.currentUser.uid,
-    });
+    CollectionReference recipes =
+        FirebaseFirestore.instance.collection('recipes');
+
+    recipes
+        .add({
+          'name': _recipeName,
+          'created_by': FirebaseAuth.instance.currentUser?.uid,
+        })
+        .then((value) => print("Recipe Added"))
+        .catchError((error) => print("Failed to add recipe: $error"));
 
     Navigator.pop(context);
   }

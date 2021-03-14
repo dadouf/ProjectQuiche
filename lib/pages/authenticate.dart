@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -31,9 +33,12 @@ class _AuthenticatePageState extends State<AuthenticatePage> {
         ));
   }
 
-  Future<UserCredential> _signInWithGoogle() async {
+  Future<UserCredential?> _signInWithGoogle() async {
     // Trigger the authentication flow
-    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    if (googleUser == null) {
+      return null;
+    }
 
     // Obtain the auth details from the request
     final GoogleSignInAuthentication googleAuth =
@@ -43,7 +48,7 @@ class _AuthenticatePageState extends State<AuthenticatePage> {
     final GoogleAuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
-    );
+    ) as GoogleAuthCredential;
 
     // Once signed in, return the UserCredential
     final userCredential =

@@ -14,7 +14,7 @@ description: Your digital livre de recettes
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.2.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
   flutter:
@@ -29,7 +29,7 @@ dependencies:
   firebase_auth: ^1.0.1
   google_sign_in: ^5.0.0
 
-  firebase_database: ^6.1.0
+  cloud_firestore: ^1.0.1
 
 dev_dependencies:
   flutter_test:

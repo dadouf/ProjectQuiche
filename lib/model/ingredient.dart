@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:developer';
 
 class Ingredient {
-  final String qualifier;
-  final String product;
-  final num quantity;
+  final String? qualifier;
+  final String? product;
+  final num? quantity;
   final QuantityUnit unit;
 
   Ingredient(this.product, this.quantity, this.unit, {this.qualifier});
@@ -31,7 +31,7 @@ class QuantityUnit {
     }
   }
 
-  static QuantityUnit from(String s) {
+  static QuantityUnit from(String? s) {
     if (s == "tbsp") {
       return tbsp;
     } else if (s == "cup") {

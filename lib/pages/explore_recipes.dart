@@ -1,56 +1,36 @@
-import 'dart:developer';
-
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:projectquiche/model/recipe.dart';
 import 'package:projectquiche/pages/recipe.dart';
 
-class ExploreRecipesPage extends StatefulWidget {
-  @override
-  _ExploreRecipesPageState createState() => _ExploreRecipesPageState();
-}
-
-class _ExploreRecipesPageState extends State<ExploreRecipesPage>
-    with StreamSubscriberMixin {
-  final _recipesDbRef =
-      FirebaseDatabase.instance.reference().child("v1/recipes");
-  final _recipesDbConverter = RecipesConverter();
-
-  List<Recipe> _recipes = [];
-
+class ExploreRecipesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: _recipes.length,
-        itemBuilder: (context, position) {
-          var _recipe = _recipes[position];
-          return ListTile(
-            title: Text(_recipe.name),
-            onTap: () => _openRecipe(context, _recipe),
-          );
-        });
-  }
+    CollectionReference recipes =
+        FirebaseFirestore.instance.collection("recipes");
 
-  @override
-  void initState() {
-    super.initState();
+    return StreamBuilder<QuerySnapshot>(
+      stream: recipes.snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Text("Something went wrong");
+        }
 
-    // TODO move one layer down
-    listen(
-        _recipesDbRef.onValue,
-        (event) => setState(() {
-              _recipes = _recipesDbConverter.convert(event.snapshot.value);
-            }), onError: (error) {
-      log("Error while listening to recipe list", error: error);
-    });
-  }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Text("Loading");
+        }
 
-  @override
-  void dispose() {
-    cancelSubscriptions();
-
-    super.dispose();
+        return new ListView(
+          children: snapshot.data!.docs.map((DocumentSnapshot document) {
+            var recipe = Recipe.fromJson(document.data()!);
+            return ListTile(
+              title: Text(recipe.name ?? "No name"),
+              onTap: () => _openRecipe(context, recipe),
+            );
+          }).toList(),
+        );
+      },
+    );
   }
 
   void _openRecipe(BuildContext context, Recipe recipe) {

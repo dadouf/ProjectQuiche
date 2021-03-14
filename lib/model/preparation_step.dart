@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:developer';
 
 class PreparationStep {
-  final String title;
-  final String instructions;
+  final String? title;
+  final String? instructions;
 
   const PreparationStep({this.title, this.instructions});
 
