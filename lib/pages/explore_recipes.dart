@@ -28,15 +28,20 @@ class ExploreRecipesPage extends StatelessWidget {
           return Center(child: CircularProgressIndicator());
         }
 
-        return new ListView(
-          children: snapshot.data!.docs.map((DocumentSnapshot document) {
-            var recipe = Recipe.fromDocument(document);
-            return ListTile(
-              title: Text(recipe.name ?? "No name"),
-              onTap: () => _openRecipe(context, recipe),
-            );
-          }).toList(),
-        );
+        var docs = snapshot.data!.docs;
+        if (docs.isNotEmpty) {
+          return new ListView(
+            children: docs.map((DocumentSnapshot document) {
+              var recipe = Recipe.fromDocument(document);
+              return ListTile(
+                title: Text(recipe.name ?? "No name"),
+                onTap: () => _openRecipe(context, recipe),
+              );
+            }).toList(),
+          );
+        } else {
+          return Center(child: Text("No recipes were found"));
+        }
       },
     );
   }
