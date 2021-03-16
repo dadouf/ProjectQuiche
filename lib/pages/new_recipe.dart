@@ -31,19 +31,23 @@ class _NewRecipePageState extends State<NewRecipePage> {
   }
 
   void _postNewRecipe() {
-    MyFirestore.recipes()
-        .add({
-          MyFirestore.FIELD_NAME: _recipeName,
-          MyFirestore.FIELD_CREATED_BY: {
-            MyFirestore.FIELD_UID: FirebaseAuth.instance.currentUser?.uid,
-            MyFirestore.FIELD_NAME:
-                FirebaseAuth.instance.currentUser?.displayName
-          },
-          MyFirestore.FIELD_MOVED_TO_BIN: false
-        })
-        .then((value) => print("Recipe added"))
-        .catchError((error, stackTrace) => FirebaseCrashlytics.instance
-            .recordError(error, stackTrace, reason: "Failed to add recipe"));
+    MyFirestore.recipes().add({
+      MyFirestore.fieldName: _recipeName,
+      MyFirestore.fieldCreatedBy: {
+        MyFirestore.fieldUid: FirebaseAuth.instance.currentUser?.uid,
+        MyFirestore.fieldName: FirebaseAuth.instance.currentUser?.displayName
+      },
+      MyFirestore.fieldMovedToBin: false
+    }).then((value) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("New recipe added")));
+    }).catchError((error, stackTrace) {
+      final reason = "Failed to add recipe";
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(reason)));
+      FirebaseCrashlytics.instance
+          .recordError(error, stackTrace, reason: reason);
+    });
 
     Navigator.pop(context);
   }

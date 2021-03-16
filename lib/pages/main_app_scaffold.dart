@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:projectquiche/pages/explore_recipes.dart';
@@ -76,9 +77,21 @@ class _MainAppScaffoldState extends State<MainAppScaffold> {
   }
 
   void _logout() {
+    final Function errorHandler = (error, stackTrace) {
+      final reason = "Failed to sign out";
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(reason)));
+      FirebaseCrashlytics.instance
+          .recordError(error, stackTrace, reason: reason);
+    };
+
     FirebaseAuth.instance
-        .signOut(); // this is enough to go back to Login screen
-    GoogleSignIn().signOut(); // this is needed in order to PROMPT user again
+        .signOut() // this is enough to go back to Login screen
+        .catchError(errorHandler);
+
+    GoogleSignIn()
+        .signOut() // this is needed in order to PROMPT user again
+        .catchError(errorHandler);
 
     // ... causes callback in main.app
   }

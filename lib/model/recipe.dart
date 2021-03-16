@@ -22,10 +22,10 @@ class Recipe {
 
   toJson() {
     return {
-      MyFirestore.FIELD_NAME: name,
-      MyFirestore.FIELD_INGREDIENTS: ingredients,
-      MyFirestore.FIELD_STEPS: steps,
-      MyFirestore.FIELD_TIPS: tips,
+      MyFirestore.fieldName: name,
+      MyFirestore.fieldIngredients: ingredients,
+      MyFirestore.fieldSteps: steps,
+      MyFirestore.fieldTips: tips,
     };
   }
 
@@ -33,12 +33,12 @@ class Recipe {
     var data = doc.data()!;
     return Recipe(
       id: doc.id,
-      name: data[MyFirestore.FIELD_NAME],
-      ingredients: parseMultiLineString(data[MyFirestore.FIELD_INGREDIENTS]),
-      steps: parseMultiLineString(data[MyFirestore.FIELD_STEPS]),
-      tips: parseMultiLineString(data[MyFirestore.FIELD_TIPS]),
-      createdByName: data[MyFirestore.FIELD_CREATED_BY][MyFirestore.FIELD_NAME],
-      createdByUid: data[MyFirestore.FIELD_CREATED_BY][MyFirestore.FIELD_UID],
+      name: data[MyFirestore.fieldName],
+      ingredients: parseMultiLineString(data[MyFirestore.fieldIngredients]),
+      steps: parseMultiLineString(data[MyFirestore.fieldSteps]),
+      tips: parseMultiLineString(data[MyFirestore.fieldTips]),
+      createdByName: data[MyFirestore.fieldCreatedBy][MyFirestore.fieldName],
+      createdByUid: data[MyFirestore.fieldCreatedBy][MyFirestore.fieldUid],
     );
   }
 }

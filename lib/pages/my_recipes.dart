@@ -11,10 +11,10 @@ class MyRecipesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     Query recipes = MyFirestore.recipes()
         // Note: "isNotEqualTo: true" isn't allowed
-        .where(MyFirestore.FIELD_MOVED_TO_BIN, isEqualTo: false)
-        .where("${MyFirestore.FIELD_CREATED_BY}.${MyFirestore.FIELD_UID}",
+        .where(MyFirestore.fieldMovedToBin, isEqualTo: false)
+        .where("${MyFirestore.fieldCreatedBy}.${MyFirestore.fieldUid}",
             isEqualTo: FirebaseAuth.instance.currentUser?.uid)
-        .orderBy(MyFirestore.FIELD_NAME);
+        .orderBy(MyFirestore.fieldName);
 
     return StreamBuilder<QuerySnapshot>(
       stream: recipes.snapshots(),
@@ -23,11 +23,12 @@ class MyRecipesPage extends StatelessWidget {
           FirebaseCrashlytics.instance.recordError(
               snapshot.error, snapshot.stackTrace,
               reason: "Couldn't load My recipes");
-          return Text("Something went wrong");
+          return Center(
+              child: Text("Couldn't load screen. Please try again later."));
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text("Loading");
+          return Center(child: CircularProgressIndicator());
         }
 
         return new ListView(

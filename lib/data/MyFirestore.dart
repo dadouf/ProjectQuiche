@@ -6,11 +6,11 @@ class MyFirestore {
   static CollectionReference recipes() =>
       FirebaseFirestore.instance.collection("recipes_v0");
 
-  static const String FIELD_MOVED_TO_BIN = "moved_to_bin";
-  static const String FIELD_CREATED_BY = "created_by";
-  static const String FIELD_UID = "uid";
-  static const String FIELD_NAME = "name";
-  static const String FIELD_INGREDIENTS = "ingredients";
-  static const String FIELD_STEPS = "steps";
-  static const String FIELD_TIPS = "tips";
+  static const String fieldMovedToBin = "moved_to_bin";
+  static const String fieldCreatedBy = "created_by";
+  static const String fieldUid = "uid";
+  static const String fieldName = "name";
+  static const String fieldIngredients = "ingredients";
+  static const String fieldSteps = "steps";
+  static const String fieldTips = "tips";
 }

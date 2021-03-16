@@ -86,12 +86,15 @@ class RecipePage extends StatelessWidget {
     Widget cancelButton = TextButton(
       child: Text("Cancel"),
       onPressed: () {
-        Navigator.pop(context);
+        Navigator.pop(context); // to close dialog
       },
     );
     Widget continueButton = TextButton(
       child: Text("Move to bin"),
-      onPressed: () => _deleteRecipe(context),
+      onPressed: () {
+        Navigator.pop(context); // to close dialog
+        _deleteRecipe(context);
+      },
     );
 
     AlertDialog alert = AlertDialog(
@@ -118,13 +121,16 @@ class RecipePage extends StatelessWidget {
   void _deleteRecipe(BuildContext context) {
     MyFirestore.recipes()
         .doc(_recipe.id)
-        .update({MyFirestore.FIELD_MOVED_TO_BIN: true})
-        .then((value) => print("Recipe moved to bin"))
-        .catchError((error, stackTrace) => FirebaseCrashlytics.instance
-            .recordError(error, stackTrace,
-                reason: "Failed to move recipe to bin"));
-
-    Navigator.pop(context); // to close dialog
-    Navigator.pop(context); // to close recipe
+        .update({MyFirestore.fieldMovedToBin: true}).then((value) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Recipe moved to bin")));
+      Navigator.pop(context); // to close recipe
+    }).catchError((error, stackTrace) {
+      var reason = "Failed to move recipe to bin";
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(reason)));
+      FirebaseCrashlytics.instance
+          .recordError(error, stackTrace, reason: reason);
+    });
   }
 }
