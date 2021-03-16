@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:projectquiche/data/MyFirestore.dart';
 
 class Recipe {
   final String? id;
@@ -6,15 +7,25 @@ class Recipe {
   final String? ingredients;
   final String? steps;
   final String? tips;
+  final String? createdByName;
+  final String? createdByUid;
 
-  const Recipe({this.id, this.name, this.ingredients, this.steps, this.tips});
+  const Recipe({
+    this.id,
+    this.name,
+    this.ingredients,
+    this.steps,
+    this.tips,
+    this.createdByName,
+    this.createdByUid,
+  });
 
   toJson() {
     return {
-      "name": name,
-      "ingredients": ingredients,
-      "steps": steps,
-      "tips": tips,
+      MyFirestore.FIELD_NAME: name,
+      MyFirestore.FIELD_INGREDIENTS: ingredients,
+      MyFirestore.FIELD_STEPS: steps,
+      MyFirestore.FIELD_TIPS: tips,
     };
   }
 
@@ -22,10 +33,17 @@ class Recipe {
     var data = doc.data()!;
     return Recipe(
       id: doc.id,
-      name: data["name"],
-      ingredients: data["ingredients"],
-      steps: data["steps"],
-      tips: data["tips"],
+      name: data[MyFirestore.FIELD_NAME],
+      ingredients: parseMultiLineString(data[MyFirestore.FIELD_INGREDIENTS]),
+      steps: parseMultiLineString(data[MyFirestore.FIELD_STEPS]),
+      tips: parseMultiLineString(data[MyFirestore.FIELD_TIPS]),
+      createdByName: data[MyFirestore.FIELD_CREATED_BY][MyFirestore.FIELD_NAME],
+      createdByUid: data[MyFirestore.FIELD_CREATED_BY][MyFirestore.FIELD_UID],
     );
   }
 }
+
+/// Firestore is incapable of storing line breaks in String fields.
+/// Instead, we store the "\n" as two literal characters. Upon receiving it,
+/// we transform it into a multi-line string.
+String? parseMultiLineString(String? str) => str?.replaceAll("\\n", "\n");

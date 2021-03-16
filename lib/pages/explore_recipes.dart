@@ -1,13 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:projectquiche/data/MyFirestore.dart';
 import 'package:projectquiche/model/recipe.dart';
 import 'package:projectquiche/pages/recipe.dart';
 
 class ExploreRecipesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Query recipes =
-        FirebaseFirestore.instance.collection("recipes").orderBy("name");
+    Query recipes = MyFirestore.recipes()
+        // Note: "isNotEqualTo: true" isn't allowed
+        .where(MyFirestore.FIELD_MOVED_TO_BIN, isEqualTo: false)
+        .orderBy(MyFirestore.FIELD_NAME);
 
     return StreamBuilder<QuerySnapshot>(
       stream: recipes.snapshots(),

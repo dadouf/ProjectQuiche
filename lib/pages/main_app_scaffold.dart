@@ -23,38 +23,46 @@ class _MainAppScaffoldState extends State<MainAppScaffold> {
           title: Text(_currentPageTitle),
         ),
         drawer: Container(
-            color: Color(0xFF404040),
-            margin: EdgeInsets.only(right: 72),
-            child: ListView(
-              children: [
-                ListTile(
-                  title: Text("Explore Recipes"),
-                  onTap: () {
-                    setState(() {
-                      _currentPage = ExploreRecipesPage();
-                      _currentPageTitle = "Explore Recipes";
-                    });
-                    Navigator.of(context).pop();
-                  },
-                ),
-                ListTile(
-                  title: Text("My Recipes"),
-                  onTap: () {
-                    setState(() {
-                      _currentPage = MyRecipesPage();
-                      _currentPageTitle = "My Recipes";
-                    });
-                    Navigator.of(context).pop();
-                  },
-                ),
-                ListTile(
-                  title: Row(
-                    children: [Icon(Icons.logout), Text("Log out")],
+          margin: EdgeInsets.only(right: 72),
+          child: Material(
+              color: Color(0xFF404040),
+              child: ListView(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                          child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                            "Connected as ${FirebaseAuth.instance.currentUser?.displayName}\n${FirebaseAuth.instance.currentUser?.email}"),
+                      )),
+                      IconButton(icon: Icon(Icons.logout), onPressed: _logout)
+                    ],
                   ),
-                  onTap: _logout,
-                )
-              ],
-            )),
+                  Divider(),
+                  ListTile(
+                    title: Text("Explore Recipes"),
+                    onTap: () {
+                      setState(() {
+                        _currentPage = ExploreRecipesPage();
+                        _currentPageTitle = "Explore Recipes";
+                      });
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  ListTile(
+                    title: Text("My Recipes"),
+                    onTap: () {
+                      setState(() {
+                        _currentPage = MyRecipesPage();
+                        _currentPageTitle = "My Recipes";
+                      });
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              )),
+        ),
         body: _currentPage,
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.plus_one),

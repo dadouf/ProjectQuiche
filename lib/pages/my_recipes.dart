@@ -1,16 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:projectquiche/data/MyFirestore.dart';
 import 'package:projectquiche/model/recipe.dart';
 import 'package:projectquiche/pages/recipe.dart';
 
 class MyRecipesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Query recipes = FirebaseFirestore.instance
-        .collection("recipes")
-        .orderBy("name")
-        .where("created_by", isEqualTo: FirebaseAuth.instance.currentUser?.uid);
+    Query recipes = MyFirestore.recipes()
+        // Note: "isNotEqualTo: true" isn't allowed
+        .where(MyFirestore.FIELD_MOVED_TO_BIN, isEqualTo: false)
+        .where("${MyFirestore.FIELD_CREATED_BY}.${MyFirestore.FIELD_UID}",
+            isEqualTo: FirebaseAuth.instance.currentUser?.uid)
+        .orderBy(MyFirestore.FIELD_NAME);
 
     return StreamBuilder<QuerySnapshot>(
       stream: recipes.snapshots(),

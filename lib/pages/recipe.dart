@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:projectquiche/data/MyFirestore.dart';
 import 'package:projectquiche/model/recipe.dart';
 
 class RecipePage extends StatelessWidget {
@@ -8,87 +10,118 @@ class RecipePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var titleStyle = TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
+    var defaultPadding = const EdgeInsets.all(16.0);
+
+    List<Widget>? actions =
+        _recipe.createdByUid == FirebaseAuth.instance.currentUser?.uid
+            ? [
+                IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () => _onEditButtonClicked(context)),
+                IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () => _onDeleteButtonClicked(context)),
+              ]
+            : null;
+
     return Scaffold(
-      appBar: AppBar(title: Text(_recipe.name!)),
+      appBar: AppBar(
+        title: Text(_recipe.name ?? "Untitled"),
+        actions: actions,
+      ),
       body: ListView(
         children: [
-          Text("INGREDIENTS"),
-          Text(_recipe.ingredients ?? "No ingredients"),
-          Text("STEPS"),
-          Text(_recipe.steps ?? "No steps"),
+          Padding(
+            padding: defaultPadding,
+            child: Text("Created by ${getRecipeCreator()}"),
+          ),
+          Padding(
+            padding: defaultPadding,
+            child: Text("Ingredients", style: titleStyle),
+          ),
+          Padding(
+            padding: defaultPadding,
+            child: Text(_recipe.ingredients ?? "None"),
+          ),
+          Padding(
+            padding: defaultPadding,
+            child: Text("Steps", style: titleStyle),
+          ),
+          Padding(
+            padding: defaultPadding,
+            child: Text(_recipe.steps ?? "None"),
+          ),
+          Padding(
+            padding: defaultPadding,
+            child: Text("Tips", style: titleStyle),
+          ),
+          Padding(
+            padding: defaultPadding,
+            child: Text(_recipe.tips ?? "None"),
+          ),
         ],
       ),
-      // body: ListView.separated(
-      //     itemCount: _recipe.steps.length + 1,
-      //     padding: EdgeInsets.all(16),
-      //     separatorBuilder: (context, position) {
-      //       return Divider(
-      //         thickness: 8,
-      //         color: Colors.transparent,
-      //       );
-      //     },
-      //     itemBuilder: (context, position) {
-      //       if (position == 0) {
-      //         return _makeIngredientsCarousel();
-      //       } else {
-      //         return PreparationStepListItem(
-      //             position, _recipe.steps[position - 1]);
-      //       }})
     );
   }
 
-// Widget _makeIngredientsCarousel() {
-//   var ingredients = _recipe.ingredients.toList();
-//   return Container(
-//       // There's no way around assigning a fixed height,
-//       // see https://stackoverflow.com/q/50155738/2291104
-//       height: 80,
-//       child: ListView.separated(
-//           scrollDirection: Axis.horizontal,
-//           itemCount: ingredients.length,
-//           separatorBuilder: (context, position) {
-//             return Divider(thickness: 8);
-//           },
-//           itemBuilder: (context, position) =>
-//               IngredientListItem(ingredients[position])));
-// }
-// }
+  String getRecipeCreator() {
+    if (_recipe.createdByUid == FirebaseAuth.instance.currentUser?.uid) {
+      return "you";
+    } else if (_recipe.createdByName != null) {
+      // TODO how can I avoid having to cast to non-null
+      return _recipe.createdByName!;
+    } else if (_recipe.createdByUid != null) {
+      return "User ${_recipe.createdByUid}";
+    } else {
+      return "someone";
+    }
+  }
 
-// class IngredientListItem extends StatelessWidget {
-//   final Ingredient _ingredient;
-//
-//   IngredientListItem(this._ingredient);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Padding(
-//         padding: EdgeInsets.all(16),
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: <Widget>[
-//             Text(
-//               _ingredient.product! +
-//                   (_ingredient.qualifier != null
-//                       ? ' (${_ingredient.qualifier})'
-//                       : ''),
-//               style: TextStyle(fontSize: 18),
-//             ),
-//             Text(_ingredient.unit.toDisplayString(_ingredient.quantity!))
-//           ],
-//         ));
-//   }
-// }
-//
-// class PreparationStepListItem extends StatelessWidget {
-//   final int _index;
-//   final PreparationStep _step;
-//
-//   PreparationStepListItem(this._index, this._step);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Text(
-//         '#$_index ${_step.title != null ? _step.title : ''}\n${_step.instructions}');
-//   }
+  void _onEditButtonClicked(BuildContext context) {}
+
+  /// Display a confirmation dialog
+  void _onDeleteButtonClicked(BuildContext context) {
+    Widget cancelButton = TextButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text("Move to bin"),
+      onPressed: () => _deleteRecipe(context),
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text("Move to bin?"),
+      content:
+          Text("This recipe will no longer be visible by you or by anyone"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  /// Move the recipe to bin.
+  /// Note: this is just setting a flag and not actually deleting the document,
+  /// out of extra safety. TODO We will need an actual deletion strategy.
+  void _deleteRecipe(BuildContext context) {
+    MyFirestore.recipes()
+        .doc(_recipe.id)
+        .update({MyFirestore.FIELD_MOVED_TO_BIN: true})
+        .then((value) => print("Recipe moved to bin"))
+        .catchError((error) => print("Failed to move recipe to bin: $error"));
+
+    Navigator.pop(context); // to close dialog
+    Navigator.pop(context); // to close recipe
+  }
 }
