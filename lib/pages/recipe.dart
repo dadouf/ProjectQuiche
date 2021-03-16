@@ -3,11 +3,11 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:projectquiche/data/MyFirestore.dart';
 import 'package:projectquiche/model/recipe.dart';
+import 'package:projectquiche/pages/edit_recipe.dart';
 
 class RecipePage extends StatelessWidget {
-  final Recipe _recipe;
-
   const RecipePage(this._recipe, {Key? key}) : super(key: key);
+  final Recipe _recipe;
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +79,10 @@ class RecipePage extends StatelessWidget {
     }
   }
 
-  void _onEditButtonClicked(BuildContext context) {}
+  void _onEditButtonClicked(BuildContext context) {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => EditRecipePage(_recipe)));
+  }
 
   /// Display a confirmation dialog
   void _onDeleteButtonClicked(BuildContext context) {
