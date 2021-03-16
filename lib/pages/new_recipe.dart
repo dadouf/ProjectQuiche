@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:projectquiche/data/MyFirestore.dart';
 
@@ -40,8 +41,9 @@ class _NewRecipePageState extends State<NewRecipePage> {
           },
           MyFirestore.FIELD_MOVED_TO_BIN: false
         })
-        .then((value) => print("Recipe Added"))
-        .catchError((error) => print("Failed to add recipe: $error"));
+        .then((value) => print("Recipe added"))
+        .catchError((error, stackTrace) => FirebaseCrashlytics.instance
+            .recordError(error, stackTrace, reason: "Failed to add recipe"));
 
     Navigator.pop(context);
   }

@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:projectquiche/data/MyFirestore.dart';
 import 'package:projectquiche/model/recipe.dart';
@@ -119,7 +120,9 @@ class RecipePage extends StatelessWidget {
         .doc(_recipe.id)
         .update({MyFirestore.FIELD_MOVED_TO_BIN: true})
         .then((value) => print("Recipe moved to bin"))
-        .catchError((error) => print("Failed to move recipe to bin: $error"));
+        .catchError((error, stackTrace) => FirebaseCrashlytics.instance
+            .recordError(error, stackTrace,
+                reason: "Failed to move recipe to bin"));
 
     Navigator.pop(context); // to close dialog
     Navigator.pop(context); // to close recipe

@@ -40,7 +40,7 @@ class QuicheApp extends StatelessWidget {
 
         if (snapshot.hasData && snapshot.data?.isAnonymous != true) {
           FirebaseCrashlytics.instance
-              .setUserIdentifier(snapshot.data?.uid ?? "unknown");
+              .setUserIdentifier(snapshot.data?.uid ?? "");
           return MainAppScaffold();
         }
 
