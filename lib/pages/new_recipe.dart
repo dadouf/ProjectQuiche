@@ -12,27 +12,60 @@ class NewRecipePage extends StatefulWidget {
 
 class _NewRecipePageState extends State<NewRecipePage> {
   var _recipeName = "";
+  var _recipeIngredients = "";
+  var _recipeSteps = "";
+  var _recipeTips = "";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: Text("New recipe")),
-        body: ListView(
-          children: [
-            TextField(
-              onChanged: _onTextChanged,
-            ),
-            ElevatedButton(
-              child: Text('Add'),
-              onPressed: _postNewRecipe,
-            )
-          ],
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView(
+            children: [
+              TextFormField(
+                decoration: const InputDecoration(labelText: "Name"),
+                onChanged: (text) {
+                  _recipeName = text;
+                },
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: "Ingredients"),
+                keyboardType: TextInputType.multiline,
+                onChanged: (text) {
+                  _recipeIngredients = text;
+                },
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: "Steps"),
+                keyboardType: TextInputType.multiline,
+                onChanged: (text) {
+                  _recipeSteps = text;
+                },
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: "Tips"),
+                keyboardType: TextInputType.multiline,
+                onChanged: (text) {
+                  _recipeTips = text;
+                },
+              ),
+              ElevatedButton(
+                child: Text('Add'),
+                onPressed: _postNewRecipe,
+              )
+            ],
+          ),
         ));
   }
 
   void _postNewRecipe() {
     MyFirestore.recipes().add({
       MyFirestore.fieldName: _recipeName,
+      MyFirestore.fieldIngredients: _recipeIngredients,
+      MyFirestore.fieldSteps: _recipeSteps,
+      MyFirestore.fieldTips: _recipeTips,
       MyFirestore.fieldCreatedBy: {
         MyFirestore.fieldUid: FirebaseAuth.instance.currentUser?.uid,
         MyFirestore.fieldName: FirebaseAuth.instance.currentUser?.displayName
@@ -50,9 +83,5 @@ class _NewRecipePageState extends State<NewRecipePage> {
     });
 
     Navigator.pop(context);
-  }
-
-  void _onTextChanged(String value) {
-    _recipeName = value;
   }
 }
