@@ -3,7 +3,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:projectquiche/data/MyFirestore.dart';
 import 'package:projectquiche/model/recipe.dart';
-import 'package:projectquiche/pages/edit_recipe.dart';
+import 'package:projectquiche/pages/recipe_input.dart';
 
 class RecipePage extends StatelessWidget {
   const RecipePage(this._recipe, {Key? key}) : super(key: key);

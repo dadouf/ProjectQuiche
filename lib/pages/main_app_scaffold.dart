@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:projectquiche/pages/explore_recipes.dart';
 import 'package:projectquiche/pages/my_recipes.dart';
-import 'package:projectquiche/pages/new_recipe.dart';
+import 'package:projectquiche/pages/recipe_input.dart';
 
 class MainAppScaffold extends StatefulWidget {
   @override
@@ -12,10 +12,10 @@ class MainAppScaffold extends StatefulWidget {
 }
 
 class _MainAppScaffoldState extends State<MainAppScaffold> {
-  Widget _currentPage = ExploreRecipesPage();
+  Widget _currentPage = MyRecipesPage();
 
   // TODO could (should) that be a field of _currentPage??
-  String _currentPageTitle = "Explore Recipes";
+  String _currentPageTitle = "My Recipes";
 
   @override
   Widget build(BuildContext context) {
@@ -42,21 +42,21 @@ class _MainAppScaffoldState extends State<MainAppScaffold> {
                   ),
                   Divider(),
                   ListTile(
-                    title: Text("Explore Recipes"),
-                    onTap: () {
-                      setState(() {
-                        _currentPage = ExploreRecipesPage();
-                        _currentPageTitle = "Explore Recipes";
-                      });
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                  ListTile(
                     title: Text("My Recipes"),
                     onTap: () {
                       setState(() {
                         _currentPage = MyRecipesPage();
                         _currentPageTitle = "My Recipes";
+                      });
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  ListTile(
+                    title: Text("Explore Recipes"),
+                    onTap: () {
+                      setState(() {
+                        _currentPage = ExploreRecipesPage();
+                        _currentPageTitle = "Explore Recipes";
                       });
                       Navigator.of(context).pop();
                     },
