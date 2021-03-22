@@ -25,12 +25,12 @@ dependencies:
   cupertino_icons: ^1.0.2
 
   firebase_core: ^1.0.1
-
   firebase_auth: ^1.0.1
   google_sign_in: ^5.0.0
-
   cloud_firestore: ^1.0.1
   firebase_crashlytics: ^1.0.0
+
+  flutter_launcher_icons: ^0.9.0
 
 dev_dependencies:
   flutter_test:
@@ -78,3 +78,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+flutter_icons:
+  image_path: "assets/images/ic_launcher-playstore.png"
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  # TODO: adaptive_icon_background, adaptive_icon_foreground
