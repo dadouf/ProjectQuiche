@@ -226,7 +226,8 @@ class _RecipeInputPageState extends State<RecipeInputPage>
       // Animate to the tab that needs to change
       _tabController.animateTo(0);
 
-      // FIXME if we're already on the right tab then validation doesn't appear
+      // Also display validation errors now in case we're already in the correct tab
+      _displayValidationErrors();
     }
   }
 
@@ -247,10 +248,14 @@ class _RecipeInputPageState extends State<RecipeInputPage>
       // FIXME small issue (maybe in Flutter): this always capitalizes even if there is a current text (Android-only apparently)
       _focusNodes[_tabController.index].requestFocus();
 
-      // ... call validate() -- this is only to show errors
+      // ... show validation errors
       if (_tabController.index == 0) {
-        _nameKey.currentState?.validate();
+        _displayValidationErrors();
       }
     }
+  }
+
+  void _displayValidationErrors() {
+    _nameKey.currentState?.validate();
   }
 }

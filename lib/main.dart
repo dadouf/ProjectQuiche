@@ -22,8 +22,13 @@ Future<void> main() async {
 class QuicheApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    const mainColor = Color(0xFFE06E61);
     return new MaterialApp(
-      theme: ThemeData.dark().copyWith(accentColor: Color(0xFFDC5445)),
+      theme: ThemeData.dark().copyWith(
+        indicatorColor: mainColor,
+        accentColor: mainColor,
+        colorScheme: ColorScheme.dark().copyWith(secondary: mainColor),
+      ),
       home: getLandingPage(),
       // initialRoute: '/',
       // routes: <String, WidgetBuilder>{
