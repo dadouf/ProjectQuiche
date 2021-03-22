@@ -11,7 +11,7 @@ class NewRecipePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return RecipeInputPage(
         title: "New recipe",
-        onRecipeSave: (name, ingredients, steps, tips) {
+        onRecipeSave: ({required name, ingredients, steps, tips}) {
           MyFirestore.recipes().add({
             MyFirestore.fieldName: name,
             MyFirestore.fieldIngredients: ingredients,
@@ -47,39 +47,43 @@ class EditRecipePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RecipeInputPage(
-        title: "Edit recipe",
-        initialRecipe: recipe,
-        onRecipeSave: (name, ingredients, steps, tips) {
-          MyFirestore.recipes().doc(recipe.id).update({
-            MyFirestore.fieldName: name,
-            MyFirestore.fieldIngredients: ingredients,
-            MyFirestore.fieldSteps: steps,
-            MyFirestore.fieldTips: tips,
-          }).then((value) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text("Recipe edited")));
-          }).catchError((error, stackTrace) {
-            final reason = "Failed to edit recipe";
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(reason)));
-            FirebaseCrashlytics.instance
-                .recordError(error, stackTrace, reason: reason);
-          });
-
-          Navigator.pop(context);
-
-          // FIXME recipe doesn't get updated in recipe page, until it does we go back all the way
-          Navigator.pop(context);
+      title: "Edit recipe",
+      initialRecipe: recipe,
+      onRecipeSave: ({required name, ingredients, steps, tips}) {
+        MyFirestore.recipes().doc(recipe.id).update({
+          MyFirestore.fieldName: name,
+          MyFirestore.fieldIngredients: ingredients,
+          MyFirestore.fieldSteps: steps,
+          MyFirestore.fieldTips: tips,
+        }).then((value) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text("Recipe edited")));
+        }).catchError((error, stackTrace) {
+          final reason = "Failed to edit recipe";
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(reason)));
+          FirebaseCrashlytics.instance
+              .recordError(error, stackTrace, reason: reason);
         });
+
+        Navigator.pop(context);
+
+        // FIXME recipe doesn't get updated in recipe page, until it does we go back all the way
+        Navigator.pop(context);
+      },
+    );
   }
 }
 
 class RecipeInputPage extends StatefulWidget {
   final String title;
   final Recipe? initialRecipe;
-  final void Function(
-          String name, String? ingredients, String? steps, String? tips)
-      onRecipeSave;
+  final void Function({
+    required String name,
+    required String? ingredients,
+    required String? steps,
+    required String? tips,
+  }) onRecipeSave;
 
   const RecipeInputPage(
       {required this.title,
@@ -94,7 +98,7 @@ class RecipeInputPage extends StatefulWidget {
 
 class _RecipeInputPageState extends State<RecipeInputPage>
     with SingleTickerProviderStateMixin {
-  final _formKey = GlobalKey<FormState>();
+  // Note: right now 1 tab = 1 field, but this will change
 
   final _tabs = [
     Tab(text: "Info"),
@@ -103,21 +107,25 @@ class _RecipeInputPageState extends State<RecipeInputPage>
     Tab(text: "Tips"),
   ];
 
-  String? _recipeName;
-  String? _recipeIngredients;
-  String? _recipeSteps;
-  String? _recipeTips;
+  late TextEditingController _recipeName;
+  late TextEditingController _recipeIngredients;
+  late TextEditingController _recipeSteps;
+  late TextEditingController _recipeTips;
 
   late TabController _tabController;
   late List<FocusNode> _focusNodes;
 
+  final _nameKey = GlobalKey<FormFieldState>();
+
   @override
   void initState() {
     super.initState();
-    _recipeName = widget.initialRecipe?.name;
-    _recipeIngredients = widget.initialRecipe?.ingredients;
-    _recipeSteps = widget.initialRecipe?.steps;
-    _recipeTips = widget.initialRecipe?.tips;
+
+    _recipeName = TextEditingController(text: widget.initialRecipe?.name);
+    _recipeIngredients =
+        TextEditingController(text: widget.initialRecipe?.ingredients);
+    _recipeSteps = TextEditingController(text: widget.initialRecipe?.steps);
+    _recipeTips = TextEditingController(text: widget.initialRecipe?.tips);
 
     _focusNodes = [FocusNode(), FocusNode(), FocusNode(), FocusNode()];
 
@@ -129,9 +137,11 @@ class _RecipeInputPageState extends State<RecipeInputPage>
   void dispose() {
     _tabController.removeListener(_onTabControllerEvent);
     _tabController.dispose();
+
     _focusNodes.forEach((element) {
       element.dispose();
     });
+
     super.dispose();
   }
 
@@ -150,100 +160,95 @@ class _RecipeInputPageState extends State<RecipeInputPage>
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: TabBarView(
-            controller: _tabController,
-            children: [
-              TextFormField(
-                focusNode: _focusNodes[0],
-                initialValue: _recipeName,
-                decoration: InputDecoration(labelText: "Name"),
-                textCapitalization: TextCapitalization.sentences,
-                onChanged: (text) {
-                  setState(() {
-                    _recipeName = text;
-                  });
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Required";
-                  } else {
-                    return null;
-                  }
-                },
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-              ),
-              TextFormField(
-                focusNode: _focusNodes[1],
-                initialValue: _recipeIngredients,
-                decoration:
-                    InputDecoration(hintText: "- 20g butter\n- 4 eggs\n..."),
-                textCapitalization: TextCapitalization.sentences,
-                onChanged: (text) {
-                  setState(() {
-                    _recipeIngredients = text;
-                  });
-                },
-                expands: true,
-                maxLines: null,
-                minLines: null,
-              ),
-              TextFormField(
-                focusNode: _focusNodes[2],
-                initialValue: _recipeSteps,
-                decoration: InputDecoration(
-                    hintText: "1. Preheat oven to 220°C\n2. Cut stuff\n..."),
-                textCapitalization: TextCapitalization.sentences,
-                onChanged: (text) {
-                  setState(() {
-                    _recipeSteps = text;
-                  });
-                },
-                expands: true,
-                maxLines: null,
-                minLines: null,
-              ),
-              TextFormField(
-                focusNode: _focusNodes[3],
-                initialValue: _recipeTips,
-                decoration: InputDecoration(
-                    hintText: "Serve with mixed greens or mash potato.\n..."),
-                textCapitalization: TextCapitalization.sentences,
-                onChanged: (text) {
-                  setState(() {
-                    _recipeTips = text;
-                  });
-                },
-                expands: true,
-                maxLines: null,
-                minLines: null,
-              ),
-            ],
-          ),
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+            TextFormField(
+              key: _nameKey,
+              focusNode: _focusNodes[0],
+              controller: _recipeName,
+              decoration: InputDecoration(labelText: "Name"),
+              textCapitalization: TextCapitalization.sentences,
+              validator: (value) {
+                if (_validateName()) {
+                  return null;
+                } else {
+                  return "Required";
+                }
+              },
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+            ),
+            TextFormField(
+              focusNode: _focusNodes[1],
+              controller: _recipeIngredients,
+              decoration:
+                  InputDecoration(hintText: "- 20g butter\n- 4 eggs\n..."),
+              textCapitalization: TextCapitalization.sentences,
+              expands: true,
+              maxLines: null,
+              minLines: null,
+            ),
+            TextFormField(
+              focusNode: _focusNodes[2],
+              controller: _recipeSteps,
+              decoration: InputDecoration(
+                  hintText: "1. Preheat oven to 220°C\n2. Cut stuff\n..."),
+              textCapitalization: TextCapitalization.sentences,
+              expands: true,
+              maxLines: null,
+              minLines: null,
+            ),
+            TextFormField(
+              focusNode: _focusNodes[3],
+              controller: _recipeTips,
+              decoration: InputDecoration(
+                  hintText: "Serve with mixed greens or mash potato.\n..."),
+              textCapitalization: TextCapitalization.sentences,
+              expands: true,
+              maxLines: null,
+              minLines: null,
+            ),
+          ],
         ),
       ),
     );
   }
 
   void _onSavePressed() {
-    if (_formKey.currentState?.validate() == true) {
-      if (_recipeName == null || _recipeName!.isEmpty) {
-        // FIXME this should not happen: find out what's wrong with the form validation
-        FirebaseCrashlytics.instance.log("Failed to validate form properly");
-        widget.onRecipeSave(
-            "Untitled", _recipeIngredients, _recipeSteps, _recipeTips);
-      } else {
-        widget.onRecipeSave(
-            _recipeName!, _recipeIngredients, _recipeSteps, _recipeTips);
-      }
+    if (_validateForm()) {
+      widget.onRecipeSave(
+        name: _recipeName.text,
+        ingredients: _recipeIngredients.text,
+        steps: _recipeSteps.text,
+        tips: _recipeTips.text,
+      );
     } else {
+      // Animate to the tab that needs to change
       _tabController.animateTo(0);
     }
   }
 
+  /// Note: validation of the full Form at once doesn't work because TabBarView
+  /// doesn't really have all 4 children existing at once. Only the current one
+  /// is attached, therefore validate() would only validate the currently
+  /// displayed field.
+  /// Instead, we manually validate the fields based on their state value.
+
+  bool _validateForm() => _validateName();
+
+  bool _validateName() => _recipeName.text.isNotEmpty;
+
   void _onTabControllerEvent() {
-    // TODO is this okay: it gets called pretty much all the time
-    _focusNodes[_tabController.index].requestFocus();
+    // Upon settling...
+    if (!_tabController.indexIsChanging) {
+      // ... focus text field
+      // FIXME small issue (maybe in Flutter): this always capitalizes even if there is a current text (Android-only apparently)
+      _focusNodes[_tabController.index].requestFocus();
+
+      // ... call validate() -- this is only to show errors
+      if (_tabController.index == 0) {
+        _nameKey.currentState?.validate();
+      }
+    }
   }
 }
