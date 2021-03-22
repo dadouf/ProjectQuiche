@@ -23,7 +23,7 @@ class QuicheApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      theme: ThemeData.dark(),
+      theme: ThemeData.dark().copyWith(accentColor: Color(0xFFDC5445)),
       home: getLandingPage(),
       // initialRoute: '/',
       // routes: <String, WidgetBuilder>{

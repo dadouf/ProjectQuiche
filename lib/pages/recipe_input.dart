@@ -225,6 +225,8 @@ class _RecipeInputPageState extends State<RecipeInputPage>
     } else {
       // Animate to the tab that needs to change
       _tabController.animateTo(0);
+
+      // FIXME if we're already on the right tab then validation doesn't appear
     }
   }
 
