@@ -95,12 +95,20 @@ class _AuthenticatePageState extends State<AuthenticatePage> {
   }
 
   void _signInWithApple() async {
+    final Function errorHandler = (error, stackTrace) {
+      final reason = "Failed to sign in";
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(reason)));
+      FirebaseCrashlytics.instance
+          .recordError(error, stackTrace, reason: reason);
+    };
+
     final appleCredential = await SignInWithApple.getAppleIDCredential(
       scopes: [
         AppleIDAuthorizationScopes.email,
         AppleIDAuthorizationScopes.fullName,
       ],
-    );
+    ).catchError(errorHandler);
 
     final AuthCredential oauthCredential =
         OAuthProvider('apple.com').credential(
@@ -111,9 +119,7 @@ class _AuthenticatePageState extends State<AuthenticatePage> {
     // Once signed in, return the UserCredential
     final userCredential = await FirebaseAuth.instance
         .signInWithCredential(oauthCredential)
-        .catchError((error) {
-      print("Apple error: $error");
-    });
+        .catchError(errorHandler);
 
     print("Apple success");
     // print(credential);
