@@ -11,7 +11,7 @@ description: Your digital livre de recettes
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.0.1+1
+version: 0.1.0+3
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
@@ -24,13 +24,19 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
 
+  # Firebase
   firebase_core: ^1.0.1
-
-  firebase_auth: ^1.0.1
-  google_sign_in: ^5.0.0
-
   cloud_firestore: ^1.0.1
   firebase_crashlytics: ^1.0.0
+
+  # Firebase & Sign in
+  firebase_auth: ^1.0.1
+  google_sign_in: ^5.0.0
+  sign_in_with_apple: ^3.0.0
+
+  flutter_launcher_icons: ^0.9.0
+
+  package_info: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -78,3 +84,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+flutter_icons:
+  image_path: "assets/images/ic_launcher-playstore.png"
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  # TODO: adaptive_icon_background, adaptive_icon_foreground

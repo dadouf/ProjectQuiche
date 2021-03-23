@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:package_info/package_info.dart';
 import 'package:projectquiche/pages/explore_recipes.dart';
 import 'package:projectquiche/pages/my_recipes.dart';
 import 'package:projectquiche/pages/recipe_input.dart';
@@ -19,6 +20,8 @@ class _MainAppScaffoldState extends State<MainAppScaffold> {
 
   @override
   Widget build(BuildContext context) {
+    const paddingValue = 16.0;
+    const padding = const EdgeInsets.all(paddingValue);
     return Scaffold(
         appBar: AppBar(
           title: Text(_currentPageTitle),
@@ -27,40 +30,82 @@ class _MainAppScaffoldState extends State<MainAppScaffold> {
           margin: EdgeInsets.only(right: 72),
           child: Material(
               color: Color(0xFF404040),
-              child: ListView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                          child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(
-                            "Connected as ${FirebaseAuth.instance.currentUser?.displayName}\n${FirebaseAuth.instance.currentUser?.email}"),
-                      )),
-                      IconButton(icon: Icon(Icons.logout), onPressed: _logout)
-                    ],
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: padding,
+                                child: Text(
+                                    "Connected as\n${FirebaseAuth.instance.currentUser?.email}"),
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.logout),
+                              onPressed: _logout,
+                            ),
+                          ],
+                        ),
+                        Divider(),
+                        ListTile(
+                          title: Text("My Recipes"),
+                          onTap: () {
+                            setState(() {
+                              _currentPage = MyRecipesPage();
+                              _currentPageTitle = "My Recipes";
+                            });
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        ListTile(
+                          title: Text("Explore Recipes"),
+                          onTap: () {
+                            setState(() {
+                              _currentPage = ExploreRecipesPage();
+                              _currentPageTitle = "Explore Recipes";
+                            });
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                   Divider(),
-                  ListTile(
-                    title: Text("My Recipes"),
-                    onTap: () {
-                      setState(() {
-                        _currentPage = MyRecipesPage();
-                        _currentPageTitle = "My Recipes";
-                      });
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                  ListTile(
-                    title: Text("Explore Recipes"),
-                    onTap: () {
-                      setState(() {
-                        _currentPage = ExploreRecipesPage();
-                        _currentPageTitle = "Explore Recipes";
-                      });
-                      Navigator.of(context).pop();
-                    },
-                  ),
+                  FutureBuilder<PackageInfo>(
+                      future: PackageInfo.fromPlatform(),
+                      builder: (context, snapshot) {
+                        String? packageName = snapshot.data?.packageName;
+                        String? version = snapshot.data?.version;
+                        String? buildNumber = snapshot.data?.buildNumber;
+
+                        const fadedColor = const Color(0x50FFFFFF);
+                        return Padding(
+                          padding: padding,
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(right: paddingValue),
+                                child: Icon(
+                                  Icons.info_outline,
+                                  color: fadedColor,
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  "$packageName\nVersion $version+$buildNumber",
+                                  style: TextStyle(color: fadedColor),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      })
                 ],
               )),
         ),
