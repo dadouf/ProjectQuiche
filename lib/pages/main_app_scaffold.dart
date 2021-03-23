@@ -42,7 +42,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> {
                               child: Padding(
                                 padding: padding,
                                 child: Text(
-                                    "Connected as ${FirebaseAuth.instance.currentUser?.displayName}\n${FirebaseAuth.instance.currentUser?.email}"),
+                                    "Connected as\n${FirebaseAuth.instance.currentUser?.email}"),
                               ),
                             ),
                             IconButton(

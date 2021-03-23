@@ -36,9 +36,19 @@ class _AuthenticatePageState extends State<AuthenticatePage> {
                 alignment: Alignment.center,
                 padding: EdgeInsets.all(32),
               ),
-              ElevatedButton(
-                child: Text('Sign in with Google'),
-                onPressed: _signInWithGoogle,
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: ElevatedButton(
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: 44, // to match Apple
+                    child: Text(
+                      'Sign in with Google',
+                      style: TextStyle(fontSize: 44 * 0.43), // to match Apple
+                    ),
+                  ),
+                  onPressed: _signInWithGoogle,
+                ),
               ),
               if (Platform.isIOS)
                 SignInWithAppleButton(
