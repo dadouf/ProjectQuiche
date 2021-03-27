@@ -5,54 +5,100 @@ import 'package:flutter/material.dart';
 import 'package:projectquiche/data/MyFirestore.dart';
 import 'package:projectquiche/model/recipe.dart';
 import 'package:projectquiche/pages/recipe.dart';
+import 'package:projectquiche/widgets/single_child_draggable_scroll_view.dart';
 
-class MyRecipesPage extends StatelessWidget {
+class MyRecipesPage extends StatefulWidget {
+  final Query _query = MyFirestore.recipes()
+      // Note: "isNotEqualTo: true" isn't allowed
+      .where(MyFirestore.fieldMovedToBin, isEqualTo: false)
+      .where("${MyFirestore.fieldCreatedBy}.${MyFirestore.fieldUid}",
+          isEqualTo: FirebaseAuth.instance.currentUser?.uid)
+      .orderBy(MyFirestore.fieldName);
+
+  @override
+  _MyRecipesPageState createState() => _MyRecipesPageState();
+}
+
+class _MyRecipesPageState extends State<MyRecipesPage> {
+  late Stream<QuerySnapshot> _stream;
+  AsyncSnapshot<QuerySnapshot>? _latestSnapshot;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _stream = widget._query.snapshots();
+  }
+
   @override
   Widget build(BuildContext context) {
-    Query recipes = MyFirestore.recipes()
-        // Note: "isNotEqualTo: true" isn't allowed
-        .where(MyFirestore.fieldMovedToBin, isEqualTo: false)
-        .where("${MyFirestore.fieldCreatedBy}.${MyFirestore.fieldUid}",
-            isEqualTo: FirebaseAuth.instance.currentUser?.uid)
-        .orderBy(MyFirestore.fieldName);
+    return LayoutBuilder(
+      builder: (context, constraints) => RefreshIndicator(
+        onRefresh: () => _refreshData(showSnackBar: true),
+        child: StreamBuilder<QuerySnapshot>(
+          stream: _stream,
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            // No need to wrap in setState because this doesn't impact the UI.
+            // It's used for business logic on refresh.
+            _latestSnapshot = snapshot;
 
-    return StreamBuilder<QuerySnapshot>(
-      stream: recipes.snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasError) {
-          FirebaseCrashlytics.instance.recordError(
-              snapshot.error, snapshot.stackTrace,
-              reason: "Couldn't load My recipes");
-          return Center(
-              child: Text("Couldn't load screen. Please try again later."));
-        }
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        }
-
-        var docs = snapshot.data!.docs;
-        if (docs.isNotEmpty) {
-          return new ListView(
-            children: docs.map((DocumentSnapshot document) {
-              var recipe = Recipe.fromDocument(document);
-              return ListTile(
-                title: Text(recipe.name ?? "No name"),
-                onTap: () => _openRecipe(context, recipe),
+            if (snapshot.hasError) {
+              FirebaseCrashlytics.instance
+                  .recordError(snapshot.error, snapshot.stackTrace);
+              return SingleChildDraggableScrollView(
+                child: Container(
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.all(16),
+                  child: Text(
+                    "Couldn't load screen. Please try again later.\n\nError: ${snapshot.error}",
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                parentConstraints: constraints,
               );
-            }).toList(),
-          );
-        } else {
-          return Center(
-              child:
-                  Text("You don't have any recipes. Start adding some now!"));
-        }
-      },
+            }
+
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+
+            var docs = snapshot.data!.docs;
+            if (docs.isNotEmpty) {
+              return new ListView(
+                children: docs.map((DocumentSnapshot document) {
+                  var recipe = Recipe.fromDocument(document);
+                  return ListTile(
+                    title: Text(recipe.name ?? "No name"),
+                    onTap: () => _openRecipe(context, recipe),
+                  );
+                }).toList(),
+              );
+            } else {
+              return SingleChildDraggableScrollView(
+                  child: Center(
+                      child: Text(
+                          "You don't have any recipes. Start adding some now!")),
+                  parentConstraints: constraints);
+            }
+          },
+        ),
+      ),
     );
   }
 
   void _openRecipe(BuildContext context, Recipe recipe) {
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => RecipePage(recipe)));
+  }
+
+  _refreshData({bool showSnackBar = false}) async {
+    if (_latestSnapshot?.hasData == true) {
+      print("Skip refresh: we already have data and are listening to changes");
+    } else {
+      setState(() {
+        _stream = widget._query.snapshots();
+      });
+    }
   }
 }

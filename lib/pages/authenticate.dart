@@ -61,11 +61,10 @@ class _AuthenticatePageState extends State<AuthenticatePage> {
 
   Future<UserCredential?> _signInWithGoogle() async {
     final Function errorHandler = (error, stackTrace) {
-      final reason = "Failed to sign in";
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(reason)));
-      FirebaseCrashlytics.instance
-          .recordError(error, stackTrace, reason: reason);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Failed to sign in: $error"),
+      ));
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
     };
 
     // Trigger the authentication flow
@@ -96,11 +95,10 @@ class _AuthenticatePageState extends State<AuthenticatePage> {
 
   void _signInWithApple() async {
     final Function errorHandler = (error, stackTrace) {
-      final reason = "Failed to sign in";
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(reason)));
-      FirebaseCrashlytics.instance
-          .recordError(error, stackTrace, reason: reason);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Failed to sign in: $error"),
+      ));
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
     };
 
     final appleCredential = await SignInWithApple.getAppleIDCredential(

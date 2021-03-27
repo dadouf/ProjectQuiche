@@ -110,6 +110,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> {
               )),
         ),
         body: _currentPage,
+        // TODO show only in My Recipes
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.plus_one),
           onPressed: () => _addStuff(),
@@ -123,11 +124,10 @@ class _MainAppScaffoldState extends State<MainAppScaffold> {
 
   void _logout() {
     final Function errorHandler = (error, stackTrace) {
-      final reason = "Failed to sign out";
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(reason)));
-      FirebaseCrashlytics.instance
-          .recordError(error, stackTrace, reason: reason);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Failed to sign out: $error"),
+      ));
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
     };
 
     FirebaseAuth.instance

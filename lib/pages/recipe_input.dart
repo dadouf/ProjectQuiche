@@ -22,16 +22,17 @@ class NewRecipePage extends StatelessWidget {
               MyFirestore.fieldName:
                   FirebaseAuth.instance.currentUser?.displayName
             },
+            MyFirestore.fieldCreationDate: DateTime.now(),
             MyFirestore.fieldMovedToBin: false
           }).then((value) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text("New recipe added")));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("New recipe added"),
+            ));
           }).catchError((error, stackTrace) {
-            final reason = "Failed to add recipe";
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(reason)));
-            FirebaseCrashlytics.instance
-                .recordError(error, stackTrace, reason: reason);
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("Failed to add recipe: $error"),
+            ));
+            FirebaseCrashlytics.instance.recordError(error, stackTrace);
           });
 
           Navigator.pop(context);
@@ -56,14 +57,14 @@ class EditRecipePage extends StatelessWidget {
           MyFirestore.fieldSteps: steps,
           MyFirestore.fieldTips: tips,
         }).then((value) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text("Recipe edited")));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("Recipe successfully edited"),
+          ));
         }).catchError((error, stackTrace) {
-          final reason = "Failed to edit recipe";
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(reason)));
-          FirebaseCrashlytics.instance
-              .recordError(error, stackTrace, reason: reason);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("Failed to edit recipe: $error"),
+          ));
+          FirebaseCrashlytics.instance.recordError(error, stackTrace);
         });
 
         Navigator.pop(context);

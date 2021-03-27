@@ -125,15 +125,15 @@ class RecipePage extends StatelessWidget {
     MyFirestore.recipes()
         .doc(_recipe.id)
         .update({MyFirestore.fieldMovedToBin: true}).then((value) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Recipe moved to bin")));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Recipe successfully moved to bin"),
+      ));
       Navigator.pop(context); // to close recipe
     }).catchError((error, stackTrace) {
-      var reason = "Failed to move recipe to bin";
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(reason)));
-      FirebaseCrashlytics.instance
-          .recordError(error, stackTrace, reason: reason);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Failed to move recipe to bin: $error"),
+      ));
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
     });
   }
 }

@@ -8,6 +8,7 @@ class MyFirestore {
 
   static const String fieldMovedToBin = "moved_to_bin";
   static const String fieldCreatedBy = "created_by";
+  static const String fieldCreationDate = "creation_date";
   static const String fieldUid = "uid";
   static const String fieldName = "name";
   static const String fieldIngredients = "ingredients";
