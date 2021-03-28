@@ -23,7 +23,8 @@ class NewRecipePage extends StatelessWidget {
                   FirebaseAuth.instance.currentUser?.displayName
             },
             MyFirestore.fieldCreationDate: DateTime.now(),
-            MyFirestore.fieldMovedToBin: false
+            MyFirestore.fieldMovedToBin: false,
+            MyFirestore.fieldVisibility: "public",
           }).then((value) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text("New recipe added"),

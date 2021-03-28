@@ -14,14 +14,17 @@ class ExploreRecipesPage extends StatefulWidget {
 
 class _ExploreRecipesPageState extends State<ExploreRecipesPage> {
   Query _currentQuery = MyFirestore.recipes()
-      // Non-deleted recipes. Note: `moved_to_bin != true` isn't allowed
+      // Non-deleted recipes. Note: can't do `moved_to_bin != true`
       .where(MyFirestore.fieldMovedToBin, isEqualTo: false)
-
+      // Public recipes
+      .where(MyFirestore.fieldVisibility, isEqualTo: "public")
+      // Note: Can't filter out user's own recipes so we do it in the client later
       // Recent recipes
       .orderBy(MyFirestore.fieldCreationDate, descending: true)
-
       // Take 30
       .limit(30);
+
+  // TODO add cursor
 
   /// Until the first load completes we show a global progress bar in the center
   /// of the view. Next loads will simply show a [RefreshIndicator].
