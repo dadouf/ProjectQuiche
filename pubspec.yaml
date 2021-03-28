@@ -29,7 +29,7 @@ dependencies:
   cloud_firestore: ^1.0.1
   firebase_crashlytics: ^1.0.0
   # firebase_remote_config: ^0.9.0-dev.1
-  firebase_analytics: ^8.0.0-dev.0
+  firebase_analytics: ^8.0.0-dev.0 # for null-safety
 
   # Firebase & Sign in
   firebase_auth: ^1.0.1

@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
@@ -9,15 +10,29 @@ import 'package:projectquiche/pages/recipe_input.dart';
 import 'package:projectquiche/routing/app_routes.dart';
 
 class MainAppScaffold extends StatefulWidget {
+  const MainAppScaffold(this.observer, {Key? key}) : super(key: key);
+
+  final FirebaseAnalyticsObserver observer;
+
   @override
   _MainAppScaffoldState createState() => _MainAppScaffoldState();
 }
 
-class _MainAppScaffoldState extends State<MainAppScaffold> {
-  Widget _currentPage = MyRecipesPage();
+class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
+  final List<Widget> _pages = [
+    MyRecipesPage(),
+    ExploreRecipesPage(),
+  ];
+  final List<String> _pageTitles = [
+    "My Recipes",
+    "Explore Recipes",
+  ];
+  final List<String> _pageRoutes = [
+    AppRoutes.myRecipes,
+    AppRoutes.exploreRecipes,
+  ];
 
-  // TODO could (should) that be a field of _currentPage??
-  String _currentPageTitle = "My Recipes";
+  int _currentPage = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +40,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> {
     const padding = const EdgeInsets.all(paddingValue);
     return Scaffold(
         appBar: AppBar(
-          title: Text(_currentPageTitle),
+          title: Text(_pageTitles[_currentPage]),
         ),
         drawer: Container(
           margin: EdgeInsets.only(right: 72),
@@ -57,8 +72,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> {
                           title: Text("My Recipes"),
                           onTap: () {
                             setState(() {
-                              _currentPage = MyRecipesPage();
-                              _currentPageTitle = "My Recipes";
+                              _currentPage = 0;
                             });
                             _closeDrawer();
                           },
@@ -67,8 +81,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> {
                           title: Text("Explore Recipes"),
                           onTap: () {
                             setState(() {
-                              _currentPage = ExploreRecipesPage();
-                              _currentPageTitle = "Explore Recipes";
+                              _currentPage = 1;
                             });
                             _closeDrawer();
                           },
@@ -91,7 +104,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> {
                             children: [
                               Padding(
                                 padding:
-                                    const EdgeInsets.only(right: paddingValue),
+                                const EdgeInsets.only(right: paddingValue),
                                 child: Icon(
                                   Icons.info_outline,
                                   color: fadedColor,
@@ -110,7 +123,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> {
                 ],
               )),
         ),
-        body: _currentPage,
+        body: _pages[_currentPage],
         // TODO show only in My Recipes
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.plus_one),
@@ -146,5 +159,42 @@ class _MainAppScaffoldState extends State<MainAppScaffold> {
         .catchError(errorHandler);
 
     // ... causes callback in main.app because auth state changed
+  }
+
+  // ---
+  // All the code below is to report analytics events when changing drawer page
+  // See https://github.com/FirebaseExtended/flutterfire/blob/master/packages/firebase_analytics/firebase_analytics/example/lib/tabs_page.dart
+  // ---
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    var modalRoute = ModalRoute.of(context);
+    if (modalRoute is PageRoute) {
+      // Official example is outdated, keep an eye on it... Meanwhile casting works.
+      widget.observer.subscribe(this, modalRoute);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.observer.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPush() {
+    _sendCurrentTabToAnalytics();
+  }
+
+  @override
+  void didPopNext() {
+    _sendCurrentTabToAnalytics();
+  }
+
+  void _sendCurrentTabToAnalytics() {
+    widget.observer.analytics.setCurrentScreen(
+      screenName: _pageRoutes[_currentPage],
+    );
   }
 }

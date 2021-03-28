@@ -23,6 +23,9 @@ class QuicheApp extends StatelessWidget {
   final Stream<User?> _authStateStream =
       FirebaseAuth.instance.authStateChanges();
 
+  final analyticsObserver =
+      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics());
+
   @override
   Widget build(BuildContext context) {
     const mainColor = Color(0xFFE06E61);
@@ -40,12 +43,13 @@ class QuicheApp extends StatelessWidget {
       //   '/': (BuildContext context) => AuthenticatePage(),
       // },
       navigatorObservers: [
-        FirebaseAnalyticsObserver(analytics: FirebaseAnalytics())
-      ],
+        analyticsObserver],
     );
   }
 
   Widget getLandingPage() {
+    // TODO this is not conforming to the route API
+
     return StreamBuilder<User?>(
       stream: _authStateStream,
       builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
@@ -54,7 +58,7 @@ class QuicheApp extends StatelessWidget {
         if (snapshot.hasData && snapshot.data?.isAnonymous != true) {
           FirebaseCrashlytics.instance
               .setUserIdentifier(snapshot.data?.uid ?? "");
-          return MainAppScaffold();
+          return MainAppScaffold(analyticsObserver);
         }
 
         return AuthenticatePage();
