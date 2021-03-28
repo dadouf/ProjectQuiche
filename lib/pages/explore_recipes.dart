@@ -4,11 +4,13 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:projectquiche/data/MyFirestore.dart';
 import 'package:projectquiche/model/recipe.dart';
-import 'package:projectquiche/pages/recipe.dart';
-import 'package:projectquiche/routing/app_routes.dart';
 import 'package:projectquiche/widgets/single_child_draggable_scroll_view.dart';
 
 class ExploreRecipesPage extends StatefulWidget {
+  ExploreRecipesPage({required this.onRecipeTap, Key? key}) : super(key: key);
+
+  final Function(Recipe recipe) onRecipeTap;
+
   @override
   _ExploreRecipesPageState createState() => _ExploreRecipesPageState();
 }
@@ -61,8 +63,10 @@ class _ExploreRecipesPageState extends State<ExploreRecipesPage> {
         return ListView(
             children: data
                 .map((Recipe recipe) => ListTile(
-                      title: Text(recipe.name ?? "Untitled"),
-                      onTap: () => _openRecipe(context, recipe),
+              title: Text(recipe.name ?? "Untitled"),
+                      onTap: () {
+                        widget.onRecipeTap(recipe);
+                      },
                     ))
                 .toList());
       } else {
@@ -113,12 +117,5 @@ class _ExploreRecipesPageState extends State<ExploreRecipesPage> {
         _latestError = e;
       });
     }
-  }
-
-  void _openRecipe(BuildContext context, Recipe recipe) {
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => RecipePage(recipe),
-      settings: RouteSettings(name: AppRoutes.viewRecipe(recipe)),
-    ));
   }
 }

@@ -4,8 +4,10 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:package_info/package_info.dart';
+import 'package:projectquiche/model/recipe.dart';
 import 'package:projectquiche/pages/explore_recipes.dart';
 import 'package:projectquiche/pages/my_recipes.dart';
+import 'package:projectquiche/pages/recipe.dart';
 import 'package:projectquiche/pages/recipe_input.dart';
 import 'package:projectquiche/routing/app_routes.dart';
 
@@ -19,10 +21,7 @@ class MainAppScaffold extends StatefulWidget {
 }
 
 class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
-  final List<Widget> _pages = [
-    MyRecipesPage(),
-    ExploreRecipesPage(),
-  ];
+  late List<Widget> _pages;
   final List<String> _pageTitles = [
     "My Recipes",
     "Explore Recipes",
@@ -33,6 +32,15 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
   ];
 
   int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      MyRecipesPage(onRecipeTap: _openRecipe),
+      ExploreRecipesPage(onRecipeTap: _openRecipe),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +112,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
                             children: [
                               Padding(
                                 padding:
-                                const EdgeInsets.only(right: paddingValue),
+                                    const EdgeInsets.only(right: paddingValue),
                                 child: Icon(
                                   Icons.info_outline,
                                   color: fadedColor,
@@ -124,18 +132,27 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
               )),
         ),
         body: _pages[_currentPage],
-        // TODO show only in My Recipes
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.plus_one),
-          onPressed: () => _addStuff(),
-        ));
+        floatingActionButton: _currentPage == 0
+            ? FloatingActionButton(
+                child: Icon(Icons.plus_one),
+                onPressed: _addRecipe,
+              )
+            : null);
   }
 
   void _closeDrawer() {
     Navigator.of(context).pop();
   }
 
-  void _addStuff() {
+  // TODO factor: this is shared code with Explore recipes
+  void _openRecipe(Recipe recipe) {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => RecipePage(recipe),
+      settings: RouteSettings(name: AppRoutes.viewRecipe(recipe)),
+    ));
+  }
+
+  void _addRecipe() {
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => NewRecipePage(),
       settings: RouteSettings(name: AppRoutes.newRecipe),

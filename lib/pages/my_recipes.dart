@@ -4,11 +4,13 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:projectquiche/data/MyFirestore.dart';
 import 'package:projectquiche/model/recipe.dart';
-import 'package:projectquiche/pages/recipe.dart';
-import 'package:projectquiche/routing/app_routes.dart';
 import 'package:projectquiche/widgets/single_child_draggable_scroll_view.dart';
 
 class MyRecipesPage extends StatefulWidget {
+  MyRecipesPage({required this.onRecipeTap, Key? key}) : super(key: key);
+
+  final Function(Recipe recipe) onRecipeTap;
+
   final Query _query = MyFirestore.recipes()
       // Note: "isNotEqualTo: true" isn't allowed
       .where(MyFirestore.fieldMovedToBin, isEqualTo: false)
@@ -70,8 +72,10 @@ class _MyRecipesPageState extends State<MyRecipesPage> {
                 children: docs.map((DocumentSnapshot document) {
                   var recipe = Recipe.fromDocument(document);
                   return ListTile(
-                    title: Text(recipe.name ?? "No name"),
-                    onTap: () => _openRecipe(context, recipe),
+                    title: Text(recipe.name ?? "Untitled"),
+                    onTap: () {
+                      widget.onRecipeTap(recipe);
+                    },
                   );
                 }).toList(),
               );
@@ -86,14 +90,6 @@ class _MyRecipesPageState extends State<MyRecipesPage> {
         ),
       ),
     );
-  }
-
-  // TODO factor: this is shared code with Explore recipes
-  void _openRecipe(BuildContext context, Recipe recipe) {
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => RecipePage(recipe),
-      settings: RouteSettings(name: AppRoutes.viewRecipe(recipe)),
-    ));
   }
 
   _refreshData({bool showSnackBar = false}) async {
