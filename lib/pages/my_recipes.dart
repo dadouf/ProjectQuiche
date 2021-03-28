@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:projectquiche/data/MyFirestore.dart';
 import 'package:projectquiche/model/recipe.dart';
 import 'package:projectquiche/pages/recipe.dart';
+import 'package:projectquiche/routing/app_routes.dart';
 import 'package:projectquiche/widgets/single_child_draggable_scroll_view.dart';
 
 class MyRecipesPage extends StatefulWidget {
@@ -87,9 +88,12 @@ class _MyRecipesPageState extends State<MyRecipesPage> {
     );
   }
 
+  // TODO factor: this is shared code with Explore recipes
   void _openRecipe(BuildContext context, Recipe recipe) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => RecipePage(recipe)));
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => RecipePage(recipe),
+      settings: RouteSettings(name: AppRoutes.viewRecipe(recipe)),
+    ));
   }
 
   _refreshData({bool showSnackBar = false}) async {

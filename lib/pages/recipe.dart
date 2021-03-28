@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:projectquiche/data/MyFirestore.dart';
 import 'package:projectquiche/model/recipe.dart';
 import 'package:projectquiche/pages/recipe_input.dart';
+import 'package:projectquiche/routing/app_routes.dart';
 
 class RecipePage extends StatelessWidget {
   const RecipePage(this._recipe, {Key? key}) : super(key: key);
@@ -80,8 +81,10 @@ class RecipePage extends StatelessWidget {
   }
 
   void _onEditButtonClicked(BuildContext context) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => EditRecipePage(_recipe)));
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => EditRecipePage(_recipe),
+      settings: RouteSettings(name: AppRoutes.editRecipe(_recipe)),
+    ));
   }
 
   /// Display a confirmation dialog

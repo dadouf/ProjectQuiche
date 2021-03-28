@@ -6,6 +6,7 @@ import 'package:package_info/package_info.dart';
 import 'package:projectquiche/pages/explore_recipes.dart';
 import 'package:projectquiche/pages/my_recipes.dart';
 import 'package:projectquiche/pages/recipe_input.dart';
+import 'package:projectquiche/routing/app_routes.dart';
 
 class MainAppScaffold extends StatefulWidget {
   @override
@@ -59,7 +60,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> {
                               _currentPage = MyRecipesPage();
                               _currentPageTitle = "My Recipes";
                             });
-                            Navigator.of(context).pop();
+                            _closeDrawer();
                           },
                         ),
                         ListTile(
@@ -69,7 +70,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> {
                               _currentPage = ExploreRecipesPage();
                               _currentPageTitle = "Explore Recipes";
                             });
-                            Navigator.of(context).pop();
+                            _closeDrawer();
                           },
                         ),
                       ],
@@ -117,9 +118,15 @@ class _MainAppScaffoldState extends State<MainAppScaffold> {
         ));
   }
 
+  void _closeDrawer() {
+    Navigator.of(context).pop();
+  }
+
   void _addStuff() {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => NewRecipePage()));
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => NewRecipePage(),
+      settings: RouteSettings(name: AppRoutes.newRecipe),
+    ));
   }
 
   void _logout() {
@@ -138,6 +145,6 @@ class _MainAppScaffoldState extends State<MainAppScaffold> {
         .signOut() // this is needed in order to PROMPT user again
         .catchError(errorHandler);
 
-    // ... causes callback in main.app
+    // ... causes callback in main.app because auth state changed
   }
 }

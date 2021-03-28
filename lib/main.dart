@@ -1,13 +1,13 @@
 import 'dart:developer';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import 'package:projectquiche/main_app_scaffold.dart';
 import 'package:projectquiche/pages/authenticate.dart';
-import 'package:projectquiche/pages/main_app_scaffold.dart';
-
-final FirebaseAuth _auth = FirebaseAuth.instance;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +20,9 @@ Future<void> main() async {
 }
 
 class QuicheApp extends StatelessWidget {
+  final Stream<User?> _authStateStream =
+      FirebaseAuth.instance.authStateChanges();
+
   @override
   Widget build(BuildContext context) {
     const mainColor = Color(0xFFE06E61);
@@ -36,12 +39,15 @@ class QuicheApp extends StatelessWidget {
       // routes: <String, WidgetBuilder>{
       //   '/': (BuildContext context) => AuthenticatePage(),
       // },
+      navigatorObservers: [
+        FirebaseAnalyticsObserver(analytics: FirebaseAnalytics())
+      ],
     );
   }
 
   Widget getLandingPage() {
     return StreamBuilder<User?>(
-      stream: _auth.authStateChanges(),
+      stream: _authStateStream,
       builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
         log("Logged in user ID: ${snapshot.data?.uid}, email: ${snapshot.data?.email}");
 
