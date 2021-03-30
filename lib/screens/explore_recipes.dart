@@ -64,7 +64,7 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
         return ListView(
             children: data
                 .map((Recipe recipe) => ListTile(
-              title: Text(recipe.name ?? "Untitled"),
+                      title: Text(recipe.name ?? "Untitled"),
                       onTap: () {
                         widget.onRecipeTap(recipe);
                       },

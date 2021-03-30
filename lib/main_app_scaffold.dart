@@ -91,17 +91,15 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
                         ListTile(
                           title: Text("My Recipes"),
                           onTap: () {
-                            // No need for setState because appModel will notify listeners
-                            appModel.recipesHomeIndex = 0;
                             _closeDrawer();
+                            appModel.recipesHomeIndex = 0;
                           },
                         ),
                         ListTile(
                           title: Text("Explore Recipes"),
                           onTap: () {
-                            // No need for setState because appModel will notify listeners
-                            appModel.recipesHomeIndex = 1;
                             _closeDrawer();
+                            appModel.recipesHomeIndex = 1;
                           },
                         ),
                       ],

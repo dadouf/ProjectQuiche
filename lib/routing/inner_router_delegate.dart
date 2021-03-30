@@ -36,7 +36,7 @@ class InnerRouterDelegate extends RouterDelegate<AppRoutePath>
       pages: [
         // Always include My Recipes page: it's ONLY so that back button in
         // Explore gets back to My Recipes
-        FadeAnimationPage(
+        InstantTransitionPage(
           child: MyRecipesScreen(
             onRecipeTap: _handleRecipeTapped,
           ),
@@ -45,7 +45,7 @@ class InnerRouterDelegate extends RouterDelegate<AppRoutePath>
 
         // Maybe Explore page
         if (appModel.recipesHomeIndex == 1) ...[
-          FadeAnimationPage(
+          InstantTransitionPage(
             child: ExploreRecipesScreen(
               onRecipeTap: _handleRecipeTapped,
             ),
@@ -84,21 +84,21 @@ class InnerRouterDelegate extends RouterDelegate<AppRoutePath>
   }
 }
 
-class FadeAnimationPage extends Page {
+/// Show the new page without any kind of transition: just replace
+class InstantTransitionPage extends Page {
   final Widget child;
 
-  FadeAnimationPage({LocalKey? key, required this.child}) : super(key: key);
+  InstantTransitionPage({LocalKey? key, required this.child}) : super(key: key);
 
   Route createRoute(BuildContext context) {
+    // For some reason Duration.zero causes a Flutter exception
+    const duration = Duration(milliseconds: 1);
+
     return PageRouteBuilder(
       settings: this,
-      pageBuilder: (context, animation, animation2) {
-        var curveTween = CurveTween(curve: Curves.easeIn);
-        return FadeTransition(
-          opacity: animation.drive(curveTween),
-          child: child,
-        );
-      },
+      transitionDuration: duration,
+      reverseTransitionDuration: duration,
+      pageBuilder: (context, animation, animation2) => child,
     );
   }
 }
