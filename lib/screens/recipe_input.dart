@@ -224,6 +224,8 @@ class _RecipeInputPageState extends State<RecipeInputPage>
 
   void _onSavePressed() {
     if (_validateForm()) {
+      context.read<FirebaseService>().logSave();
+
       widget.onRecipeSave(
         name: _recipeName.text,
         ingredients: _recipeIngredients.text,

@@ -122,10 +122,14 @@ class RecipeScreen extends StatelessWidget {
   /// Note: this is just setting a flag and not actually deleting the document,
   /// out of extra safety. TODO We will need an actual deletion strategy.
   Future<void> _deleteRecipe(BuildContext context) async {
+    final service = context.read<FirebaseService>();
     try {
       await MyFirestore.recipes()
           .doc(_recipe.id)
           .update({MyFirestore.fieldMovedToBin: true});
+
+      service.logMoveToBin();
+
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("Recipe successfully moved to bin"),
       ));
@@ -135,7 +139,7 @@ class RecipeScreen extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("Failed to move recipe to bin: $exception"),
       ));
-      context.read<FirebaseService>().recordError(exception, stack);
+      service.recordError(exception, stack);
     }
   }
 }

@@ -72,7 +72,7 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
         idToken: googleAuth.idToken,
       );
 
-      await _signIn(credential);
+      await _signIn(credential: credential, method: "Google");
     } on Exception catch (e, stackTrace) {
       _handleError(e, stackTrace);
     }
@@ -87,19 +87,24 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
         ],
       );
 
-      final OAuthCredential credential = OAuthProvider('apple.com').credential(
+      final OAuthCredential credential = OAuthProvider("apple.com").credential(
         accessToken: appleCredential.authorizationCode,
         idToken: appleCredential.identityToken,
       );
 
-      await _signIn(credential);
+      await _signIn(credential: credential, method: "Apple");
     } on Exception catch (e, stackTrace) {
       _handleError(e, stackTrace);
     }
   }
 
-  Future<void> _signIn(OAuthCredential credential) async {
-    await context.read<FirebaseService>().signIn(credential);
+  Future<void> _signIn({
+    required OAuthCredential credential,
+    required String method,
+  }) async {
+    await context
+        .read<FirebaseService>()
+        .signIn(credential: credential, method: method);
   }
 
   void _handleError(exception, trace) {
