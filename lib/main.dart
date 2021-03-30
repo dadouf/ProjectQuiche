@@ -1,68 +1,63 @@
-import 'dart:developer';
+import 'dart:async';
 
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-import 'package:projectquiche/main_app_scaffold.dart';
-import 'package:projectquiche/pages/authenticate.dart';
+import 'package:projectquiche/models/app_model.dart';
+import 'package:projectquiche/routing/app_route_parser.dart';
+import 'package:projectquiche/routing/app_router.dart';
+import 'package:projectquiche/services/firebase/firebase_service.dart';
+import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
 
-  // Pass Flutter errors to Crashlytics. This still prints to the console too.
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+  FirebaseService firebase = FirebaseService();
+  AppModel appModel = AppModel(firebase);
 
-  runApp(QuicheApp());
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider.value(value: firebase),
+      ChangeNotifierProvider.value(value: appModel),
+    ],
+    child: QuicheApp(),
+  ));
 }
 
-class QuicheApp extends StatelessWidget {
-  final Stream<User?> _authStateStream =
-      FirebaseAuth.instance.authStateChanges();
+class QuicheApp extends StatefulWidget {
+  @override
+  _QuicheAppState createState() => _QuicheAppState();
+}
 
-  final analyticsObserver =
-      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics());
+class _QuicheAppState extends State<QuicheApp> {
+  AppRouteParser routeParser = AppRouteParser();
+  late AppRouterDelegate router;
+
+  @override
+  void initState() {
+    router = AppRouterDelegate(context.read<AppModel>());
+
+    _bootstrap();
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     const mainColor = Color(0xFFE06E61);
     var baseTheme = ThemeData.dark();
 
-    return new MaterialApp(
+    return MaterialApp.router(
+      routeInformationParser: routeParser,
+      routerDelegate: router,
       theme: baseTheme.copyWith(
         indicatorColor: mainColor,
         accentColor: mainColor,
         colorScheme: baseTheme.colorScheme.copyWith(secondary: mainColor),
       ),
-      home: getLandingPage(),
-      // initialRoute: '/',
-      // routes: <String, WidgetBuilder>{
-      //   '/': (BuildContext context) => AuthenticatePage(),
-      // },
-      navigatorObservers: [
-        analyticsObserver],
     );
   }
 
-  Widget getLandingPage() {
-    // TODO this is not conforming to the route API
-
-    return StreamBuilder<User?>(
-      stream: _authStateStream,
-      builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
-        log("Logged in user ID: ${snapshot.data?.uid}, email: ${snapshot.data?.email}");
-
-        if (snapshot.hasData && snapshot.data?.isAnonymous != true) {
-          FirebaseCrashlytics.instance
-              .setUserIdentifier(snapshot.data?.uid ?? "");
-          return MainAppScaffold(analyticsObserver);
-        }
-
-        return AuthenticatePage();
-      },
-    );
+  void _bootstrap() async {
+    await context.read<FirebaseService>().init();
+    context.read<AppModel>().onBootstrapComplete();
   }
 }

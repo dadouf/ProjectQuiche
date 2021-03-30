@@ -1,0 +1,111 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:projectquiche/services/firebase/firebase_service.dart';
+import 'package:provider/provider.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+
+class AuthenticateScreen extends StatefulWidget {
+  @override
+  _AuthenticateScreenState createState() {
+    return _AuthenticateScreenState();
+  }
+}
+
+class _AuthenticateScreenState extends State<AuthenticateScreen> {
+  @override
+  Widget build(BuildContext context) {
+    const edgeInsets = EdgeInsets.all(16);
+    return Scaffold(
+        appBar: AppBar(title: Text('Project Quiche')),
+        body: Center(
+            child: Padding(
+          padding: edgeInsets,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                child: Text(
+                  'Welcome!',
+                  style: TextStyle(fontSize: 18),
+                ),
+                alignment: Alignment.center,
+                padding: EdgeInsets.all(32),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: ElevatedButton(
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: 44, // to match Apple
+                    child: Text(
+                      'Sign in with Google',
+                      style: TextStyle(fontSize: 44 * 0.43), // to match Apple
+                    ),
+                  ),
+                  onPressed: _signInWithGoogle,
+                ),
+              ),
+              if (!kIsWeb && Platform.isIOS)
+                SignInWithAppleButton(
+                  onPressed: _signInWithApple,
+                )
+            ],
+          ),
+        )));
+  }
+
+  Future<UserCredential?> _signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser!.authentication;
+
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      await _signIn(credential);
+    } on Exception catch (e, stackTrace) {
+      _handleError(e, stackTrace);
+    }
+  }
+
+  Future<void> _signInWithApple() async {
+    try {
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      final OAuthCredential credential = OAuthProvider('apple.com').credential(
+        accessToken: appleCredential.authorizationCode,
+        idToken: appleCredential.identityToken,
+      );
+
+      await _signIn(credential);
+    } on Exception catch (e, stackTrace) {
+      _handleError(e, stackTrace);
+    }
+  }
+
+  Future<void> _signIn(OAuthCredential credential) async {
+    await context.read<FirebaseService>().signIn(credential);
+  }
+
+  void _handleError(exception, trace) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text("Failed to sign in: $exception"),
+    ));
+    context.read<FirebaseService>().recordError(exception, trace);
+  }
+}

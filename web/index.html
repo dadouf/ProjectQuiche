@@ -20,13 +20,16 @@
     <!-- iOS meta tags & icons -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="newproject">
+    <meta name="apple-mobile-web-app-title" content="Project Quiche">
+    <meta name="google-signin-client_id"
+          content="17993561239-tdfnga0dtvrmjmg0cr4rfchjmngd7vet.apps.googleusercontent.com">
+
     <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png"/>
 
-    <title>newproject</title>
+    <title>Project Quiche</title>
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
@@ -34,12 +37,34 @@
      application. For more information, see:
      https://developers.google.com/web/fundamentals/primers/service-workers -->
 <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('flutter-first-frame', function () {
-        navigator.serviceWorker.register('flutter_service_worker.js');
-      });
-    }
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('flutter-first-frame', function () {
+            navigator.serviceWorker.register('flutter_service_worker.js');
+          });
+        }
 
+</script>
+<!-- The core Firebase JS SDK is always required and must be listed first.
+     Use version 7.x to avoid https://stackoverflow.com/a/65003173/2291104 -->
+<script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  var firebaseConfig = {
+    apiKey: "AIzaSyDZoSO27wtGd4ERgWkv-g0XF3WD2mwANhQ",
+    authDomain: "project-quiche-dev.firebaseapp.com",
+    projectId: "project-quiche-dev",
+    storageBucket: "project-quiche-dev.appspot.com",
+    messagingSenderId: "17993561239",
+    appId: "1:17993561239:web:adfe868773308fe4f4a5d2",
+    measurementId: "G-1F58TZG00G"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
 
 </script>
 <script src="main.dart.js" type="application/javascript"></script>

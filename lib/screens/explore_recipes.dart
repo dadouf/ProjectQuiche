@@ -1,21 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-import 'package:projectquiche/data/MyFirestore.dart';
 import 'package:projectquiche/model/recipe.dart';
+import 'package:projectquiche/services/firebase/firebase_service.dart';
+import 'package:projectquiche/services/firebase/firestore_keys.dart';
 import 'package:projectquiche/widgets/single_child_draggable_scroll_view.dart';
+import 'package:provider/provider.dart';
 
-class ExploreRecipesPage extends StatefulWidget {
-  ExploreRecipesPage({required this.onRecipeTap, Key? key}) : super(key: key);
+class ExploreRecipesScreen extends StatefulWidget {
+  ExploreRecipesScreen({required this.onRecipeTap, Key? key}) : super(key: key);
 
   final Function(Recipe recipe) onRecipeTap;
 
   @override
-  _ExploreRecipesPageState createState() => _ExploreRecipesPageState();
+  _ExploreRecipesScreenState createState() => _ExploreRecipesScreenState();
 }
 
-class _ExploreRecipesPageState extends State<ExploreRecipesPage> {
+class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
   Query _currentQuery = MyFirestore.recipes()
       // Non-deleted recipes. Note: can't do `moved_to_bin != true`
       .where(MyFirestore.fieldMovedToBin, isEqualTo: false)
@@ -103,18 +104,18 @@ class _ExploreRecipesPageState extends State<ExploreRecipesPage> {
 
         _firstLoadCompleted = true;
       });
-    } on Exception catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace);
+    } on Exception catch (exception, trace) {
+      context.read<FirebaseService>().recordError(exception, trace);
 
       if (showSnackBar) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Failed to refresh: $e"),
+          content: Text("Failed to refresh: $exception"),
         ));
       }
 
       setState(() {
         _firstLoadCompleted = true;
-        _latestError = e;
+        _latestError = exception;
       });
     }
   }

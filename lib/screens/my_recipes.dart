@@ -1,13 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-import 'package:projectquiche/data/MyFirestore.dart';
 import 'package:projectquiche/model/recipe.dart';
+import 'package:projectquiche/services/firebase/firebase_service.dart';
+import 'package:projectquiche/services/firebase/firestore_keys.dart';
+import 'package:projectquiche/utils/safe_print.dart';
 import 'package:projectquiche/widgets/single_child_draggable_scroll_view.dart';
+import 'package:provider/provider.dart';
 
-class MyRecipesPage extends StatefulWidget {
-  MyRecipesPage({required this.onRecipeTap, Key? key}) : super(key: key);
+class MyRecipesScreen extends StatefulWidget {
+  MyRecipesScreen({required this.onRecipeTap, Key? key}) : super(key: key);
 
   final Function(Recipe recipe) onRecipeTap;
 
@@ -19,10 +21,10 @@ class MyRecipesPage extends StatefulWidget {
       .orderBy(MyFirestore.fieldName);
 
   @override
-  _MyRecipesPageState createState() => _MyRecipesPageState();
+  _MyRecipesScreenState createState() => _MyRecipesScreenState();
 }
 
-class _MyRecipesPageState extends State<MyRecipesPage> {
+class _MyRecipesScreenState extends State<MyRecipesScreen> {
   late Stream<QuerySnapshot> _stream;
   AsyncSnapshot<QuerySnapshot>? _latestSnapshot;
 
@@ -47,7 +49,8 @@ class _MyRecipesPageState extends State<MyRecipesPage> {
             _latestSnapshot = snapshot;
 
             if (snapshot.hasError) {
-              FirebaseCrashlytics.instance
+              context
+                  .read<FirebaseService>()
                   .recordError(snapshot.error, snapshot.stackTrace);
               return SingleChildDraggableScrollView(
                 child: Container(
@@ -92,9 +95,10 @@ class _MyRecipesPageState extends State<MyRecipesPage> {
     );
   }
 
-  _refreshData({bool showSnackBar = false}) async {
+  Future<void> _refreshData({bool showSnackBar = false}) async {
     if (_latestSnapshot?.hasData == true) {
-      print("Skip refresh: we already have data and are listening to changes");
+      safePrint(
+          "Skip refresh: we already have data and are listening to changes");
     } else {
       setState(() {
         _stream = widget._query.snapshots();

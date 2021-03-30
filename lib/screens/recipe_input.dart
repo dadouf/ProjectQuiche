@@ -1,18 +1,21 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-import 'package:projectquiche/data/MyFirestore.dart';
 import 'package:projectquiche/model/recipe.dart';
+import 'package:projectquiche/models/app_model.dart';
+import 'package:projectquiche/services/firebase/firebase_service.dart';
+import 'package:projectquiche/services/firebase/firestore_keys.dart';
+import 'package:provider/provider.dart';
 
-class NewRecipePage extends StatelessWidget {
-  const NewRecipePage({Key? key}) : super(key: key);
+class CreateRecipeScreen extends StatelessWidget {
+  const CreateRecipeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return RecipeInputPage(
-        title: "New recipe",
-        onRecipeSave: ({required name, ingredients, steps, tips}) {
-          MyFirestore.recipes().add({
+      title: "New recipe",
+      onRecipeSave: ({required name, ingredients, steps, tips}) async {
+        try {
+          await MyFirestore.recipes().add({
             MyFirestore.fieldName: name,
             MyFirestore.fieldIngredients: ingredients,
             MyFirestore.fieldSteps: steps,
@@ -25,53 +28,56 @@ class NewRecipePage extends StatelessWidget {
             MyFirestore.fieldCreationDate: DateTime.now(),
             MyFirestore.fieldMovedToBin: false,
             MyFirestore.fieldVisibility: "public",
-          }).then((value) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text("New recipe added"),
-            ));
-          }).catchError((error, stackTrace) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text("Failed to add recipe: $error"),
-            ));
-            FirebaseCrashlytics.instance.recordError(error, stackTrace);
           });
 
-          Navigator.pop(context);
-        });
+          context.read<AppModel>().completeEditing();
+
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("New recipe added"),
+          ));
+        } on Exception catch (exception, trace) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("Failed to add recipe: $exception"),
+          ));
+          context.read<FirebaseService>().recordError(exception, trace);
+        }
+      },
+    );
   }
 }
 
-class EditRecipePage extends StatelessWidget {
+class EditRecipeScreen extends StatelessWidget {
   final Recipe recipe;
 
-  const EditRecipePage(this.recipe, {Key? key}) : super(key: key);
+  const EditRecipeScreen(this.recipe, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return RecipeInputPage(
       title: "Edit recipe",
       initialRecipe: recipe,
-      onRecipeSave: ({required name, ingredients, steps, tips}) {
-        MyFirestore.recipes().doc(recipe.id).update({
-          MyFirestore.fieldName: name,
-          MyFirestore.fieldIngredients: ingredients,
-          MyFirestore.fieldSteps: steps,
-          MyFirestore.fieldTips: tips,
-        }).then((value) {
+      onRecipeSave: ({required name, ingredients, steps, tips}) async {
+        try {
+          await MyFirestore.recipes().doc(recipe.id).update({
+            MyFirestore.fieldName: name,
+            MyFirestore.fieldIngredients: ingredients,
+            MyFirestore.fieldSteps: steps,
+            MyFirestore.fieldTips: tips,
+          });
+
+          context.read<AppModel>().completeEditing();
+
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text("Recipe successfully edited"),
           ));
-        }).catchError((error, stackTrace) {
+          // FIXME the context is wrong here, I should show
+
+        } on Exception catch (exception, trace) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text("Failed to edit recipe: $error"),
+            content: Text("Failed to edit recipe: $exception"),
           ));
-          FirebaseCrashlytics.instance.recordError(error, stackTrace);
-        });
-
-        Navigator.pop(context);
-
-        // FIXME recipe doesn't get updated in recipe page, until it does we go back all the way
-        Navigator.pop(context);
+          context.read<FirebaseService>().recordError(exception, trace);
+        }
       },
     );
   }

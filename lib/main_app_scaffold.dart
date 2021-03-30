@@ -1,54 +1,68 @@
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:package_info/package_info.dart';
-import 'package:projectquiche/model/recipe.dart';
-import 'package:projectquiche/pages/explore_recipes.dart';
-import 'package:projectquiche/pages/my_recipes.dart';
-import 'package:projectquiche/pages/recipe.dart';
-import 'package:projectquiche/pages/recipe_input.dart';
-import 'package:projectquiche/routing/app_routes.dart';
+import 'package:projectquiche/models/app_model.dart';
+import 'package:projectquiche/routing/inner_router_delegate.dart';
+import 'package:projectquiche/services/firebase/firebase_service.dart';
+import 'package:provider/provider.dart';
 
+/// Parent of the main navigation UI (now: drawer, later: bottom nav bar)
+/// as well as the current page accessed via that UI.
 class MainAppScaffold extends StatefulWidget {
-  const MainAppScaffold(this.observer, {Key? key}) : super(key: key);
-
   final FirebaseAnalyticsObserver observer;
+
+  const MainAppScaffold({required this.observer, Key? key}) : super(key: key);
 
   @override
   _MainAppScaffoldState createState() => _MainAppScaffoldState();
 }
 
 class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
-  late List<Widget> _pages;
   final List<String> _pageTitles = [
     "My Recipes",
     "Explore Recipes",
   ];
-  final List<String> _pageRoutes = [
-    AppRoutes.myRecipes,
-    AppRoutes.exploreRecipes,
-  ];
 
-  int _currentPage = 0;
+  late InnerRouterDelegate _routerDelegate;
+  late ChildBackButtonDispatcher _backButtonDispatcher;
 
   @override
   void initState() {
     super.initState();
-    _pages = [
-      MyRecipesPage(onRecipeTap: _openRecipe),
-      ExploreRecipesPage(onRecipeTap: _openRecipe),
-    ];
+    _routerDelegate = InnerRouterDelegate(context.read<AppModel>());
+  }
+
+  @override
+  void didUpdateWidget(covariant MainAppScaffold oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _routerDelegate.appModel = context.read<AppModel>();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Defer back button dispatching to the child router
+    _backButtonDispatcher = Router.of(context)
+        .backButtonDispatcher!
+        .createChildBackButtonDispatcher();
   }
 
   @override
   Widget build(BuildContext context) {
+    // Claim priority, If there are parallel sub router, you will need
+    // to pick which one should take priority;
+    _backButtonDispatcher.takePriority();
+
+    // TODO is it good practice to factor:
+    // AppModel appModel = context.read<AppModel>() and use it in this method?
+
     const paddingValue = 16.0;
     const padding = const EdgeInsets.all(paddingValue);
     return Scaffold(
         appBar: AppBar(
-          title: Text(_pageTitles[_currentPage]),
+          title: Text(_pageTitles[context.read<AppModel>().recipesHomeIndex]),
         ),
         drawer: Container(
           margin: EdgeInsets.only(right: 72),
@@ -79,18 +93,16 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
                         ListTile(
                           title: Text("My Recipes"),
                           onTap: () {
-                            setState(() {
-                              _currentPage = 0;
-                            });
+                            // No need for setState because appModel will notify listeners
+                            context.read<AppModel>().recipesHomeIndex = 0;
                             _closeDrawer();
                           },
                         ),
                         ListTile(
                           title: Text("Explore Recipes"),
                           onTap: () {
-                            setState(() {
-                              _currentPage = 1;
-                            });
+                            // No need for setState because appModel will notify listeners
+                            context.read<AppModel>().recipesHomeIndex = 1;
                             _closeDrawer();
                           },
                         ),
@@ -112,7 +124,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
                             children: [
                               Padding(
                                 padding:
-                                    const EdgeInsets.only(right: paddingValue),
+                                const EdgeInsets.only(right: paddingValue),
                                 child: Icon(
                                   Icons.info_outline,
                                   color: fadedColor,
@@ -131,8 +143,11 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
                 ],
               )),
         ),
-        body: _pages[_currentPage],
-        floatingActionButton: _currentPage == 0
+        body: Router(
+          routerDelegate: _routerDelegate,
+          backButtonDispatcher: _backButtonDispatcher,
+        ),
+        floatingActionButton: context.read<AppModel>().recipesHomeIndex == 0
             ? FloatingActionButton(
                 child: Icon(Icons.plus_one),
                 onPressed: _addRecipe,
@@ -144,74 +159,61 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
     Navigator.of(context).pop();
   }
 
-  // TODO factor: this is shared code with Explore recipes
-  void _openRecipe(Recipe recipe) {
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => RecipePage(recipe),
-      settings: RouteSettings(name: AppRoutes.viewRecipe(recipe)),
-    ));
-  }
-
   void _addRecipe() {
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => NewRecipePage(),
-      settings: RouteSettings(name: AppRoutes.newRecipe),
-    ));
+    context.read<AppModel>().startCreatingRecipe();
   }
 
-  void _logout() {
-    final Function errorHandler = (error, stackTrace) {
+  Future<void> _logout() async {
+    try {
+      // This is enough to go back to Login screen
+      await context.read<FirebaseService>().signOut();
+
+      // This is needed in order to PROMPT user again
+      await GoogleSignIn().signOut();
+
+      // ... will cause AppModel update because FirebaseService.isSignedIn will change
+    } on Exception catch (exception, stack) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Failed to sign out: $error"),
+        content: Text("Failed to sign out: $exception"),
       ));
-      FirebaseCrashlytics.instance.recordError(error, stackTrace);
-    };
-
-    FirebaseAuth.instance
-        .signOut() // this is enough to go back to Login screen
-        .catchError(errorHandler);
-
-    GoogleSignIn()
-        .signOut() // this is needed in order to PROMPT user again
-        .catchError(errorHandler);
-
-    // ... causes callback in main.app because auth state changed
-  }
-
-  // ---
-  // All the code below is to report analytics events when changing drawer page
-  // See https://github.com/FirebaseExtended/flutterfire/blob/master/packages/firebase_analytics/firebase_analytics/example/lib/tabs_page.dart
-  // ---
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    var modalRoute = ModalRoute.of(context);
-    if (modalRoute is PageRoute) {
-      // Official example is outdated, keep an eye on it... Meanwhile casting works.
-      widget.observer.subscribe(this, modalRoute);
+      context.read<FirebaseService>().recordError(exception, stack);
     }
   }
 
-  @override
-  void dispose() {
-    widget.observer.unsubscribe(this);
-    super.dispose();
-  }
+// ---
+// All the code below is to report analytics events when changing drawer page
+// See https://github.com/FirebaseExtended/flutterfire/blob/master/packages/firebase_analytics/firebase_analytics/example/lib/tabs_page.dart
+// ---
 
-  @override
-  void didPush() {
-    _sendCurrentTabToAnalytics();
-  }
-
-  @override
-  void didPopNext() {
-    _sendCurrentTabToAnalytics();
-  }
-
-  void _sendCurrentTabToAnalytics() {
-    widget.observer.analytics.setCurrentScreen(
-      screenName: _pageRoutes[_currentPage],
-    );
-  }
+// @override
+// void didChangeDependencies() {
+//   super.didChangeDependencies();
+//   var modalRoute = ModalRoute.of(context);
+//   if (modalRoute is PageRoute) {
+//     // Official example is outdated, keep an eye on it... Meanwhile casting works.
+//     widget.observer.subscribe(this, modalRoute);
+//   }
+// }
+//
+// @override
+// void dispose() {
+//   widget.observer.unsubscribe(this);
+//   super.dispose();
+// }
+//
+// @override
+// void didPush() {
+//   _sendCurrentTabToAnalytics();
+// }
+//
+// @override
+// void didPopNext() {
+//   _sendCurrentTabToAnalytics();
+// }
+//
+// void _sendCurrentTabToAnalytics() {
+//   // widget.observer.analytics.setCurrentScreen(
+//   //   screenName: _pageRoutes[_currentPage],
+//   // );
+// }
 }
