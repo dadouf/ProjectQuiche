@@ -3,6 +3,7 @@ import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:projectquiche/main_app_scaffold.dart';
+import 'package:projectquiche/model/recipe.dart';
 import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/routing/app_route_path.dart';
 import 'package:projectquiche/routing/inner_router_delegate.dart';
@@ -66,7 +67,10 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
   Widget build(BuildContext context) {
     safePrint("AppRouterDelegate.build()");
 
+    // TODO select??
     bool isAuthenticated = appModel.isFirebaseSignedIn;
+    Recipe? currentRecipe = appModel.currentRecipe;
+    bool isCreatingOrEditing = appModel.isCreatingOrEditing;
 
     return Navigator(
       key: navigatorKey,
@@ -89,17 +93,17 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
                       analytics: FirebaseAnalytics()))),
 
           // View page + Edit page
-          if (appModel.currentRecipe != null) ...[
+          if (currentRecipe != null) ...[
             MaterialPage(
-                key: ValueKey(appModel.currentRecipe!),
-                child: RecipeScreen(appModel.currentRecipe!)),
-            if (appModel.isCreatingOrEditing)
+                key: ValueKey(currentRecipe),
+                child: RecipeScreen(currentRecipe)),
+            if (isCreatingOrEditing)
               MaterialPage(
-                  key: ValueKey("${appModel.currentRecipe}-edit"),
-                  child: EditRecipeScreen(appModel.currentRecipe!)),
+                  key: ValueKey("$currentRecipe-edit"),
+                  child: EditRecipeScreen(currentRecipe)),
 
             // Create recipe page
-          ] else if (appModel.isCreatingOrEditing) ...[
+          ] else if (isCreatingOrEditing) ...[
             MaterialPage(
               key: ValueKey("NewRecipePage"),
               child: CreateRecipeScreen(),
