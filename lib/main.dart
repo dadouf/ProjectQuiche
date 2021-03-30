@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/routing/app_route_parser.dart';
-import 'package:projectquiche/routing/app_router.dart';
+import 'package:projectquiche/routing/app_router_delegate.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:provider/provider.dart';
 

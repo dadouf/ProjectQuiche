@@ -1,11 +1,14 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:projectquiche/main_app_scaffold.dart';
 import 'package:projectquiche/model/recipe.dart';
 import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/routing/app_route_path.dart';
-import 'package:projectquiche/routing/app_router.dart';
+import 'package:projectquiche/routing/app_router_delegate.dart';
 import 'package:projectquiche/screens/explore_recipes.dart';
 import 'package:projectquiche/screens/my_recipes.dart';
+import 'package:projectquiche/services/firebase/analytics_keys.dart';
 import 'package:projectquiche/utils/safe_print.dart';
 import 'package:provider/provider.dart';
 
@@ -20,7 +23,7 @@ class InnerRouterDelegate extends RouterDelegate<AppRoutePath>
   @override
   Widget build(BuildContext context) {
     final int recipesHomeIndex =
-        context.select((AppModel appModel) => appModel.recipesHomeIndex);
+    context.select((AppModel appModel) => appModel.recipesHomeIndex);
 
     return Navigator(
       key: navigatorKey,
@@ -28,19 +31,21 @@ class InnerRouterDelegate extends RouterDelegate<AppRoutePath>
         // Always include My Recipes page: it's ONLY so that back button in
         // Explore gets back to My Recipes
         InstantTransitionPage(
+          name: MyAnalytics.pageMyRecipes,
+          key: ValueKey("MyRecipesPage"),
           child: MyRecipesScreen(
             onRecipeTap: (recipe) => _handleRecipeTapped(context, recipe),
           ),
-          key: ValueKey('MyRecipesPage'),
         ),
 
         // Maybe Explore page
         if (recipesHomeIndex == 1) ...[
           InstantTransitionPage(
+            name: MyAnalytics.pageExploreRecipes,
+            key: ValueKey("ExploreRecipesPage"),
             child: ExploreRecipesScreen(
               onRecipeTap: (recipe) => _handleRecipeTapped(context, recipe),
             ),
-            key: ValueKey('ExploreRecipesPage'),
           ),
         ]
       ],
@@ -60,6 +65,7 @@ class InnerRouterDelegate extends RouterDelegate<AppRoutePath>
 
         return false;
       },
+      observers: [FirebaseAnalyticsObserver(analytics: FirebaseAnalytics())],
     );
   }
 
@@ -80,7 +86,12 @@ class InnerRouterDelegate extends RouterDelegate<AppRoutePath>
 class InstantTransitionPage extends Page {
   final Widget child;
 
-  InstantTransitionPage({LocalKey? key, required this.child}) : super(key: key);
+  InstantTransitionPage({
+    required this.child,
+    LocalKey? key,
+    String? name,
+    Object? arguments,
+  }) : super(key: key, name: name, arguments: arguments);
 
   Route createRoute(BuildContext context) {
     // For some reason Duration.zero causes a Flutter exception

@@ -1,4 +1,3 @@
-import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -11,9 +10,7 @@ import 'package:provider/provider.dart';
 /// Parent of the main navigation UI (now: drawer, later: bottom nav bar)
 /// as well as the current page accessed via that UI.
 class MainAppScaffold extends StatefulWidget {
-  final FirebaseAnalyticsObserver observer;
-
-  const MainAppScaffold({required this.observer, Key? key}) : super(key: key);
+  const MainAppScaffold({Key? key}) : super(key: key);
 
   @override
   _MainAppScaffoldState createState() => _MainAppScaffoldState();

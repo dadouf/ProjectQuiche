@@ -10,6 +10,7 @@ import 'package:projectquiche/routing/inner_router_delegate.dart';
 import 'package:projectquiche/screens/authenticate.dart';
 import 'package:projectquiche/screens/recipe.dart';
 import 'package:projectquiche/screens/recipe_input.dart';
+import 'package:projectquiche/services/firebase/analytics_keys.dart';
 import 'package:projectquiche/utils/safe_print.dart';
 
 /// Global app router.
@@ -57,7 +58,7 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
       }
     }
 
-    safePrint("currentConfiguration: $result");
+    // safePrint("currentConfiguration: $result");
 
     return result;
   }
@@ -65,8 +66,6 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
   // Return a navigator, configured to match the current app state
   @override
   Widget build(BuildContext context) {
-    safePrint("AppRouterDelegate.build()");
-
     // TODO select??
     bool isAuthenticated = appModel.isFirebaseSignedIn;
     Recipe? currentRecipe = appModel.currentRecipe;
@@ -78,6 +77,9 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
         // Sign in flow
         if (isAuthenticated == false) ...[
           MaterialPage(
+            // TODO analytics reports this even when it's shown 1ms
+            // The way to fix is probably to hold a Splash for some time
+            name: MyAnalytics.pageAuthenticate,
             key: ValueKey("AuthenticatePage"),
             child: AuthenticateScreen(),
           ),
@@ -87,24 +89,31 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
         else ...[
           // Main scaffold with drawer
           MaterialPage(
-              key: ValueKey("MainScaffold"),
-              child: MainAppScaffold(
-                  observer: FirebaseAnalyticsObserver(
-                      analytics: FirebaseAnalytics()))),
+            // Trick: set the name both here and in the inner router so that
+            // it's reported on inner push/pop as well as global pop
+            name: appModel.recipesHomeIndex == 0
+                ? MyAnalytics.pageMyRecipes
+                : MyAnalytics.pageExploreRecipes,
+            key: ValueKey("MainScaffold"),
+            child: MainAppScaffold(),
+          ),
 
           // View page + Edit page
           if (currentRecipe != null) ...[
             MaterialPage(
+                name: MyAnalytics.pageViewRecipe,
                 key: ValueKey(currentRecipe),
                 child: RecipeScreen(currentRecipe)),
             if (isCreatingOrEditing)
               MaterialPage(
+                  name: MyAnalytics.pageEditRecipe,
                   key: ValueKey("$currentRecipe-edit"),
                   child: EditRecipeScreen(currentRecipe)),
 
             // Create recipe page
           ] else if (isCreatingOrEditing) ...[
             MaterialPage(
+              name: MyAnalytics.pageCreateRecipe,
               key: ValueKey("NewRecipePage"),
               child: CreateRecipeScreen(),
             ),
@@ -131,12 +140,13 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
 
         return false;
       },
+      observers: [FirebaseAnalyticsObserver(analytics: FirebaseAnalytics())],
     );
   }
 
   @override
   Future<void> setInitialRoutePath(AppRoutePath initialPath) async {
-    safePrint("setInitialRoutePath: $initialPath");
+    // safePrint("setInitialRoutePath: $initialPath");
 
     await setNewRoutePath(initialPath);
   }
