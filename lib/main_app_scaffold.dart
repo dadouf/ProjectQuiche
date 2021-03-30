@@ -25,20 +25,8 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
     "Explore Recipes",
   ];
 
-  late InnerRouterDelegate _routerDelegate;
+  final InnerRouterDelegate _routerDelegate = InnerRouterDelegate();
   late ChildBackButtonDispatcher? _backButtonDispatcher;
-
-  @override
-  void initState() {
-    super.initState();
-    _routerDelegate = InnerRouterDelegate(context.read<AppModel>());
-  }
-
-  @override
-  void didUpdateWidget(covariant MainAppScaffold oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _routerDelegate.appModel = context.read<AppModel>();
-  }
 
   @override
   void didChangeDependencies() {

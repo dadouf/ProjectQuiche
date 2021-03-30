@@ -7,6 +7,7 @@ import 'package:projectquiche/routing/app_router.dart';
 import 'package:projectquiche/screens/explore_recipes.dart';
 import 'package:projectquiche/screens/my_recipes.dart';
 import 'package:projectquiche/utils/safe_print.dart';
+import 'package:provider/provider.dart';
 
 /// Routes pages within the [MainAppScaffold].
 /// See [AppRouterDelegate]
@@ -14,23 +15,13 @@ class InnerRouterDelegate extends RouterDelegate<AppRoutePath>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<AppRoutePath> {
   final GlobalKey<NavigatorState> navigatorKey;
 
-  // TODO do I need this?
-  AppModel get appModel => _appModel;
-  AppModel _appModel;
-
-  set appModel(AppModel value) {
-    if (value == _appModel) {
-      return;
-    }
-    _appModel = value;
-    notifyListeners();
-  }
-
-  InnerRouterDelegate(this._appModel)
-      : navigatorKey = GlobalKey<NavigatorState>();
+  InnerRouterDelegate() : navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
+    final int recipesHomeIndex =
+        context.select((AppModel appModel) => appModel.recipesHomeIndex);
+
     return Navigator(
       key: navigatorKey,
       pages: [
@@ -38,16 +29,16 @@ class InnerRouterDelegate extends RouterDelegate<AppRoutePath>
         // Explore gets back to My Recipes
         InstantTransitionPage(
           child: MyRecipesScreen(
-            onRecipeTap: _handleRecipeTapped,
+            onRecipeTap: (recipe) => _handleRecipeTapped(context, recipe),
           ),
           key: ValueKey('MyRecipesPage'),
         ),
 
         // Maybe Explore page
-        if (appModel.recipesHomeIndex == 1) ...[
+        if (recipesHomeIndex == 1) ...[
           InstantTransitionPage(
             child: ExploreRecipesScreen(
-              onRecipeTap: _handleRecipeTapped,
+              onRecipeTap: (recipe) => _handleRecipeTapped(context, recipe),
             ),
             key: ValueKey('ExploreRecipesPage'),
           ),
@@ -61,6 +52,7 @@ class InnerRouterDelegate extends RouterDelegate<AppRoutePath>
           return false;
         }
 
+        final AppModel appModel = context.read<AppModel>();
         if (appModel.recipesHomeIndex == 1) {
           appModel.recipesHomeIndex = 0;
           return true;
@@ -78,8 +70,8 @@ class InnerRouterDelegate extends RouterDelegate<AppRoutePath>
     assert(false);
   }
 
-  void _handleRecipeTapped(Recipe recipe) {
-    appModel.startViewingRecipe(recipe);
+  void _handleRecipeTapped(BuildContext context, Recipe recipe) {
+    context.read<AppModel>().startViewingRecipe(recipe);
     notifyListeners();
   }
 }
