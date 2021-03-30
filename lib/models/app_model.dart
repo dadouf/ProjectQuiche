@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projectquiche/model/recipe.dart';
+import 'package:projectquiche/routing/app_route_path.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 
 /// Hold the global app state. Things like: "is user signed in" and "what is
@@ -84,6 +85,22 @@ class AppModel extends ChangeNotifier {
     // Until we find a way to update the Recipe page we've just edited,
     // go all the way back to Home.
     _currentRecipe = null;
+
+    notifyListeners();
+  }
+
+  void goToRecipeList(RecipeListRoutePath path) {
+    _currentRecipe = null;
+    _isCreatingOrEditing = false;
+    _recipesHomeIndex = path.home == RecipesHome.my ? 0 : 1;
+
+    notifyListeners();
+  }
+
+  void goToRecipe(RecipeRoutePath path) {
+    _currentRecipe = null; // path.recipeId; // TODO lookup by ID!
+    _isCreatingOrEditing = path.isEditing;
+    _recipesHomeIndex = 0; // unknown
 
     notifyListeners();
   }

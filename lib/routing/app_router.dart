@@ -145,6 +145,10 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
   Future<void> setNewRoutePath(AppRoutePath path) async {
     safePrint("setNewRoutePath: $path");
 
-    // TODO set appmodel state here
+    if (path is RecipeListRoutePath) {
+      appModel.goToRecipeList(path);
+    } else if (path is RecipeRoutePath) {
+      appModel.goToRecipe(path);
+    }
   }
 }
