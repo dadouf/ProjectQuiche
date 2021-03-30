@@ -51,18 +51,16 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    // Claim priority, If there are parallel sub router, you will need
-    // to pick which one should take priority;
+    // Claim priority
     _backButtonDispatcher.takePriority();
 
-    // TODO is it good practice to factor:
-    // AppModel appModel = context.read<AppModel>() and use it in this method?
+    AppModel appModel = context.read<AppModel>();
 
     const paddingValue = 16.0;
     const padding = const EdgeInsets.all(paddingValue);
     return Scaffold(
         appBar: AppBar(
-          title: Text(_pageTitles[context.read<AppModel>().recipesHomeIndex]),
+          title: Text(_pageTitles[appModel.recipesHomeIndex]),
         ),
         drawer: Container(
           margin: EdgeInsets.only(right: 72),
@@ -94,7 +92,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
                           title: Text("My Recipes"),
                           onTap: () {
                             // No need for setState because appModel will notify listeners
-                            context.read<AppModel>().recipesHomeIndex = 0;
+                            appModel.recipesHomeIndex = 0;
                             _closeDrawer();
                           },
                         ),
@@ -102,7 +100,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
                           title: Text("Explore Recipes"),
                           onTap: () {
                             // No need for setState because appModel will notify listeners
-                            context.read<AppModel>().recipesHomeIndex = 1;
+                            appModel.recipesHomeIndex = 1;
                             _closeDrawer();
                           },
                         ),
@@ -124,7 +122,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
                             children: [
                               Padding(
                                 padding:
-                                const EdgeInsets.only(right: paddingValue),
+                                    const EdgeInsets.only(right: paddingValue),
                                 child: Icon(
                                   Icons.info_outline,
                                   color: fadedColor,
@@ -147,7 +145,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
           routerDelegate: _routerDelegate,
           backButtonDispatcher: _backButtonDispatcher,
         ),
-        floatingActionButton: context.read<AppModel>().recipesHomeIndex == 0
+        floatingActionButton: appModel.recipesHomeIndex == 0
             ? FloatingActionButton(
                 child: Icon(Icons.plus_one),
                 onPressed: _addRecipe,

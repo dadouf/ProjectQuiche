@@ -12,7 +12,7 @@ import 'package:projectquiche/utils/safe_print.dart';
 /// See [AppRouterDelegate]
 class InnerRouterDelegate extends RouterDelegate<AppRoutePath>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<AppRoutePath> {
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> navigatorKey;
 
   // TODO do I need this?
   AppModel get appModel => _appModel;
@@ -26,13 +26,24 @@ class InnerRouterDelegate extends RouterDelegate<AppRoutePath>
     notifyListeners();
   }
 
-  InnerRouterDelegate(this._appModel);
+  InnerRouterDelegate(this._appModel)
+      : navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
     return Navigator(
       key: navigatorKey,
       pages: [
+        // Always include My Recipes page: it's ONLY so that back button in
+        // Explore gets back to My Recipes
+        FadeAnimationPage(
+          child: MyRecipesScreen(
+            onRecipeTap: _handleRecipeTapped,
+          ),
+          key: ValueKey('MyRecipesPage'),
+        ),
+
+        // Maybe Explore page
         if (appModel.recipesHomeIndex == 1) ...[
           FadeAnimationPage(
             child: ExploreRecipesScreen(
@@ -40,13 +51,7 @@ class InnerRouterDelegate extends RouterDelegate<AppRoutePath>
             ),
             key: ValueKey('ExploreRecipesPage'),
           ),
-        ] else
-          FadeAnimationPage(
-            child: MyRecipesScreen(
-              onRecipeTap: _handleRecipeTapped,
-            ),
-            key: ValueKey('MyRecipesPage'),
-          ),
+        ]
       ],
       onPopPage: (route, result) {
         safePrint("InnerRouter: onPopPage");
@@ -57,7 +62,6 @@ class InnerRouterDelegate extends RouterDelegate<AppRoutePath>
         }
 
         if (appModel.recipesHomeIndex == 1) {
-          // Go back to My Recipes. FIXME this doesn't work!
           appModel.recipesHomeIndex = 0;
           return true;
         }

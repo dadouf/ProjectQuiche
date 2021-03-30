@@ -17,7 +17,7 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<AppRoutePath> {
   final AppModel appModel;
 
-  final GlobalKey<NavigatorState> navigatorKey; // TODO why do I need this?
+  final GlobalKey<NavigatorState> navigatorKey;
 
   AppRouterDelegate(this.appModel)
       : navigatorKey = GlobalKey<NavigatorState>() {
@@ -141,6 +141,6 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
   Future<void> setNewRoutePath(AppRoutePath path) async {
     safePrint("setNewRoutePath: $path");
 
-    // TODO do stuff here??
+    // TODO set appmodel state here
   }
 }
