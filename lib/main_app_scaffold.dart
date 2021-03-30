@@ -26,7 +26,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
   ];
 
   late InnerRouterDelegate _routerDelegate;
-  late ChildBackButtonDispatcher _backButtonDispatcher;
+  late ChildBackButtonDispatcher? _backButtonDispatcher;
 
   @override
   void initState() {
@@ -45,16 +45,20 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
     super.didChangeDependencies();
     // Defer back button dispatching to the child router
     _backButtonDispatcher = Router.of(context)
-        .backButtonDispatcher!
-        .createChildBackButtonDispatcher();
+        .backButtonDispatcher
+        ?.createChildBackButtonDispatcher();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Claim priority
-    _backButtonDispatcher.takePriority();
-
     AppModel appModel = context.read<AppModel>();
+
+    // Claim priority if this is the top screen
+    if (appModel.currentRecipe == null && !appModel.isCreatingOrEditing) {
+      _backButtonDispatcher?.takePriority();
+    } else {
+      Router.of(context).backButtonDispatcher?.takePriority();
+    }
 
     const paddingValue = 16.0;
     const padding = const EdgeInsets.all(paddingValue);

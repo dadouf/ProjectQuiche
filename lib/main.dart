@@ -29,11 +29,11 @@ class QuicheApp extends StatefulWidget {
 
 class _QuicheAppState extends State<QuicheApp> {
   AppRouteParser routeParser = AppRouteParser();
-  late AppRouterDelegate router;
+  late AppRouterDelegate routerDelegate;
 
   @override
   void initState() {
-    router = AppRouterDelegate(context.read<AppModel>());
+    routerDelegate = AppRouterDelegate(context.read<AppModel>());
 
     _bootstrap();
 
@@ -47,7 +47,7 @@ class _QuicheAppState extends State<QuicheApp> {
 
     return MaterialApp.router(
       routeInformationParser: routeParser,
-      routerDelegate: router,
+      routerDelegate: routerDelegate,
       theme: baseTheme.copyWith(
         indicatorColor: mainColor,
         accentColor: mainColor,
