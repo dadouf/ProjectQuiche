@@ -98,6 +98,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
                   FutureBuilder<PackageInfo>(
                       future: PackageInfo.fromPlatform(),
                       builder: (context, snapshot) {
+                        String? appName = snapshot.data?.appName;
                         String? packageName = snapshot.data?.packageName;
                         String? version = snapshot.data?.version;
                         String? buildNumber = snapshot.data?.buildNumber;
@@ -109,7 +110,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
                             children: [
                               Padding(
                                 padding:
-                                    const EdgeInsets.only(right: paddingValue),
+                                const EdgeInsets.only(right: paddingValue),
                                 child: Icon(
                                   Icons.info_outline,
                                   color: fadedColor,
@@ -117,7 +118,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
                               ),
                               Expanded(
                                 child: Text(
-                                  "$packageName\nVersion $version+$buildNumber",
+                                  "$appName v$version+$buildNumber\n$packageName",
                                   style: TextStyle(color: fadedColor),
                                 ),
                               ),
@@ -164,41 +165,4 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
       context.read<FirebaseService>().recordError(exception, stack);
     }
   }
-
-// ---
-// All the code below is to report analytics events when changing drawer page
-// See https://github.com/FirebaseExtended/flutterfire/blob/master/packages/firebase_analytics/firebase_analytics/example/lib/tabs_page.dart
-// ---
-
-// @override
-// void didChangeDependencies() {
-//   super.didChangeDependencies();
-//   var modalRoute = ModalRoute.of(context);
-//   if (modalRoute is PageRoute) {
-//     // Official example is outdated, keep an eye on it... Meanwhile casting works.
-//     widget.observer.subscribe(this, modalRoute);
-//   }
-// }
-//
-// @override
-// void dispose() {
-//   widget.observer.unsubscribe(this);
-//   super.dispose();
-// }
-//
-// @override
-// void didPush() {
-//   _sendCurrentTabToAnalytics();
-// }
-//
-// @override
-// void didPopNext() {
-//   _sendCurrentTabToAnalytics();
-// }
-//
-// void _sendCurrentTabToAnalytics() {
-//   // widget.observer.analytics.setCurrentScreen(
-//   //   screenName: _pageRoutes[_currentPage],
-//   // );
-// }
 }

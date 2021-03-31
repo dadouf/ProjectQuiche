@@ -76,6 +76,27 @@ android {
             signingConfig signingConfigs.release
         }
     }
+
+    flavorDimensions "env"
+    productFlavors {
+        dev {
+            dimension "env"
+        }
+        prod {
+            dimension "env"
+        }
+    }
+
+    applicationVariants.all { variant ->
+        def flavor = variant.productFlavors[0].name
+        def type = variant.buildType.name
+
+        if (flavor == "prod" && type == "release") {
+            variant.resValue  "string", "app_name", "Project Quiche"
+        } else {
+            variant.resValue  "string", "app_name", "PQ $flavor $type"
+        }
+    }
 }
 
 flutter {

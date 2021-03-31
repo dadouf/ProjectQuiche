@@ -42,6 +42,7 @@ class _MyRecipesScreenState extends State<MyRecipesScreen> {
         onRefresh: () => _refreshData(showSnackBar: true),
         child: StreamBuilder<QuerySnapshot>(
           stream: _stream,
+          // TODO this throws an error in the console when logging out because permission
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             // No need to wrap in setState because this doesn't impact the UI.
