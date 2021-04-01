@@ -18,7 +18,7 @@ class MainAppScaffold extends StatefulWidget {
 
 class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
   final List<String> _pageTitles = [
-    "My Recipes",
+    "My Cookbook",
     "Explore Recipes",
   ];
 
@@ -78,14 +78,14 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
                         ),
                         Divider(),
                         ListTile(
-                          title: Text("My Recipes"),
+                          title: Text(_pageTitles[0]),
                           onTap: () {
                             _closeDrawer();
                             appModel.recipesHomeIndex = 0;
                           },
                         ),
                         ListTile(
-                          title: Text("Explore Recipes"),
+                          title: Text(_pageTitles[1]),
                           onTap: () {
                             _closeDrawer();
                             appModel.recipesHomeIndex = 1;

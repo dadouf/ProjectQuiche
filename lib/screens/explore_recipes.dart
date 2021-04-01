@@ -110,7 +110,6 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
     setState(() => _isLoading = true);
 
     try {
-      await Future.delayed(Duration(seconds: 1));
       var snapshot = await _currentQuery.get();
 
       var additionalDocs = snapshot.docs

@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
+import 'package:projectquiche/utils/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -20,43 +21,63 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
   @override
   Widget build(BuildContext context) {
     const edgeInsets = EdgeInsets.all(16);
-    return Scaffold(
-        body: Center(
+
+    final originalScheme = Theme.of(context).colorScheme;
+    final boldColorScheme = originalScheme.copyWith(
+      background: originalScheme.primary,
+      onBackground: originalScheme.onPrimary,
+      primary: originalScheme.background,
+      onPrimary: originalScheme.onBackground,
+    );
+
+    return Theme(
+      data: boldColorScheme.toTheme(),
+      child: Builder(
+        builder: (context) => Scaffold(
+          body: Center(
             child: Padding(
-      padding: edgeInsets,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            child: Text(
-              'Welcome!',
-              style: TextStyle(fontSize: 18),
-            ),
-            alignment: Alignment.center,
-            padding: EdgeInsets.all(32),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: ElevatedButton(
-              child: Container(
-                alignment: Alignment.center,
-                height: 44, // to match Apple
-                child: Text(
-                  'Sign in with Google',
-                  style: TextStyle(fontSize: 44 * 0.43), // to match Apple
-                ),
+              padding: edgeInsets,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    child: Text(
+                      'Project Quiche',
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.only(bottom: 64),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: ElevatedButton(
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 44, // to match Apple
+                        child: Text(
+                          'Sign in with Google',
+                          style:
+                              TextStyle(fontSize: 44 * 0.43), // to match Apple
+                        ),
+                      ),
+                      onPressed: _signInWithGoogle,
+                    ),
+                  ),
+                  if (!kIsWeb && Platform.isIOS)
+                    SignInWithAppleButton(
+                      onPressed: _signInWithApple,
+                    )
+                ],
               ),
-              onPressed: _signInWithGoogle,
             ),
           ),
-          if (!kIsWeb && Platform.isIOS)
-            SignInWithAppleButton(
-              onPressed: _signInWithApple,
-            )
-        ],
+        ),
       ),
-    )));
+    );
   }
 
   Future<UserCredential?> _signInWithGoogle() async {
