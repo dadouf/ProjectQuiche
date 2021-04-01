@@ -15,23 +15,11 @@ class AppModel extends ChangeNotifier {
     _firebase.addListener(notifyListeners);
   }
 
-  // -------
-  // Startup
-  // -------
-
-  bool get hasBootstrapped => _hasBootstrapped;
-  bool _hasBootstrapped = false;
-
-  void onBootstrapComplete() {
-    _hasBootstrapped = true;
-    notifyListeners();
-  }
-
   // ------------
   // Auth
   // ------------
 
-  bool get isFirebaseSignedIn => _firebase.isSignedIn;
+  bool? get isFirebaseSignedIn => _firebase.isSignedIn;
 
   // ----------
   // Navigation

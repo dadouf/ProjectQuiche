@@ -10,6 +10,7 @@ import 'package:projectquiche/routing/inner_router_delegate.dart';
 import 'package:projectquiche/screens/authenticate.dart';
 import 'package:projectquiche/screens/recipe.dart';
 import 'package:projectquiche/screens/recipe_input.dart';
+import 'package:projectquiche/screens/splash.dart';
 import 'package:projectquiche/services/firebase/analytics_keys.dart';
 import 'package:projectquiche/utils/safe_print.dart';
 
@@ -38,7 +39,11 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
   AppRoutePath? get currentConfiguration {
     AppRoutePath? result;
 
-    if (!appModel.isFirebaseSignedIn) {
+    bool? isFirebaseSignedIn = appModel.isFirebaseSignedIn;
+
+    if (isFirebaseSignedIn == null) {
+      result = null;
+    } else if (!isFirebaseSignedIn) {
       result = AuthRoutePath();
     } else {
       if (appModel.currentRecipe == null) {
@@ -66,59 +71,67 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
   // Return a navigator, configured to match the current app state
   @override
   Widget build(BuildContext context) {
-    // TODO select??
-    bool isAuthenticated = appModel.isFirebaseSignedIn;
+    // TODO select to avoid rebuilds?
+    bool? isAuthenticated = appModel.isFirebaseSignedIn;
     Recipe? currentRecipe = appModel.currentRecipe;
     bool isCreatingOrEditing = appModel.isCreatingOrEditing;
 
     return Navigator(
       key: navigatorKey,
       pages: [
+        if (isAuthenticated == null) ...[
+          MaterialPage(
+            name: MyAnalytics.pageSplash,
+            key: ValueKey("Splash"),
+            child: SplashScreen(),
+          )
+        ]
+
         // Sign in flow
-        if (isAuthenticated == false) ...[
+        else if (isAuthenticated == false) ...[
           MaterialPage(
             // TODO analytics reports this even when it's shown 1ms
             // The way to fix is probably to hold a Splash for some time
             name: MyAnalytics.pageAuthenticate,
-            key: ValueKey("AuthenticatePage"),
+            key: ValueKey("Authenticate"),
             child: AuthenticateScreen(),
           ),
         ]
 
         // Main flow
         else ...[
-          // Main scaffold with drawer
-          MaterialPage(
-            // Trick: set the name both here and in the inner router so that
-            // it's reported on inner push/pop as well as global pop
-            name: appModel.recipesHomeIndex == 0
-                ? MyAnalytics.pageMyRecipes
-                : MyAnalytics.pageExploreRecipes,
-            key: ValueKey("MainScaffold"),
-            child: MainAppScaffold(),
-          ),
-
-          // View page + Edit page
-          if (currentRecipe != null) ...[
+            // Main scaffold with drawer
             MaterialPage(
-                name: MyAnalytics.pageViewRecipe,
-                key: ValueKey(currentRecipe),
-                child: RecipeScreen(currentRecipe)),
-            if (isCreatingOrEditing)
-              MaterialPage(
-                  name: MyAnalytics.pageEditRecipe,
-                  key: ValueKey("$currentRecipe-edit"),
-                  child: EditRecipeScreen(currentRecipe)),
-
-            // Create recipe page
-          ] else if (isCreatingOrEditing) ...[
-            MaterialPage(
-              name: MyAnalytics.pageCreateRecipe,
-              key: ValueKey("NewRecipePage"),
-              child: CreateRecipeScreen(),
+              // Trick: set the name both here and in the inner router so that
+              // it's reported on inner push/pop as well as global pop
+              name: appModel.recipesHomeIndex == 0
+                  ? MyAnalytics.pageMyRecipes
+                  : MyAnalytics.pageExploreRecipes,
+              key: ValueKey("MainScaffold"),
+              child: MainAppScaffold(),
             ),
-          ]
-        ],
+
+            // View page + Edit page
+            if (currentRecipe != null) ...[
+              MaterialPage(
+                  name: MyAnalytics.pageViewRecipe,
+                  key: ValueKey(currentRecipe),
+                  child: RecipeScreen(currentRecipe)),
+              if (isCreatingOrEditing)
+                MaterialPage(
+                    name: MyAnalytics.pageEditRecipe,
+                    key: ValueKey("$currentRecipe-edit"),
+                    child: EditRecipeScreen(currentRecipe)),
+
+              // Create recipe page
+            ] else if (isCreatingOrEditing) ...[
+              MaterialPage(
+                name: MyAnalytics.pageCreateRecipe,
+                key: ValueKey("NewRecipePage"),
+                child: CreateRecipeScreen(),
+              ),
+            ]
+          ],
       ],
       onPopPage: (route, result) {
         safePrint("AppRouter: onPopPage");

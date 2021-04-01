@@ -54,7 +54,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
         drawer: Container(
           margin: EdgeInsets.only(right: 72),
           child: Material(
-              color: Color(0xFF404040),
+              color: Theme.of(context).colorScheme.surface,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -103,14 +103,17 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
                         String? version = snapshot.data?.version;
                         String? buildNumber = snapshot.data?.buildNumber;
 
-                        const fadedColor = const Color(0x50FFFFFF);
+                        Color fadedColor = Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withAlpha(92);
                         return Padding(
                           padding: padding,
                           child: Row(
                             children: [
                               Padding(
                                 padding:
-                                const EdgeInsets.only(right: paddingValue),
+                                    const EdgeInsets.only(right: paddingValue),
                                 child: Icon(
                                   Icons.info_outline,
                                   color: fadedColor,

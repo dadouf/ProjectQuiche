@@ -21,43 +21,42 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
   Widget build(BuildContext context) {
     const edgeInsets = EdgeInsets.all(16);
     return Scaffold(
-        appBar: AppBar(title: Text('Project Quiche')),
         body: Center(
             child: Padding(
-          padding: edgeInsets,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                child: Text(
-                  'Welcome!',
-                  style: TextStyle(fontSize: 18),
-                ),
-                alignment: Alignment.center,
-                padding: EdgeInsets.all(32),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: ElevatedButton(
-                  child: Container(
-                    alignment: Alignment.center,
-                    height: 44, // to match Apple
-                    child: Text(
-                      'Sign in with Google',
-                      style: TextStyle(fontSize: 44 * 0.43), // to match Apple
-                    ),
-                  ),
-                  onPressed: _signInWithGoogle,
-                ),
-              ),
-              if (!kIsWeb && Platform.isIOS)
-                SignInWithAppleButton(
-                  onPressed: _signInWithApple,
-                )
-            ],
+      padding: edgeInsets,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            child: Text(
+              'Welcome!',
+              style: TextStyle(fontSize: 18),
+            ),
+            alignment: Alignment.center,
+            padding: EdgeInsets.all(32),
           ),
-        )));
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: ElevatedButton(
+              child: Container(
+                alignment: Alignment.center,
+                height: 44, // to match Apple
+                child: Text(
+                  'Sign in with Google',
+                  style: TextStyle(fontSize: 44 * 0.43), // to match Apple
+                ),
+              ),
+              onPressed: _signInWithGoogle,
+            ),
+          ),
+          if (!kIsWeb && Platform.isIOS)
+            SignInWithAppleButton(
+              onPressed: _signInWithApple,
+            )
+        ],
+      ),
+    )));
   }
 
   Future<UserCredential?> _signInWithGoogle() async {

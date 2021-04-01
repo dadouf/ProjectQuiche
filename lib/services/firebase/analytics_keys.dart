@@ -1,6 +1,7 @@
 class MyAnalytics {
   MyAnalytics._();
 
+  static const pageSplash = "Splash";
   static const pageAuthenticate = "Authenticate";
   static const pageMyRecipes = "MyRecipes";
   static const pageExploreRecipes = "ExploreRecipes";

@@ -35,29 +35,46 @@ class _QuicheAppState extends State<QuicheApp> {
   void initState() {
     routerDelegate = AppRouterDelegate(context.read<AppModel>());
 
-    _bootstrap();
+    // Bootstrap Firebase
+    context.read<FirebaseService>().init();
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    const mainColor = Color(0xFFE06E61);
-    var baseTheme = ThemeData.dark();
+    const darkLiverHorses = Color(0xFF564138);
+    const myrtleGreen = Color(0xFF38726C);
+    const sunglow = Color(0xFFFFC914);
+    const lightPeriwinkle = Color(0xFFC7CCDB);
+    const snow = Color(0xFFFCF7F8);
+    var myColorScheme = ColorScheme(
+      primary: myrtleGreen,
+      primaryVariant: myrtleGreen,
+      secondary: sunglow,
+      secondaryVariant: sunglow,
+      surface: lightPeriwinkle,
+      background: snow,
+      error: Colors.red,
+      onPrimary: Colors.white,
+      onSecondary: Colors.black,
+      onSurface: Colors.black,
+      onBackground: Colors.black,
+      onError: Colors.black,
+      brightness: Brightness.light,
+    );
+
+    var baseTheme = ThemeData.light();
 
     return MaterialApp.router(
       routeInformationParser: routeParser,
       routerDelegate: routerDelegate,
       theme: baseTheme.copyWith(
-        indicatorColor: mainColor,
-        accentColor: mainColor,
-        colorScheme: baseTheme.colorScheme.copyWith(secondary: mainColor),
+        primaryColor: myColorScheme.primary,
+        indicatorColor: myColorScheme.secondary,
+        scaffoldBackgroundColor: myColorScheme.background,
+        colorScheme: myColorScheme,
       ),
     );
-  }
-
-  void _bootstrap() async {
-    await context.read<FirebaseService>().init();
-    context.read<AppModel>().onBootstrapComplete();
   }
 }

@@ -20,8 +20,9 @@ class FirebaseService extends ChangeNotifier {
     return _analyticsInstance!;
   }
 
-  bool get isSignedIn => _isSignedIn;
-  bool _isSignedIn = false;
+  /// Null until we get the very first user callback from Firebase
+  bool? get isSignedIn => _isSignedIn;
+  bool? _isSignedIn;
 
   Future<void> init() async {
     // Must initializeApp before ANY other Firebase calls
