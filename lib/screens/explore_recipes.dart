@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:projectquiche/model/recipe.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
-import 'package:projectquiche/widgets/single_child_draggable_scroll_view.dart';
 import 'package:provider/provider.dart';
 
 class ExploreRecipesScreen extends StatefulWidget {
@@ -17,6 +16,8 @@ class ExploreRecipesScreen extends StatefulWidget {
 }
 
 class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
+  static const pageLimit = 20;
+
   Query _currentQuery = MyFirestore.recipes()
       // Non-deleted recipes. Note: can't do `moved_to_bin != true`
       .where(MyFirestore.fieldMovedToBin, isEqualTo: false)
@@ -26,97 +27,140 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
       // Recent recipes
       .orderBy(MyFirestore.fieldCreationDate, descending: true)
       // Take 30
-      .limit(30);
-
-  // TODO add cursor
-
-  /// Until the first load completes we show a global progress bar in the center
-  /// of the view. Next loads will simply show a [RefreshIndicator].
-  bool _firstLoadCompleted = false;
+      .limit(pageLimit);
 
   /// The list of recipes to display. Null means we never got data.
-  List<Recipe>? _data;
+  List<Recipe>? _loadedRecipes;
 
   Exception? _latestError;
+
+  /// When non-null this signifies that there may be more data to load.
+  /// It's set to null initially until we get the first page, and set to null
+  /// again once we've received the last page.
+  DocumentSnapshot? _lastDocument;
+
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
 
-    _refreshData();
+    _fetchMoreRecipes();
   }
 
   @override
   Widget build(BuildContext context) {
-    // FIXME (minor): refresh is hard to cancel by gesture, i.e. drag down then up
-    return LayoutBuilder(
-        builder: (context, constraints) => RefreshIndicator(
-              onRefresh: () => _refreshData(showSnackBar: true),
-              child: buildListOrPlaceholder(constraints),
+    var loadedRecipes = _loadedRecipes
+        ?.map((Recipe recipe) => ListTile(
+              title: Text(recipe.name ?? "Untitled"),
+              onTap: () => widget.onRecipeTap(recipe),
+            ))
+        .toList();
+
+    if (loadedRecipes != null) {
+      if (loadedRecipes.isNotEmpty) {
+        // There's data
+        if (_canLoadMore()) {
+          if (_isLoading) {
+            // We're loading more
+            loadedRecipes.add(ListTile(
+              title: Center(child: CircularProgressIndicator()),
             ));
-  }
+          } else {
+            // We'll be able to load more later
+            loadedRecipes.add(ListTile(
+              title: Center(child: Text("Load more")),
+              onTap: () => _loadMore(false),
+            ));
+          }
+        }
 
-  Widget buildListOrPlaceholder(BoxConstraints parentConstraints) {
-    var data = _data;
-
-    if (data != null) {
-      if (data.isNotEmpty) {
-        return ListView(
-            children: data
-                .map((Recipe recipe) => ListTile(
-                      title: Text(recipe.name ?? "Untitled"),
-                      onTap: () {
-                        widget.onRecipeTap(recipe);
-                      },
-                    ))
-                .toList());
+        return NotificationListener<ScrollEndNotification>(
+          child: ListView(children: loadedRecipes),
+          onNotification: (t) {
+            var atBottomOfList = t.metrics.pixels > 0;
+            if (atBottomOfList && _canLoadMore()) {
+              _loadMore(true);
+            }
+            return false;
+          },
+        );
       } else {
-        return SingleChildDraggableScrollView(
-            child: Center(child: Text("No recipes were found")),
-            parentConstraints: parentConstraints);
+        // There's no data
+        return Center(child: Text("No recipes were found"));
       }
-    } else if (!_firstLoadCompleted) {
-      // Do not make this draggable: it's already loading
+    } else if (_isLoading) {
+      // First load in progress
       return Center(child: CircularProgressIndicator());
     } else {
-      return SingleChildDraggableScrollView(
-          child: Container(
-              alignment: Alignment.center,
-              padding: EdgeInsets.all(16),
-              child: Text(
-                "Couldn't load screen. Please try again later.\n\nError: $_latestError",
-                textAlign: TextAlign.center,
-              )),
-          parentConstraints: parentConstraints);
+      // First load completed with an error
+      return Container(
+          alignment: Alignment.center,
+          padding: EdgeInsets.all(16),
+          child: Text(
+            "Couldn't load screen. Please try again later.\n\nError: $_latestError",
+            textAlign: TextAlign.center,
+          ));
     }
   }
 
-  Future<void> _refreshData({bool showSnackBar = false}) async {
-    try {
-      var snapshot = await _currentQuery.get();
-      setState(() {
-        _data = snapshot.docs
-            .map((DocumentSnapshot document) => Recipe.fromDocument(document))
-            // Filter out user's own recipes (because we can't do it in the query)
-            .where((element) =>
-                element.createdByUid != FirebaseAuth.instance.currentUser?.uid)
-            .toList();
+  bool _canLoadMore() => _lastDocument != null;
 
-        _firstLoadCompleted = true;
+  Future<void> _fetchMoreRecipes({bool showSnackBar = false}) async {
+    setState(() => _isLoading = true);
+
+    try {
+      await Future.delayed(Duration(seconds: 1));
+      var snapshot = await _currentQuery.get();
+
+      var additionalDocs = snapshot.docs
+          // Filter out user's own recipes (because we can't do it in the query)
+          .where((element) =>
+              element.data()![MyFirestore.fieldCreatedBy] !=
+              FirebaseAuth.instance.currentUser?.uid);
+
+      // If the number of docs in the snapshot is < limit we already know we're reached the end
+      var mayHaveMoreDocs = snapshot.docs.length == pageLimit;
+
+      var additionalRecipes = additionalDocs
+          .map((DocumentSnapshot document) => Recipe.fromDocument(document))
+          .toList();
+
+      setState(() {
+        _loadedRecipes = (_loadedRecipes ?? []) + additionalRecipes;
+
+        if (additionalDocs.isNotEmpty && mayHaveMoreDocs) {
+          _lastDocument = additionalDocs.last;
+        } else {
+          _lastDocument = null; // will hide Load More button
+        }
       });
     } on Exception catch (exception, trace) {
       context.read<FirebaseService>().recordError(exception, trace);
 
       if (showSnackBar) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Failed to refresh: $exception"),
+          content: Text("Failed to load more: $exception"),
         ));
       }
 
-      setState(() {
-        _firstLoadCompleted = true;
-        _latestError = exception;
-      });
+      setState(() => _latestError = exception);
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _loadMore(bool autoTriggered) {
+    FirebaseService service = context.read<FirebaseService>();
+
+    if (_canLoadMore()) {
+      service.logLoadMore(_loadedRecipes?.length ?? 0, autoTriggered);
+
+      _currentQuery = _currentQuery.startAfterDocument(_lastDocument!);
+      _fetchMoreRecipes(showSnackBar: true);
+    } else {
+      // Not supposed to get here
+      service.log("Tried to load more although it's impossible");
     }
   }
 }

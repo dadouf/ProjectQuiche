@@ -81,6 +81,14 @@ class FirebaseService extends ChangeNotifier {
     }
   }
 
+  /// Note: this is not terribly useful since the logs are only "included in the
+  /// next fatal or non-fatal report", but better than nothing.
+  void log(String message) {
+    if (!kIsWeb) {
+      _crashlytics.log(message);
+    }
+  }
+
   // ---------
   // Analytics
   // ---------
@@ -91,5 +99,12 @@ class FirebaseService extends ChangeNotifier {
 
   void logMoveToBin() {
     _analytics.logEvent(name: "move_to_bin");
+  }
+
+  void logLoadMore(int length, bool autoTriggered) {
+    _analytics.logEvent(name: "load_more_recipes", parameters: {
+      "loaded_count": length,
+      "auto_triggered": autoTriggered,
+    });
   }
 }
