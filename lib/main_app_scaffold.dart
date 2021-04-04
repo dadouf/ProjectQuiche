@@ -44,26 +44,20 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Expanded(
-                child: SpaceTab(
-                  space: AppSpace.myRecipes,
-                  icon: Icons.book,
-                  title: "My Cookbook",
-                ),
+              SpaceTab(
+                space: AppSpace.myRecipes,
+                icon: Icons.book,
+                title: "My Cookbook",
               ),
-              Expanded(
-                child: SpaceTab(
-                  space: AppSpace.exploreRecipes,
-                  icon: Icons.explore,
-                  title: "Explore Recipes",
-                ),
+              SpaceTab(
+                space: AppSpace.exploreRecipes,
+                icon: Icons.explore,
+                title: "Explore Recipes",
               ),
-              Expanded(
-                child: SpaceTab(
-                  space: AppSpace.myProfile,
-                  icon: Icons.person,
-                  title: "My Profile",
-                ),
+              SpaceTab(
+                space: AppSpace.myProfile,
+                icon: Icons.person,
+                title: "My Profile",
               ),
             ],
           ),
@@ -73,8 +67,9 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
           backButtonDispatcher: _backButtonDispatcher,
         ),
         floatingActionButton: appModel.currentSpace == AppSpace.myRecipes
-            ? FloatingActionButton(
-                child: Icon(Icons.edit_outlined),
+            ? FloatingActionButton.extended(
+                label: Text("Add"),
+                icon: Icon(Icons.edit_outlined),
                 onPressed: _addRecipe,
               )
             : null);
@@ -101,18 +96,24 @@ class SpaceTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final appModel = context.read<AppModel>();
 
-    return TextButton(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: appModel.currentSpace == space ? null : Color(0xFF999999),
+    return Expanded(
+      child: SizedBox(
+        height: 60,
+        child: TextButton(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                color:
+                    appModel.currentSpace == space ? null : Color(0xFF999999),
+              ),
+              if (appModel.currentSpace == space) Text(title),
+            ],
           ),
-          if (appModel.currentSpace == space) Text(title),
-        ],
+          onPressed: () => appModel.currentSpace = space,
+        ),
       ),
-      onPressed: () => appModel.currentSpace = space,
     );
   }
 }

@@ -41,6 +41,11 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Icon(
+                    Icons.restaurant,
+                    size: 92,
+                    color: Colors.white,
+                  ),
                   Container(
                     child: Text(
                       'Project Quiche',

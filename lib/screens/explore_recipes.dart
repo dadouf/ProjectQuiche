@@ -69,7 +69,15 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
           } else {
             // We'll be able to load more later
             loadedRecipes.add(ListTile(
-              title: Center(child: Text("Load more")),
+              title: Center(
+                child: Text(
+                  "Load more",
+                  style: TextStyle(
+                    color: Color(0x60000000),
+                    fontSize: 14,
+                  ),
+                ),
+              ),
               onTap: () => _loadMore(false),
             ));
           }
@@ -115,7 +123,8 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
       var additionalDocs = snapshot.docs
           // Filter out user's own recipes (because we can't do it in the query)
           .where((element) =>
-              element.data()![MyFirestore.fieldCreatedBy] !=
+              element.data()![MyFirestore.fieldCreatedBy]
+                  [MyFirestore.fieldUid] !=
               FirebaseAuth.instance.currentUser?.uid);
 
       // If the number of docs in the snapshot is < limit we already know we're reached the end
