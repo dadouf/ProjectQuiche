@@ -10,34 +10,34 @@ class AppRouteParser extends RouteInformationParser<AppRoutePath> {
 
     if (routeInformation.location != null) {
       final uri = Uri.parse(routeInformation.location!);
+      final parts = uri.pathSegments;
 
-      if (uri.pathSegments.length == 0) {
+      if (parts.length == 0) {
         // /
-        result = RecipeListRoutePath();
-      } else if (uri.pathSegments[0] == 'recipes') {
-        if (uri.pathSegments.length == 1) {
+        result = AppRoutePath.initial();
+      } else if (parts.length == 1) {
+        if (parts[0] == "recipes") {
           // /recipes
-          result = RecipeListRoutePath();
-        } else {
-          if (uri.pathSegments[1] == "my") {
-            // /recipes/my
-            result = RecipeListRoutePath(home: RecipesHome.my);
-          } else if (uri.pathSegments[1] == "explore") {
-            // /recipes/explore
-            result = RecipeListRoutePath(home: RecipesHome.explore);
-          } else if (uri.pathSegments[1] == "new") {
-            // /recipes/new
-            result = RecipeRoutePath.create();
-          } else {
-            String recipeId = uri.pathSegments[1];
-            if (uri.pathSegments.length == 3 && uri.pathSegments[2] == "edit") {
-              // /recipes/{id}/edit
-              result = RecipeRoutePath.edit(recipeId);
-            } else {
-              // /recipes/{id}
-              result = RecipeRoutePath.view(recipeId);
-            }
-          }
+          result = AppSpaceRoutePath();
+        } else if (parts[0] == "me") {
+          // /me
+          result = AppSpaceRoutePath(space: AppSpace.myProfile);
+        }
+      } else if (parts.length == 2) {
+        if (parts[0] == "recipes" && parts[1] == "my") {
+          // recipes/my
+          result = AppSpaceRoutePath(space: AppSpace.myRecipes);
+        } else if (parts[0] == "recipes" && parts[1] == "explore") {
+          // recipes/explore
+          result = AppSpaceRoutePath(space: AppSpace.exploreRecipes);
+        } else if (parts[0] == "recipes") {
+          final recipeId = parts[1];
+          result = RecipeRoutePath.view(recipeId);
+        }
+      } else if (parts.length == 3) {
+        if (parts[0] == "recipes" && parts[2] == "edit") {
+          final recipeId = parts[1];
+          result = RecipeRoutePath.edit(recipeId);
         }
       }
     }
@@ -64,8 +64,9 @@ class AppRouteParser extends RouteInformationParser<AppRoutePath> {
       }
     }
 
-    if (path is RecipeListRoutePath) {
-      result = RouteInformation(location: "/recipes/${path.home}");
+    if (path is AppSpaceRoutePath) {
+      // FIXME this is broken
+      result = RouteInformation(location: _pathFromSpace(path.space));
     }
 
     if (path is AuthRoutePath) {
@@ -75,6 +76,17 @@ class AppRouteParser extends RouteInformationParser<AppRoutePath> {
     safePrint("restoreRouteInformation: $path -> ${result?.toDebugString()}");
 
     return result;
+  }
+
+  static String _pathFromSpace(AppSpace currentSpace) {
+    switch (currentSpace) {
+      case AppSpace.myRecipes:
+        return "/recipes/my";
+      case AppSpace.exploreRecipes:
+        return "/recipes/explore";
+      case AppSpace.myProfile:
+        return "/me";
+    }
   }
 }
 

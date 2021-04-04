@@ -31,11 +31,11 @@ class AppModel extends ChangeNotifier {
   bool get isCreatingOrEditing => _isCreatingOrEditing;
   bool _isCreatingOrEditing = false;
 
-  int get recipesHomeIndex => _recipesHomeIndex;
-  int _recipesHomeIndex = 0;
+  AppSpace get currentSpace => _currentSpace;
+  AppSpace _currentSpace = AppSpace.myRecipes;
 
-  set recipesHomeIndex(int value) {
-    _recipesHomeIndex = value;
+  set currentSpace(AppSpace value) {
+    _currentSpace = value;
     notifyListeners();
   }
 
@@ -77,10 +77,10 @@ class AppModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void goToRecipeList(RecipeListRoutePath path) {
+  void goToRecipeList(AppSpaceRoutePath path) {
     _currentRecipe = null;
     _isCreatingOrEditing = false;
-    _recipesHomeIndex = path.home == RecipesHome.my ? 0 : 1;
+    _currentSpace = path.space;
 
     notifyListeners();
   }
@@ -88,7 +88,7 @@ class AppModel extends ChangeNotifier {
   void goToRecipe(RecipeRoutePath path) {
     _currentRecipe = null; // path.recipeId; // TODO lookup by ID!
     _isCreatingOrEditing = path.isEditing;
-    _recipesHomeIndex = 0; // unknown
+    _currentSpace = AppSpace.exploreRecipes; // unknown
 
     notifyListeners();
   }

@@ -1,23 +1,27 @@
-abstract class AppRoutePath {}
+abstract class AppRoutePath {
+  const AppRoutePath();
 
-class RecipeListRoutePath extends AppRoutePath {
-  final RecipesHome home;
+  static AppRoutePath initial() => AppSpaceRoutePath();
+}
 
-  RecipeListRoutePath({this.home = RecipesHome.my});
+class AppSpaceRoutePath extends AppRoutePath {
+  final AppSpace space;
+
+  const AppSpaceRoutePath({this.space = AppSpace.myRecipes});
 
   @override
-  String toString() => "RecipeListRoutePath{home: $home}";
+  String toString() => "AppSpaceRoutePath{home: $space}";
 }
 
 class RecipeRoutePath extends AppRoutePath {
   final String? recipeId;
   final bool isEditing;
 
-  RecipeRoutePath.view(String this.recipeId) : isEditing = false;
+  const RecipeRoutePath.view(String this.recipeId) : isEditing = false;
 
-  RecipeRoutePath.edit(String this.recipeId) : isEditing = true;
+  const RecipeRoutePath.edit(String this.recipeId) : isEditing = true;
 
-  RecipeRoutePath.create()
+  const RecipeRoutePath.create()
       : recipeId = null,
         isEditing = true;
 
@@ -36,14 +40,4 @@ class UnknownRoutePath extends AppRoutePath {
   String toString() => "UnknownRoutePath";
 }
 
-class RecipesHome {
-  final String value;
-
-  const RecipesHome._(this.value);
-
-  static const my = const RecipesHome._("my");
-  static const explore = const RecipesHome._("explore");
-
-  @override
-  String toString() => value;
-}
+enum AppSpace { myRecipes, exploreRecipes, myProfile }

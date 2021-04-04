@@ -69,6 +69,7 @@ class _QuicheAppState extends State<QuicheApp> {
     const maximumBlueGreen = Color(0xFF62BEC1);
     const roseMadder = Color(0xFFDF2935);
     const lavenderBlush = Color(0xFFEEE5E9);
+    const lavenderBlushDarker = Color(0xFFE6DCDF);
     const darkSienna = Color(0xFF32161F);
 
     var myColorScheme = ColorScheme(
@@ -76,7 +77,7 @@ class _QuicheAppState extends State<QuicheApp> {
       primaryVariant: usafaBlue,
       secondary: maximumBlueGreen,
       secondaryVariant: maximumBlueGreen,
-      surface: lavenderBlush,
+      surface: lavenderBlushDarker,
       background: lavenderBlush,
       error: roseMadder,
       onPrimary: Colors.white,

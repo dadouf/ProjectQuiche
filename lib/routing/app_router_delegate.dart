@@ -49,10 +49,8 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
       if (appModel.currentRecipe == null) {
         if (appModel.isCreatingOrEditing) {
           result = RecipeRoutePath.create();
-        } else if (appModel.recipesHomeIndex == 0) {
-          result = RecipeListRoutePath(home: RecipesHome.my);
-        } else if (appModel.recipesHomeIndex == 1) {
-          result = RecipeListRoutePath(home: RecipesHome.explore);
+        } else {
+          result = AppSpaceRoutePath(space: appModel.currentSpace);
         }
       } else {
         if (appModel.isCreatingOrEditing) {
@@ -100,38 +98,36 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
 
         // Main flow
         else ...[
-            // Main scaffold with drawer
+          // Main scaffold with drawer
+          MaterialPage(
+            // Trick: set the name both here and in the inner router so that
+            // it's reported on inner push/pop as well as global pop
+            name: MyAnalytics.pageFromSpace(appModel.currentSpace),
+            key: ValueKey("MainScaffold"),
+            child: MainAppScaffold(),
+          ),
+
+          // View page + Edit page
+          if (currentRecipe != null) ...[
             MaterialPage(
-              // Trick: set the name both here and in the inner router so that
-              // it's reported on inner push/pop as well as global pop
-              name: appModel.recipesHomeIndex == 0
-                  ? MyAnalytics.pageMyRecipes
-                  : MyAnalytics.pageExploreRecipes,
-              key: ValueKey("MainScaffold"),
-              child: MainAppScaffold(),
+                name: MyAnalytics.pageViewRecipe,
+                key: ValueKey(currentRecipe),
+                child: RecipeScreen(currentRecipe)),
+            if (isCreatingOrEditing)
+              MaterialPage(
+                  name: MyAnalytics.pageEditRecipe,
+                  key: ValueKey("$currentRecipe-edit"),
+                  child: EditRecipeScreen(currentRecipe)),
+
+            // Create recipe page
+          ] else if (isCreatingOrEditing) ...[
+            MaterialPage(
+              name: MyAnalytics.pageCreateRecipe,
+              key: ValueKey("NewRecipePage"),
+              child: CreateRecipeScreen(),
             ),
-
-            // View page + Edit page
-            if (currentRecipe != null) ...[
-              MaterialPage(
-                  name: MyAnalytics.pageViewRecipe,
-                  key: ValueKey(currentRecipe),
-                  child: RecipeScreen(currentRecipe)),
-              if (isCreatingOrEditing)
-                MaterialPage(
-                    name: MyAnalytics.pageEditRecipe,
-                    key: ValueKey("$currentRecipe-edit"),
-                    child: EditRecipeScreen(currentRecipe)),
-
-              // Create recipe page
-            ] else if (isCreatingOrEditing) ...[
-              MaterialPage(
-                name: MyAnalytics.pageCreateRecipe,
-                key: ValueKey("NewRecipePage"),
-                child: CreateRecipeScreen(),
-              ),
-            ]
-          ],
+          ]
+        ],
       ],
       onPopPage: (route, result) {
         safePrint("AppRouter: onPopPage");
@@ -168,7 +164,7 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
   Future<void> setNewRoutePath(AppRoutePath path) async {
     safePrint("setNewRoutePath: $path");
 
-    if (path is RecipeListRoutePath) {
+    if (path is AppSpaceRoutePath) {
       appModel.goToRecipeList(path);
     } else if (path is RecipeRoutePath) {
       appModel.goToRecipe(path);

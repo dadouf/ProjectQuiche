@@ -7,6 +7,7 @@ import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/routing/app_route_path.dart';
 import 'package:projectquiche/routing/app_router_delegate.dart';
 import 'package:projectquiche/screens/explore_recipes.dart';
+import 'package:projectquiche/screens/my_profile.dart';
 import 'package:projectquiche/screens/my_recipes.dart';
 import 'package:projectquiche/services/firebase/analytics_keys.dart';
 import 'package:projectquiche/utils/safe_print.dart';
@@ -22,14 +23,14 @@ class InnerRouterDelegate extends RouterDelegate<AppRoutePath>
 
   @override
   Widget build(BuildContext context) {
-    final int recipesHomeIndex =
-    context.select((AppModel appModel) => appModel.recipesHomeIndex);
+    final AppSpace currentSpace =
+        context.select((AppModel appModel) => appModel.currentSpace);
 
     return Navigator(
       key: navigatorKey,
       pages: [
-        // Always include My Recipes page: it's ONLY so that back button in
-        // Explore gets back to My Recipes
+        // Always include My Recipes page, so that the back button in other spaces
+        // get us back to My Recipes
         InstantTransitionPage(
           name: MyAnalytics.pageMyRecipes,
           key: ValueKey("MyRecipesPage"),
@@ -39,13 +40,19 @@ class InnerRouterDelegate extends RouterDelegate<AppRoutePath>
         ),
 
         // Maybe Explore page
-        if (recipesHomeIndex == 1) ...[
+        if (currentSpace == AppSpace.exploreRecipes) ...[
           InstantTransitionPage(
             name: MyAnalytics.pageExploreRecipes,
             key: ValueKey("ExploreRecipesPage"),
             child: ExploreRecipesScreen(
               onRecipeTap: (recipe) => _handleRecipeTapped(context, recipe),
             ),
+          ),
+        ] else if (currentSpace == AppSpace.myProfile) ...[
+          InstantTransitionPage(
+            name: MyAnalytics.pageMyProfile,
+            key: ValueKey("MyProfilePage"),
+            child: MyProfileScreen(),
           ),
         ]
       ],
@@ -58,8 +65,8 @@ class InnerRouterDelegate extends RouterDelegate<AppRoutePath>
         }
 
         final AppModel appModel = context.read<AppModel>();
-        if (appModel.recipesHomeIndex == 1) {
-          appModel.recipesHomeIndex = 0;
+        if (appModel.currentSpace != AppSpace.myRecipes) {
+          appModel.currentSpace = AppSpace.myRecipes;
           return true;
         }
 
