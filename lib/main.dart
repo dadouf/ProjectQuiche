@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/routing/app_route_parser.dart';
 import 'package:projectquiche/routing/app_router_delegate.dart';
@@ -115,6 +116,8 @@ class _QuicheAppState extends State<QuicheApp> {
       routeInformationParser: routeParser,
       routerDelegate: routerDelegate,
       theme: myColorScheme.toTheme(),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
     );
   }
 }

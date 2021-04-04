@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/routing/app_route_path.dart';
 import 'package:projectquiche/routing/inner_router_delegate.dart';
@@ -47,17 +48,17 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
               SpaceTab(
                 space: AppSpace.myRecipes,
                 icon: Icons.book,
-                title: "My Cookbook",
+                title: AppLocalizations.of(context)!.myRecipes,
               ),
               SpaceTab(
                 space: AppSpace.exploreRecipes,
                 icon: Icons.explore,
-                title: "Explore Recipes",
+                title: AppLocalizations.of(context)!.exploreRecipes,
               ),
               SpaceTab(
                 space: AppSpace.myProfile,
                 icon: Icons.person,
-                title: "My Profile",
+                title: AppLocalizations.of(context)!.myProfile,
               ),
             ],
           ),
@@ -68,7 +69,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
         ),
         floatingActionButton: appModel.currentSpace == AppSpace.myRecipes
             ? FloatingActionButton.extended(
-                label: Text("Add"),
+          label: Text(AppLocalizations.of(context)!.add),
                 icon: Icon(Icons.edit_outlined),
                 onPressed: _addRecipe,
               )

@@ -1,0 +1,9 @@
+{
+    "helloWorld": "Hola Mundo!",
+    "signInWithGoogle": "Iniciar sesión con Google",
+    "signInWithApple": "Iniciar sesión con Apple",
+    "add": "Añadir",
+    "myRecipes": "Mis recetas",
+    "exploreRecipes": "Explorar",
+    "myProfile": "Mi perfil"
+}

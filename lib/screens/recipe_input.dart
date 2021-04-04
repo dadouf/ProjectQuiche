@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:projectquiche/model/recipe.dart';
 import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
@@ -108,12 +109,7 @@ class _RecipeInputPageState extends State<RecipeInputPage>
     with SingleTickerProviderStateMixin {
   // Note: right now 1 tab = 1 field, but this will change
 
-  final _tabs = [
-    Tab(text: "Info"),
-    Tab(text: "Ingredients"),
-    Tab(text: "Steps"),
-    Tab(text: "Tips"),
-  ];
+  late List<Tab> _tabs = [];
 
   late TextEditingController _recipeName;
   late TextEditingController _recipeIngredients;
@@ -151,6 +147,18 @@ class _RecipeInputPageState extends State<RecipeInputPage>
     });
 
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _tabs = [
+      Tab(text: AppLocalizations.of(context)!.info),
+      Tab(text: AppLocalizations.of(context)!.ingredients),
+      Tab(text: AppLocalizations.of(context)!.steps),
+      Tab(text: AppLocalizations.of(context)!.tips),
+    ];
   }
 
   @override

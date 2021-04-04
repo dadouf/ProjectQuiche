@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:projectquiche/model/recipe.dart';
 import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
@@ -36,11 +37,15 @@ class RecipeScreen extends StatelessWidget {
         children: [
           Padding(
             padding: defaultPadding,
-            child: Text("Created by ${getRecipeCreator()}"),
+            child: Text(AppLocalizations.of(context)!
+                .created_by(_getRecipeCreator(context))),
           ),
           Padding(
             padding: defaultPadding,
-            child: Text("Ingredients", style: titleStyle),
+            child: Text(
+              AppLocalizations.of(context)!.ingredients,
+              style: titleStyle,
+            ),
           ),
           Padding(
             padding: defaultPadding,
@@ -48,7 +53,10 @@ class RecipeScreen extends StatelessWidget {
           ),
           Padding(
             padding: defaultPadding,
-            child: Text("Steps", style: titleStyle),
+            child: Text(
+              AppLocalizations.of(context)!.steps,
+              style: titleStyle,
+            ),
           ),
           Padding(
             padding: defaultPadding,
@@ -56,7 +64,7 @@ class RecipeScreen extends StatelessWidget {
           ),
           Padding(
             padding: defaultPadding,
-            child: Text("Tips", style: titleStyle),
+            child: Text(AppLocalizations.of(context)!.tips, style: titleStyle),
           ),
           Padding(
             padding: defaultPadding,
@@ -67,16 +75,13 @@ class RecipeScreen extends StatelessWidget {
     );
   }
 
-  String getRecipeCreator() {
+  String _getRecipeCreator(BuildContext context) {
     if (_recipe.createdByUid == FirebaseAuth.instance.currentUser?.uid) {
-      return "you";
+      return AppLocalizations.of(context)!.me;
     } else if (_recipe.createdByName != null) {
-      // TODO how can I avoid having to cast to non-null
       return _recipe.createdByName!;
-    } else if (_recipe.createdByUid != null) {
-      return "User ${_recipe.createdByUid}";
     } else {
-      return "someone";
+      return "User ${_recipe.createdByUid}";
     }
   }
 

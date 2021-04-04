@@ -1,0 +1,22 @@
+{
+    "signInWithGoogle": "Sign in with Google",
+    "signInWithApple": "Sign in with Apple",
+
+    "add": "Add",
+    "myRecipes": "My Cookbook",
+    "exploreRecipes": "Explore Recipes",
+    "myProfile": "My Profile",
+
+    "info": "Info",
+    "ingredients": "Ingredients",
+    "steps": "Steps",
+    "tips": "Tips",
+
+    "created_by": "Created by {person}",
+    "@created_by": {
+        "placeholders": {
+            "person": {}
+        }
+    },
+    "me": "me"
+}

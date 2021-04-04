@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/utils/theme.dart';
@@ -48,7 +49,7 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
                   ),
                   Container(
                     child: Text(
-                      'Project Quiche',
+                      "Project Quiche",
                       style: TextStyle(
                         fontSize: 24,
                         color: Theme.of(context).colorScheme.onBackground,
@@ -64,7 +65,7 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
                         alignment: Alignment.center,
                         height: 44, // to match Apple
                         child: Text(
-                          'Sign in with Google',
+                          AppLocalizations.of(context)!.signInWithGoogle,
                           style:
                               TextStyle(fontSize: 44 * 0.43), // to match Apple
                         ),
@@ -75,6 +76,7 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
                   if (!kIsWeb && Platform.isIOS)
                     SignInWithAppleButton(
                       onPressed: _signInWithApple,
+                      text: AppLocalizations.of(context)!.signInWithApple,
                     )
                 ],
               ),

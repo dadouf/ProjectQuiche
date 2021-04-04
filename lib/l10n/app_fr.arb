@@ -1,0 +1,18 @@
+{
+    "helloWorld": "Bonjour le monde !",
+    "signInWithGoogle": "Connexion avec Google",
+    "signInWithApple": "Connexion avec Apple",
+
+    "add": "Ajouter",
+    "myRecipes": "Mes recettes",
+    "exploreRecipes": "Explorer",
+    "myProfile": "Mon profil",
+
+    "info": "Info",
+    "ingredients": "Ingrédients",
+    "steps": "Étapes",
+    "tips": "Conseils",
+
+    "created_by": "Créée par {person}",
+    "me": "moi"
+}
