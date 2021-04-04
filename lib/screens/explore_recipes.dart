@@ -78,7 +78,7 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
         return NotificationListener<ScrollEndNotification>(
           child: ListView(children: loadedRecipes),
           onNotification: (t) {
-            var atBottomOfList = t.metrics.pixels > 0;
+            var atBottomOfList = t.metrics.pixels == t.metrics.maxScrollExtent;
             if (atBottomOfList && _canLoadMore()) {
               _loadMore(true);
             }
