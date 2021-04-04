@@ -7,10 +7,12 @@ extension ColorSchemeToTheme on ColorScheme {
         : ThemeData.dark();
 
     return baseTheme.copyWith(
-        colorScheme: this,
-        primaryColor: this.primary,
-        indicatorColor: this.secondary,
-        scaffoldBackgroundColor: this.background,
-        textTheme: baseTheme.textTheme);
+      colorScheme: this,
+      primaryColor: this.primary,
+      accentColor: this.primary,
+      indicatorColor: this.secondary,
+      scaffoldBackgroundColor: this.background,
+      textTheme: baseTheme.textTheme,
+    );
   }
 }

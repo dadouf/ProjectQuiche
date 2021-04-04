@@ -88,10 +88,3 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
-
-flutter_icons:
-  image_path: "assets/images/ic_launcher-playstore.png"
-  android: true
-  ios: true
-  remove_alpha_ios: true
-  # TODO: adaptive_icon_background, adaptive_icon_foreground

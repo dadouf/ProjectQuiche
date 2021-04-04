@@ -39,6 +39,7 @@ class _MyRecipesScreenState extends State<MyRecipesScreen> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) => RefreshIndicator(
+        color: Theme.of(context).colorScheme.primary,
         onRefresh: () => _refreshData(showSnackBar: true),
         child: StreamBuilder<QuerySnapshot>(
           stream: _stream,

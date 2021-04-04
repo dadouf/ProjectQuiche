@@ -14,11 +14,6 @@ class MainAppScaffold extends StatefulWidget {
 }
 
 class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
-  final List<String> _pageTitles = [
-    "My Cookbook",
-    "Explore Recipes",
-  ];
-
   final InnerRouterDelegate _routerDelegate = InnerRouterDelegate();
   late ChildBackButtonDispatcher? _backButtonDispatcher;
 
@@ -79,7 +74,7 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
         ),
         floatingActionButton: appModel.currentSpace == AppSpace.myRecipes
             ? FloatingActionButton(
-                child: Icon(Icons.plus_one),
+                child: Icon(Icons.edit_outlined),
                 onPressed: _addRecipe,
               )
             : null);

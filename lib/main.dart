@@ -65,26 +65,49 @@ class _QuicheAppState extends State<QuicheApp> {
     //   brightness: Brightness.light,
     // );
 
-    const usafaBlue = Color(0xFF26547C);
-    const maximumBlueGreen = Color(0xFF62BEC1);
-    const roseMadder = Color(0xFFDF2935);
-    const lavenderBlush = Color(0xFFEEE5E9);
-    const lavenderBlushDarker = Color(0xFFE6DCDF);
-    const darkSienna = Color(0xFF32161F);
+    // const usafaBlue = Color(0xFF26547C);
+    // const maximumBlueGreen = Color(0xFF62BEC1);
+    // const roseMadder = Color(0xFFDF2935);
+    // const lavenderBlush = Color(0xFFEEE5E9);
+    // const lavenderBlushDarker = Color(0xFFE6DCDF);
+    // const darkSienna = Color(0xFF32161F);
+    //
+    // var myColorScheme = ColorScheme(
+    //   primary: usafaBlue,
+    //   primaryVariant: usafaBlue,
+    //   secondary: maximumBlueGreen,
+    //   secondaryVariant: maximumBlueGreen,
+    //   surface: lavenderBlushDarker,
+    //   background: lavenderBlush,
+    //   error: roseMadder,
+    //   onPrimary: Colors.white,
+    //   onSecondary: Colors.black,
+    //   onSurface: Colors.black,
+    //   onBackground: darkSienna,
+    //   onError: Colors.black,
+    //   brightness: Brightness.light,
+    // );
+
+    // Keep it synced with Android (values/colors.xml) and iOS (LaunchScreen.storyboard)
+    const mediumSeaGreen = Color(0xFFB71540);
+    const redSalsa = Color(0xFFF85A33);
+    const blackCoffee = Color(0xFF3A2E39);
+    const lightGray = Color(0xFFEBE6E7);
+    const isabelline = Color(0xFFF4EDEA);
 
     var myColorScheme = ColorScheme(
-      primary: usafaBlue,
-      primaryVariant: usafaBlue,
-      secondary: maximumBlueGreen,
-      secondaryVariant: maximumBlueGreen,
-      surface: lavenderBlushDarker,
-      background: lavenderBlush,
-      error: roseMadder,
+      primary: mediumSeaGreen,
+      primaryVariant: mediumSeaGreen,
+      secondary: mediumSeaGreen,
+      secondaryVariant: mediumSeaGreen,
+      surface: lightGray,
+      background: isabelline,
+      error: redSalsa,
       onPrimary: Colors.white,
-      onSecondary: Colors.black,
-      onSurface: Colors.black,
-      onBackground: darkSienna,
-      onError: Colors.black,
+      onSecondary: Colors.white,
+      onSurface: blackCoffee,
+      onBackground: blackCoffee,
+      onError: blackCoffee,
       brightness: Brightness.light,
     );
 
