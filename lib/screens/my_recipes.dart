@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:projectquiche/model/recipe.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
@@ -59,7 +60,8 @@ class _MyRecipesScreenState extends State<MyRecipesScreen> {
                   alignment: Alignment.center,
                   padding: EdgeInsets.all(16),
                   child: Text(
-                    "Couldn't load screen. Please try again later.\n\nError: ${snapshot.error}",
+                    AppLocalizations.of(context)!
+                        .screenLoadError(snapshot.error ?? "Unknown"),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -87,8 +89,11 @@ class _MyRecipesScreenState extends State<MyRecipesScreen> {
             } else {
               return SingleChildDraggableScrollView(
                   child: Center(
-                      child: Text(
-                          "You don't have any recipes. Start adding some now!")),
+                    child: Text(
+                      AppLocalizations.of(context)!.myRecipes_empty,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                   parentConstraints: constraints);
             }
           },

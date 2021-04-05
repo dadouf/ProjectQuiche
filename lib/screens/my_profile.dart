@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:package_info/package_info.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
@@ -12,12 +13,12 @@ class MyProfileScreen extends StatelessWidget {
       children: [
         ListTile(
           leading: Icon(Icons.person),
-          title:
-              Text("Connected as ${FirebaseAuth.instance.currentUser?.email}"),
+          title: Text(AppLocalizations.of(context)!.connectedAs(
+              FirebaseAuth.instance.currentUser?.email ?? "Unknown")),
         ),
         ListTile(
           leading: Icon(Icons.logout),
-          title: Text("Sign out"),
+          title: Text(AppLocalizations.of(context)!.signOut),
           onTap: () => _logout(context),
         ),
         Divider(),

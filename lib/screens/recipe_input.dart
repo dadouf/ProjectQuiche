@@ -13,7 +13,7 @@ class CreateRecipeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RecipeInputPage(
-      title: "New recipe",
+      title: AppLocalizations.of(context)!.addRecipe,
       onRecipeSave: ({required name, ingredients, steps, tips}) async {
         try {
           await MyFirestore.recipes().add({
@@ -34,11 +34,12 @@ class CreateRecipeScreen extends StatelessWidget {
           context.read<AppModel>().completeEditing();
 
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text("New recipe added"),
+            content: Text(AppLocalizations.of(context)!.addRecipe_success),
           ));
         } on Exception catch (exception, trace) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text("Failed to add recipe: $exception"),
+            content: Text(
+                AppLocalizations.of(context)!.addRecipe_failure(exception)),
           ));
           context.read<FirebaseService>().recordError(exception, trace);
         }
@@ -55,7 +56,7 @@ class EditRecipeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RecipeInputPage(
-      title: "Edit recipe",
+      title: AppLocalizations.of(context)!.editRecipe,
       initialRecipe: recipe,
       onRecipeSave: ({required name, ingredients, steps, tips}) async {
         try {
@@ -69,13 +70,14 @@ class EditRecipeScreen extends StatelessWidget {
           context.read<AppModel>().completeEditing();
 
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text("Recipe successfully edited"),
+            content: Text(AppLocalizations.of(context)!.editRecipe_success),
           ));
           // FIXME the context is wrong here, I should show
 
         } on Exception catch (exception, trace) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text("Failed to edit recipe: $exception"),
+            content: Text(
+                AppLocalizations.of(context)!.editRecipe_failure(exception)),
           ));
           context.read<FirebaseService>().recordError(exception, trace);
         }
@@ -183,13 +185,14 @@ class _RecipeInputPageState extends State<RecipeInputPage>
               key: _nameKey,
               focusNode: _focusNodes[0],
               controller: _recipeName,
-              decoration: InputDecoration(labelText: "Name"),
+              decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.name),
               textCapitalization: TextCapitalization.sentences,
               validator: (value) {
                 if (_validateName()) {
                   return null;
                 } else {
-                  return "Required";
+                  return AppLocalizations.of(context)!.required;
                 }
               },
               autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -197,8 +200,8 @@ class _RecipeInputPageState extends State<RecipeInputPage>
             TextFormField(
               focusNode: _focusNodes[1],
               controller: _recipeIngredients,
-              decoration:
-                  InputDecoration(hintText: "- 20g butter\n- 4 eggs\n..."),
+              decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context)!.ingredients_hint),
               textCapitalization: TextCapitalization.sentences,
               expands: true,
               maxLines: null,
@@ -208,7 +211,7 @@ class _RecipeInputPageState extends State<RecipeInputPage>
               focusNode: _focusNodes[2],
               controller: _recipeSteps,
               decoration: InputDecoration(
-                  hintText: "1. Preheat oven to 220°C\n2. Cut stuff\n..."),
+                  hintText: AppLocalizations.of(context)!.steps_hint),
               textCapitalization: TextCapitalization.sentences,
               expands: true,
               maxLines: null,
@@ -218,7 +221,7 @@ class _RecipeInputPageState extends State<RecipeInputPage>
               focusNode: _focusNodes[3],
               controller: _recipeTips,
               decoration: InputDecoration(
-                  hintText: "Serve with mixed greens or mash potato.\n..."),
+                  hintText: AppLocalizations.of(context)!.tips_hint),
               textCapitalization: TextCapitalization.sentences,
               expands: true,
               maxLines: null,

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:projectquiche/model/recipe.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
@@ -71,14 +72,14 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
             loadedRecipes.add(ListTile(
               title: Center(
                 child: Text(
-                  "Load more",
+                  AppLocalizations.of(context)!.loadMore,
                   style: TextStyle(
                     color: Color(0x60000000),
                     fontSize: 14,
                   ),
                 ),
               ),
-              onTap: () => _loadMore(false),
+              onTap: () => _maybeLoadMore(false),
             ));
           }
         }
@@ -87,15 +88,16 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
           child: ListView(children: loadedRecipes),
           onNotification: (t) {
             var atBottomOfList = t.metrics.pixels == t.metrics.maxScrollExtent;
-            if (atBottomOfList && _canLoadMore()) {
-              _loadMore(true);
+            if (atBottomOfList) {
+              _maybeLoadMore(true);
             }
             return false;
           },
         );
       } else {
         // There's no data
-        return Center(child: Text("No recipes were found"));
+        return Center(
+            child: Text(AppLocalizations.of(context)!.exploreRecipes_empty));
       }
     } else if (_isLoading) {
       // First load in progress
@@ -106,7 +108,8 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
           alignment: Alignment.center,
           padding: EdgeInsets.all(16),
           child: Text(
-            "Couldn't load screen. Please try again later.\n\nError: $_latestError",
+            AppLocalizations.of(context)!
+                .screenLoadError(_latestError ?? "Unknown"),
             textAlign: TextAlign.center,
           ));
     }
@@ -158,7 +161,7 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
     }
   }
 
-  void _loadMore(bool autoTriggered) {
+  void _maybeLoadMore(bool autoTriggered) {
     FirebaseService service = context.read<FirebaseService>();
 
     if (_canLoadMore()) {
@@ -167,8 +170,7 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
       _currentQuery = _currentQuery.startAfterDocument(_lastDocument!);
       _fetchMoreRecipes(showSnackBar: true);
     } else {
-      // Not supposed to get here
-      service.log("Tried to load more although it's impossible");
+      // We typically get here on an auto-trigger
     }
   }
 }

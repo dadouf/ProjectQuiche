@@ -92,13 +92,13 @@ class RecipeScreen extends StatelessWidget {
   /// Display a confirmation dialog
   void _onDeleteButtonClicked(BuildContext context) {
     Widget cancelButton = TextButton(
-      child: Text("Cancel"),
+      child: Text(AppLocalizations.of(context)!.moveToBin_cancel),
       onPressed: () {
         Navigator.pop(context); // to close dialog
       },
     );
     Widget continueButton = TextButton(
-      child: Text("Move to bin"),
+      child: Text(AppLocalizations.of(context)!.moveToBin_confirm),
       onPressed: () {
         Navigator.pop(context); // to close dialog
         _deleteRecipe(context);
@@ -106,9 +106,8 @@ class RecipeScreen extends StatelessWidget {
     );
 
     AlertDialog alert = AlertDialog(
-      title: Text("Move to bin?"),
-      content:
-          Text("This recipe will no longer be visible by you or by anyone"),
+      title: Text(AppLocalizations.of(context)!.moveToBin_title),
+      content: Text(AppLocalizations.of(context)!.moveToBin_message),
       actions: [
         cancelButton,
         continueButton,
@@ -136,13 +135,14 @@ class RecipeScreen extends StatelessWidget {
       service.logMoveToBin();
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Recipe successfully moved to bin"),
+        content: Text(AppLocalizations.of(context)!.moveToBin_success),
       ));
 
       context.read<AppModel>().cancelViewingRecipe();
     } on Exception catch (exception, stack) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Failed to move recipe to bin: $exception"),
+        content:
+            Text(AppLocalizations.of(context)!.moveToBin_failure(exception)),
       ));
       service.recordError(exception, stack);
     }
