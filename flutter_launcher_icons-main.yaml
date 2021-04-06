@@ -1,0 +1,9 @@
+# Run `flutter pub run flutter_launcher_icons:main -f flutter_launcher_icons-debug.yaml`
+# and it will generate icons for both debug and main.
+
+flutter_icons:
+  image_path: "assets/images/ic_launcher-playstore.png"
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  # TODO: adaptive_icon_background, adaptive_icon_foreground

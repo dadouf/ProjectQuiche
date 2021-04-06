@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:projectquiche/data/MyFirestore.dart';
+import 'package:projectquiche/services/firebase/firestore_keys.dart';
 
 class Recipe {
   final String? id;
