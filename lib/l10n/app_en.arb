@@ -1,77 +1,67 @@
 {
-    "signInWithGoogle": "Sign in with Google",
-    "signInWithApple": "Sign in with Apple",
-
-    "add": "Add",
-    "myRecipes": "My Cookbook",
-    "exploreRecipes": "Explore Recipes",
-    "myProfile": "My Profile",
-
-    "info": "Info",
-    "ingredients": "Ingredients",
-    "steps": "Steps",
-    "tips": "Tips",
-
-    "created_by": "Created by {person}",
-    "@created_by": {
-        "placeholders": {
-            "person": {}
-        }
-    },
-    "me": "me",
-
-    "addRecipe": "Add recipe",
-    "addRecipe_success": "Recipe successfully saved",
-    "addRecipe_failure": "Failed to save recipe: {exception}",
-    "@addRecipe_failure": {
-        "placeholders": {
-            "exception": {}
-        }
-    },
-
-    "editRecipe": "Edit recipe",
-    "editRecipe_success": "Recipe successfully saved",
-    "editRecipe_failure": "Failed to save recipe: {exception}",
-    "@editRecipe_failure": {
-        "placeholders": {
-            "exception": {}
-        }
-    },
-
-    "name": "Title",
-    "required": "Required",
-    "ingredients_hint": "- 20g butter\n- 4 eggs\n...",
-    "steps_hint": "1. Preheat oven to 220°C\n2. Cut stuff\n...",
-    "tips_hint": "Serve with mixed greens or mash potato.\n...",
-
-    "moveToBin_title": "Move to bin?",
-    "moveToBin_message": "This recipe will no longer be visible by you or by anyone",
-    "moveToBin_confirm": "Move to bin",
-    "moveToBin_cancel": "Cancel",
-    "moveToBin_success": "Recipe successfully moved to bin",
-    "moveToBin_failure": "Failed to move recipe to bin: {exception}",
-    "@moveToBin_failure": {
-        "placeholders": {
-            "exception": {}
-        }
-    },
-
-    "connectedAs": "{user}",
-    "@connectedAs": {
-        "placeholders": {
-            "user": {}
-        }
-    },
-    "signOut": "Sign out",
-
-    "screenLoadError": "Couldn't load screen. Please try again later.\n\nError: {exception}",
-    "@screenLoadError": {
-        "placeholders": {
-            "exception": {}
-        }
-    },
-
-    "myRecipes_empty": "You don't have any recipes. Start adding some now!",
-    "exploreRecipes_empty": "There are no recipes right now",
-    "loadMore": "Load more"
+  "signInWithGoogle": "Sign in with Google",
+  "signInWithApple": "Sign in with Apple",
+  "add": "Add",
+  "myRecipes": "My Cookbook",
+  "exploreRecipes": "Explore Recipes",
+  "myProfile": "My Profile",
+  "info": "Info",
+  "ingredients": "Ingredients",
+  "steps": "Steps",
+  "tips": "Tips",
+  "created_by": "Created by {person}",
+  "@created_by": {
+    "placeholders": {
+      "person": {}
+    }
+  },
+  "me": "me",
+  "addRecipe": "Add recipe",
+  "addRecipe_success": "Recipe successfully saved",
+  "addRecipe_failure": "Failed to save recipe: {exception}",
+  "@addRecipe_failure": {
+    "placeholders": {
+      "exception": {}
+    }
+  },
+  "editRecipe": "Edit recipe",
+  "editRecipe_success": "Recipe successfully saved",
+  "editRecipe_failure": "Failed to save recipe: {exception}",
+  "@editRecipe_failure": {
+    "placeholders": {
+      "exception": {}
+    }
+  },
+  "name": "Title",
+  "required": "Required",
+  "ingredients_hint": "- 20g butter\n- 4 eggs\n...",
+  "steps_hint": "1. Preheat oven to 220°C\n2. Cut stuff\n...",
+  "tips_hint": "Serve with mixed greens or mash potato.\n...",
+  "moveToBin_title": "Move to bin?",
+  "moveToBin_message": "This recipe will no longer be visible by you or by anyone",
+  "moveToBin_confirm": "Move to bin",
+  "moveToBin_cancel": "Cancel",
+  "moveToBin_success": "Recipe successfully moved to bin",
+  "moveToBin_failure": "Failed to move recipe to bin: {exception}",
+  "@moveToBin_failure": {
+    "placeholders": {
+      "exception": {}
+    }
+  },
+  "connectedAs": "{user}",
+  "@connectedAs": {
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "signOut": "Sign out",
+  "screenLoadError": "Couldn't load screen. Please try again later.\n\nError: {exception}",
+  "@screenLoadError": {
+    "placeholders": {
+      "exception": {}
+    }
+  },
+  "myRecipes_empty": "You don't have any recipes. Start adding some now!",
+  "exploreRecipes_empty": "There are no recipes right now",
+  "loadMore": "Load more"
 }
