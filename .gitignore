@@ -40,6 +40,8 @@ lib/generated_plugin_registrant.dart
 .gradle
 local.properties
 
-# Sensitive files
+# Firebase config files. They're not sensitive per se because they're ultimately public (easy to
+# read from Android, iOS or web client), but they don't really make sense in an open-source project.
 google-services.json
 GoogleService-Info*.plist
+web/firebase-config.js
