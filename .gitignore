@@ -39,3 +39,7 @@ lib/generated_plugin_registrant.dart
 # Android
 .gradle
 local.properties
+
+# Sensitive files
+google-services.json
+GoogleService-Info*.plist
