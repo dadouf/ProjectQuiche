@@ -3,18 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:package_info/package_info.dart';
+import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:provider/provider.dart';
 
 class MyProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+    final appUser = context.read<AppModel>().currentUser;
+
     return ListView(
       children: [
         ListTile(
           leading: Icon(Icons.person),
-          title: Text(AppLocalizations.of(context)!.connectedAs(
-              FirebaseAuth.instance.currentUser?.email ?? "Unknown")),
+          title: Text(AppLocalizations.of(context)!
+              .connectedAs("${appUser?.username}\n${firebaseUser?.email}")),
         ),
         ListTile(
           leading: Icon(Icons.logout),

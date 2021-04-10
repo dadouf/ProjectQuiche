@@ -37,10 +37,13 @@ class _QuicheAppState extends State<QuicheApp> {
   void initState() {
     routerDelegate = AppRouterDelegate(context.read<AppModel>());
 
-    // Bootstrap Firebase
-    context.read<FirebaseService>().init();
+    bootstrap();
 
     super.initState();
+  }
+
+  Future<void> bootstrap() async {
+    await context.read<FirebaseService>().init();
   }
 
   @override

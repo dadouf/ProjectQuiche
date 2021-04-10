@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:projectquiche/model/recipe.dart';
+import 'package:projectquiche/models/app_user.dart';
+import 'package:projectquiche/models/recipe.dart';
 import 'package:projectquiche/routing/app_route_path.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 
@@ -16,10 +17,14 @@ class AppModel extends ChangeNotifier {
   }
 
   // ------------
-  // Auth
+  // Init + Auth
   // ------------
 
-  bool? get isFirebaseSignedIn => _firebase.isSignedIn;
+  /// The app has bootstrapped when it has received the first callback for a
+  /// Firebase user? plus -- if user != null -- the first callback for an AppUser?
+  bool get hasBootstrapped => _firebase.hasBootstrapped;
+
+  AppUser? get currentUser => _firebase.appUser;
 
   // ----------
   // Navigation

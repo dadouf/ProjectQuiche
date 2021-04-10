@@ -3,8 +3,9 @@ import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:projectquiche/main_app_scaffold.dart';
-import 'package:projectquiche/model/recipe.dart';
 import 'package:projectquiche/models/app_model.dart';
+import 'package:projectquiche/models/app_user.dart';
+import 'package:projectquiche/models/recipe.dart';
 import 'package:projectquiche/routing/app_route_path.dart';
 import 'package:projectquiche/routing/inner_router_delegate.dart';
 import 'package:projectquiche/screens/authenticate.dart';
@@ -39,11 +40,9 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
   AppRoutePath? get currentConfiguration {
     AppRoutePath? result;
 
-    bool? isFirebaseSignedIn = appModel.isFirebaseSignedIn;
-
-    if (isFirebaseSignedIn == null) {
+    if (!appModel.hasBootstrapped) {
       result = null;
-    } else if (!isFirebaseSignedIn) {
+    } else if (appModel.currentUser == null) {
       result = AuthRoutePath();
     } else {
       if (appModel.currentRecipe == null) {
@@ -70,14 +69,15 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
   @override
   Widget build(BuildContext context) {
     // TODO select to avoid rebuilds?
-    bool? isAuthenticated = appModel.isFirebaseSignedIn;
+    bool hasBootstrapped = appModel.hasBootstrapped;
+    AppUser? user = appModel.currentUser;
     Recipe? currentRecipe = appModel.currentRecipe;
     bool isCreatingOrEditing = appModel.isCreatingOrEditing;
 
     return Navigator(
       key: navigatorKey,
       pages: [
-        if (isAuthenticated == null) ...[
+        if (!hasBootstrapped) ...[
           MaterialPage(
             name: MyAnalytics.pageSplash,
             key: ValueKey("Splash"),
@@ -86,7 +86,7 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
         ]
 
         // Sign in flow
-        else if (isAuthenticated == false) ...[
+        else if (user == null) ...[
           MaterialPage(
             // TODO analytics reports this even when it's shown 1ms
             // The way to fix is probably to hold a Splash for some time

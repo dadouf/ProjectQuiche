@@ -6,6 +6,15 @@ class MyFirestore {
   static CollectionReference recipes() =>
       FirebaseFirestore.instance.collection("recipes_v0");
 
+  static CollectionReference users() =>
+      FirebaseFirestore.instance.collection("users_v0");
+
+  // TODO scope field names so they can be found more easily
+
+  //
+  // Recipe
+  //
+
   static const String fieldMovedToBin = "moved_to_bin";
   static const String fieldVisibility = "visibility";
   static const String fieldCreatedBy = "created_by";
@@ -15,4 +24,12 @@ class MyFirestore {
   static const String fieldIngredients = "ingredients";
   static const String fieldSteps = "steps";
   static const String fieldTips = "tips";
+
+  //
+  // User
+  //
+
+  static const String fieldUsername = "username";
+  static const String fieldAvatarUrl = "avatar_url";
+  static const String fieldAvatarSymbol = "avatar_symbol";
 }

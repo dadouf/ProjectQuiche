@@ -1,15 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:projectquiche/models/app_user.dart';
+import 'package:projectquiche/services/firebase/firestore_keys.dart';
 import 'package:projectquiche/utils/safe_print.dart';
 
 class FirebaseService extends ChangeNotifier {
   FirebaseAuth get _auth => FirebaseAuth.instance;
 
   FirebaseCrashlytics get _crashlytics => FirebaseCrashlytics.instance;
+
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
   FirebaseAnalytics? _analyticsInstance;
 
@@ -20,9 +25,16 @@ class FirebaseService extends ChangeNotifier {
     return _analyticsInstance!;
   }
 
-  /// Null until we get the very first user callback from Firebase
-  bool? get isSignedIn => _isSignedIn;
-  bool? _isSignedIn;
+  /// false == Firebase hasn't init yet
+  /// true == Firebase has init at least the first user (may be null or not)
+  bool get hasBootstrapped => _hasBootstrapped;
+  bool _hasBootstrapped = false;
+
+  User? get firebaseUser => _firebaseUser;
+  User? _firebaseUser;
+
+  AppUser? get appUser => _appUser;
+  AppUser? _appUser;
 
   Future<void> init() async {
     // Must initializeApp before ANY other Firebase calls
@@ -32,16 +44,30 @@ class FirebaseService extends ChangeNotifier {
       safePrint("FirebaseService: init complete");
     });
 
-    FirebaseAuth.instance.userChanges().listen((User? user) {
-      safePrint("FirebaseService: user changed $user");
+    _auth.userChanges().listen((User? firebaseUser) async {
+      safePrint("FirebaseService: user changed $firebaseUser");
 
       if (!kIsWeb) {
-        _crashlytics.setUserIdentifier(user?.uid ?? "");
-        // TODO keep User in the model so that we can refer to it
+        _crashlytics.setUserIdentifier(firebaseUser?.uid ?? "");
       }
-      _analytics.setUserId(user?.uid);
+      _analytics.setUserId(firebaseUser?.uid);
 
-      _isSignedIn = user != null;
+      _firebaseUser = firebaseUser;
+
+      if (firebaseUser == null) {
+        _hasBootstrapped = true;
+      } else {
+        try {
+          final userDoc = await MyFirestore.users().doc(firebaseUser.uid).get();
+          if (userDoc.exists) {
+            _appUser = AppUser.fromDocument(userDoc);
+          }
+        } on Exception catch (e, s) {
+          _crashlytics.recordError(e, s);
+        } finally {
+          _hasBootstrapped = true;
+        }
+      }
       notifyListeners();
     });
 
@@ -55,8 +81,7 @@ class FirebaseService extends ChangeNotifier {
   // Auth
   // ----
 
-  Future<void> signIn(
-      {required OAuthCredential credential, required String method}) async {
+  Future<void> signIn({required OAuthCredential credential, required String method}) async {
     final userCredential = await _auth.signInWithCredential(credential);
 
     if (userCredential.additionalUserInfo?.isNewUser == true) {
@@ -67,9 +92,27 @@ class FirebaseService extends ChangeNotifier {
   }
 
   Future<void> signOut() async {
+    _appUser = null;
     await _auth.signOut();
 
     _analytics.logEvent(name: "logout");
+  }
+
+  Future<void> completeProfile(
+      String username, AvatarType selectedAvatar) async {
+    try {
+      await MyFirestore.users().doc(_firebaseUser!.uid).set({
+        MyFirestore.fieldUsername: username,
+        MyFirestore.fieldAvatarUrl: selectedAvatar == AvatarType.social
+            ? _firebaseUser?.photoURL
+            : null,
+        MyFirestore.fieldAvatarSymbol: selectedAvatar.code,
+      });
+      _appUser = AppUser(uid: _firebaseUser!.uid, username: username);
+      notifyListeners();
+    } on Exception catch (e, stack) {
+      // TODO
+    }
   }
 
   // -----------
