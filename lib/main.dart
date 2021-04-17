@@ -99,7 +99,7 @@ class _QuicheAppState extends State<QuicheApp> {
     const mediumSeaGreen = Color(0xFFB71540);
     const redSalsa = Color(0xFFF85A33);
     const blackCoffee = Color(0xFF3A2E39);
-    const lightGray = Color(0xFFEBE6E7);
+    const lightGray = Color(0xFFFFFAFA);
     const isabelline = Color(0xFFF4EDEA);
     // TODO export into AppTheme
 

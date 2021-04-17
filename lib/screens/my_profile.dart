@@ -58,6 +58,7 @@ class MyProfileScreen extends StatelessWidget {
 }
 
 class HeroHeader extends StatelessWidget {
+  // TODO shadow https://stackoverflow.com/questions/55033726/can-i-draw-a-custom-box-shadow-in-flutter-using-canvas-in-a-custompaint
   final avatarRadius = defaultAvatarRadius * 1.5;
 
   @override
@@ -68,7 +69,7 @@ class HeroHeader extends StatelessWidget {
       alignment: Alignment.bottomCenter,
       children: [
         SizedBox(
-          height: 170,
+          height: 170, // TODO ideally we don't need to hardcode this
           child: Padding(
             padding: EdgeInsets.only(bottom: avatarRadius),
             child: ClipPath(
@@ -102,6 +103,7 @@ class HeroHeader extends StatelessWidget {
       return IconAvatar(
         icon: icon,
         color: Color(0xFFB71540),
+        backgroundColor: Color(0xFFFFFAFA),
         radius: avatarRadius,
       );
     } else if (user.avatarUrl != null) {
