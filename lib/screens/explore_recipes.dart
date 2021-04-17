@@ -33,7 +33,7 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
   /// The list of recipes to display. Null means we never got data.
   List<Recipe>? _loadedRecipes;
 
-  Exception? _latestError;
+  Object? _latestError;
 
   /// When non-null this signifies that there may be more data to load.
   /// It's set to null initially until we get the first page, and set to null
@@ -126,7 +126,7 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
       var additionalDocs = snapshot.docs
           // Filter out user's own recipes (because we can't do it in the query)
           .where((element) =>
-              element.data()![MyFirestore.fieldCreatedBy]
+      element.data()[MyFirestore.fieldCreatedBy]
                   [MyFirestore.fieldUid] !=
               FirebaseAuth.instance.currentUser?.uid);
 
@@ -146,16 +146,16 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
           _lastDocument = null; // will hide Load More button
         }
       });
-    } on Exception catch (exception, trace) {
-      context.read<FirebaseService>().recordError(exception, trace);
+    } catch (e, trace) {
+      context.read<FirebaseService>().recordError(e, trace);
 
       if (showSnackBar) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Failed to load more: $exception"),
+          content: Text("Failed to load more: $e"),
         ));
       }
 
-      setState(() => _latestError = exception);
+      setState(() => _latestError = e);
     } finally {
       setState(() => _isLoading = false);
     }

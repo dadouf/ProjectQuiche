@@ -1,10 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:package_info/package_info.dart';
 import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
+import 'package:projectquiche/utils/app_icons.dart';
+import 'package:projectquiche/widgets/avatar.dart';
 import 'package:provider/provider.dart';
 
 class MyProfileScreen extends StatelessWidget {
@@ -15,11 +16,12 @@ class MyProfileScreen extends StatelessWidget {
 
     return ListView(
       children: [
-        ListTile(
-          leading: Icon(Icons.person),
-          title: Text(AppLocalizations.of(context)!
-              .connectedAs("${appUser?.username}\n${firebaseUser?.email}")),
-        ),
+        // HeroHeader(),
+        if (firebaseUser?.email != null)
+          ListTile(
+            leading: Icon(Icons.email),
+            title: Text(firebaseUser!.email!),
+          ),
         ListTile(
           leading: Icon(Icons.logout),
           title: Text(AppLocalizations.of(context)!.signOut),
@@ -44,20 +46,34 @@ class MyProfileScreen extends StatelessWidget {
   }
 
   Future<void> _logout(BuildContext context) async {
-    final service = context.read<FirebaseService>();
     try {
-      // This is enough to go back to Login screen
-      await service.signOut();
-
-      // This is needed in order to PROMPT user again
-      await GoogleSignIn().signOut();
-
-      // ... will cause AppModel update because FirebaseService.isSignedIn will change
-    } on Exception catch (exception, stack) {
+      await context.read<FirebaseService>().signOut();
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Failed to sign out: $exception"),
+        content: Text("Failed to sign out: $e"),
       ));
-      service.recordError(exception, stack);
     }
+  }
+}
+
+class HeroHeader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Check https://api.flutter.dev/flutter/widgets/ClipPath-class.html
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        SizedBox(
+          height: 200,
+          child: Container(
+            color: Color(0xFFB71540),
+          ),
+        ),
+        IconAvatar(
+          icon: AppIcons.chef_hat, // FIXME
+          color: Color(0xFFB71540),
+        ),
+      ],
+    );
   }
 }

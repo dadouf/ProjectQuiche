@@ -12,7 +12,9 @@ extension ColorSchemeToTheme on ColorScheme {
       accentColor: this.primary,
       indicatorColor: this.secondary,
       scaffoldBackgroundColor: this.background,
-      textTheme: baseTheme.textTheme,
+      snackBarTheme: baseTheme.snackBarTheme.copyWith(
+        contentTextStyle: TextStyle(color: Colors.white),
+      ),
     );
   }
 }

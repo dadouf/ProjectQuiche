@@ -4,8 +4,12 @@ PODS:
     - AppAuth/ExternalUserAgent (= 1.4.0)
   - AppAuth/Core (1.4.0)
   - AppAuth/ExternalUserAgent (1.4.0)
-  - cloud_firestore (1.0.3):
+  - cloud_firestore (1.0.4):
     - Firebase/Firestore (= 7.3.0)
+    - firebase_core
+    - Flutter
+  - cloud_functions (1.0.3):
+    - Firebase/Functions (= 7.3.0)
     - firebase_core
     - Flutter
   - Firebase/Analytics (7.3.0):
@@ -24,20 +28,24 @@ PODS:
   - Firebase/Firestore (7.3.0):
     - Firebase/CoreOnly
     - FirebaseFirestore (~> 7.3.0)
-  - firebase_analytics (8.0.0-dev.0):
+  - Firebase/Functions (7.3.0):
+    - Firebase/CoreOnly
+    - FirebaseFunctions (~> 7.3.0)
+  - firebase_analytics (8.0.0-dev.2):
     - Firebase/Analytics (= 7.3.0)
     - firebase_core
     - Flutter
-  - firebase_auth (1.0.1):
+  - firebase_auth (1.1.0):
     - Firebase/Auth (= 7.3.0)
     - firebase_core
     - Flutter
-  - firebase_core (1.0.2):
+  - firebase_core (1.0.3):
     - Firebase/CoreOnly (= 7.3.0)
     - Flutter
-  - firebase_crashlytics (1.0.0):
+  - firebase_crashlytics (2.0.0):
     - Firebase/Crashlytics (= 7.3.0)
     - firebase_core
+    - Flutter
   - FirebaseAnalytics (7.3.0):
     - FirebaseCore (~> 7.0)
     - FirebaseInstallations (~> 7.0)
@@ -68,6 +76,9 @@ PODS:
     - nanopb (~> 2.30906.0)
     - PromisesObjC (~> 1.2)
   - FirebaseFirestore (7.3.0)
+  - FirebaseFunctions (7.3.0):
+    - FirebaseCore (~> 7.0)
+    - GTMSessionFetcher/Core (~> 1.4)
   - FirebaseInstallations (7.8.0):
     - FirebaseCore (~> 7.0)
     - GoogleUtilities/Environment (~> 7.0)
@@ -129,6 +140,7 @@ PODS:
 
 DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
+  - cloud_functions (from `.symlinks/plugins/cloud_functions/ios`)
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
@@ -148,6 +160,7 @@ SPEC REPOS:
     - FirebaseCore
     - FirebaseCoreDiagnostics
     - FirebaseCrashlytics
+    - FirebaseFunctions
     - FirebaseInstallations
     - GoogleAppMeasurement
     - GoogleDataTransport
@@ -161,6 +174,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   cloud_firestore:
     :path: ".symlinks/plugins/cloud_firestore/ios"
+  cloud_functions:
+    :path: ".symlinks/plugins/cloud_functions/ios"
   firebase_analytics:
     :path: ".symlinks/plugins/firebase_analytics/ios"
   firebase_auth:
@@ -188,18 +203,20 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
-  cloud_firestore: abe0e10141b0f61377340dcb308d8fa7a7910a10
+  cloud_firestore: d5902cdb3c48c2e8c73cd093fc9471ebe7f44a4c
+  cloud_functions: c4ab28246ffa9b4391e21a7f93ae75171b6c6863
   Firebase: 26223c695fe322633274198cb19dca8cb7e54416
-  firebase_analytics: c9b8ddc8e864e45cd70761c5d972bd11c83574ab
-  firebase_auth: 9f6491ea8e44570323361ae713a2ae3175b3f21a
-  firebase_core: e6cbb0d1f7091edfcae31559e58224bfc1e455dc
-  firebase_crashlytics: a62319db93baf2bfeca8a2384af3f29e3d62b09c
+  firebase_analytics: 4c032e04324c47ee6dd7a28bfff831e0ac0d09b6
+  firebase_auth: d09964a120e218411768f5ca2d3ce938abd319f2
+  firebase_core: b5d81dfd4fb2d6f700e67de34d9a633ae325c4e9
+  firebase_crashlytics: 3b8018f6c88a59be95f9e2f38f04e5c0f05e0c6a
   FirebaseAnalytics: 2580c2d62535ae7b644143d48941fcc239ea897a
   FirebaseAuth: c224a0cf1afa0949bd5c7bfcf154b4f5ce8ddef2
   FirebaseCore: 4d3c72622ce0e2106aaa07bb4b2935ba2c370972
   FirebaseCoreDiagnostics: d50e11039e5984d92c8a512be2395f13df747350
   FirebaseCrashlytics: d31325312c92e2cb2f0386d589b9aa44e303d99b
   FirebaseFirestore: 46e32f479aac127e742b1cf873930f7bb43e7b45
+  FirebaseFunctions: 56b7275ad46d936b77b64ecacd306e77db7be251
   FirebaseInstallations: 7f7ed0e7e27fb51f57291e1876e2ddb1524126c1
   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
   google_sign_in: 6bd214b9c154f881422f5fe27b66aaa7bbd580cc

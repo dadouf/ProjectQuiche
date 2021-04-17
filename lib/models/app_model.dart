@@ -12,8 +12,15 @@ class AppModel extends ChangeNotifier {
   final FirebaseService _firebase;
 
   AppModel(this._firebase) {
-    // When FirebaseService notifies its listeners, AppModel will notify theirs
-    _firebase.addListener(notifyListeners);
+    _firebase.addListener(() {
+      if (_firebase.firebaseUser == null) {
+        // Reset state on log out
+        _reset();
+      }
+
+      // When FirebaseService notifies its listeners, AppModel will notify theirs
+      notifyListeners();
+    });
   }
 
   // ------------
@@ -25,6 +32,14 @@ class AppModel extends ChangeNotifier {
   bool get hasBootstrapped => _firebase.hasBootstrapped;
 
   AppUser? get currentUser => _firebase.appUser;
+
+  void _reset() {
+    _currentRecipe = null;
+    _isCreatingOrEditing = false;
+    _currentSpace = AppSpace.myRecipes;
+
+    // Do not notifyListeners, the caller of reset() takes care of it
+  }
 
   // ----------
   // Navigation

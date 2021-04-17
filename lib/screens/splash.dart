@@ -9,6 +9,7 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Theme.of(context).colorScheme.primary,
+      // TODO Circular progress indicator
     );
   }
 }

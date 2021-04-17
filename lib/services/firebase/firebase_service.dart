@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:projectquiche/models/app_user.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
 import 'package:projectquiche/utils/safe_print.dart';
@@ -25,6 +27,8 @@ class FirebaseService extends ChangeNotifier {
     return _analyticsInstance!;
   }
 
+  FirebaseFunctions get _functions => FirebaseFunctions.instance;
+
   /// false == Firebase hasn't init yet
   /// true == Firebase has init at least the first user (may be null or not)
   bool get hasBootstrapped => _hasBootstrapped;
@@ -33,16 +37,20 @@ class FirebaseService extends ChangeNotifier {
   User? get firebaseUser => _firebaseUser;
   User? _firebaseUser;
 
+  // TODO this ideally shouldn't be held here, but in AppModel
   AppUser? get appUser => _appUser;
   AppUser? _appUser;
 
   Future<void> init() async {
     // Must initializeApp before ANY other Firebase calls
-    await Firebase.initializeApp().catchError((Object e) {
-      safePrint("FirebaseService: failed to init Firebase: $e");
-    }).then((value) {
+    try {
+      await _maybeFakeWait();
+
+      await Firebase.initializeApp();
       safePrint("FirebaseService: init complete");
-    });
+    } catch (e, trace) {
+      safePrint("FirebaseService: failed to init Firebase: $e, $trace");
+    }
 
     _auth.userChanges().listen((User? firebaseUser) async {
       safePrint("FirebaseService: user changed $firebaseUser");
@@ -58,12 +66,14 @@ class FirebaseService extends ChangeNotifier {
         _hasBootstrapped = true;
       } else {
         try {
+          await _maybeFakeWait();
+
           final userDoc = await MyFirestore.users().doc(firebaseUser.uid).get();
           if (userDoc.exists) {
             _appUser = AppUser.fromDocument(userDoc);
           }
-        } on Exception catch (e, s) {
-          _crashlytics.recordError(e, s);
+        } catch (e, trace) {
+          _crashlytics.recordError(e, trace);
         } finally {
           _hasBootstrapped = true;
         }
@@ -77,30 +87,64 @@ class FirebaseService extends ChangeNotifier {
     }
   }
 
+  /// Use this to test loading states. Uncomment prior to release.
+  _maybeFakeWait() async {
+    // await Future.delayed(Duration(seconds: 2));
+  }
+
   // ----
   // Auth
   // ----
 
-  Future<void> signIn({required OAuthCredential credential, required String method}) async {
-    final userCredential = await _auth.signInWithCredential(credential);
+  Future<void> signIn({
+    required OAuthCredential credential,
+    required String method,
+  }) async {
+    try {
+      await _maybeFakeWait();
 
-    if (userCredential.additionalUserInfo?.isNewUser == true) {
-      _analytics.logSignUp(signUpMethod: method);
-    } else {
-      _analytics.logLogin(loginMethod: method);
+      final userCredential = await _auth.signInWithCredential(credential);
+
+      if (userCredential.additionalUserInfo?.isNewUser == true) {
+        _analytics.logSignUp(signUpMethod: method);
+      } else {
+        _analytics.logLogin(loginMethod: method);
+      }
+    } catch (e, trace) {
+      recordError(e, trace);
+      rethrow;
     }
   }
 
   Future<void> signOut() async {
-    _appUser = null;
-    await _auth.signOut();
-
     _analytics.logEvent(name: "logout");
+
+    _appUser = null;
+
+    try {
+      await _maybeFakeWait();
+      // TODO stop listening to firebase before, otherwise a permission-denied error is thrown
+
+      // This is enough to go back to Login screen
+      await _auth.signOut();
+
+      // This is needed in order to PROMPT user again
+      await GoogleSignIn().signOut();
+
+      // ... will cause AppModel update because FirebaseService.isSignedIn will change
+    } catch (e, trace) {
+      recordError(e, trace);
+      rethrow;
+    }
   }
 
-  Future<void> completeProfile(
-      String username, AvatarType selectedAvatar) async {
+  Future<void> createProfile(
+    String username,
+    AvatarType selectedAvatar,
+  ) async {
     try {
+      await _maybeFakeWait();
+
       await MyFirestore.users().doc(_firebaseUser!.uid).set({
         MyFirestore.fieldUsername: username,
         MyFirestore.fieldAvatarUrl: selectedAvatar == AvatarType.social
@@ -108,10 +152,13 @@ class FirebaseService extends ChangeNotifier {
             : null,
         MyFirestore.fieldAvatarSymbol: selectedAvatar.code,
       });
+
       _appUser = AppUser(uid: _firebaseUser!.uid, username: username);
+
       notifyListeners();
-    } on Exception catch (e, stack) {
-      // TODO
+    } catch (e, trace) {
+      recordError(e, trace);
+      rethrow;
     }
   }
 
@@ -150,5 +197,23 @@ class FirebaseService extends ChangeNotifier {
       "loaded_count": length,
       "auto_triggered": autoTriggered,
     });
+  }
+
+  // ---------------
+  // Cloud Functions
+  // ---------------
+
+  Future<String> generateUsername() async {
+    try {
+      await _maybeFakeWait();
+
+      HttpsCallable callable = _functions.httpsCallable("generateUsername");
+      final results = await callable();
+
+      return results.data["username"];
+    } catch (e, trace) {
+      recordError(e, trace);
+      rethrow;
+    }
   }
 }

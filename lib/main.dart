@@ -5,6 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/routing/app_route_parser.dart';
 import 'package:projectquiche/routing/app_router_delegate.dart';
+import 'package:projectquiche/services/auth_service.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/utils/theme.dart';
 import 'package:provider/provider.dart';
@@ -13,11 +14,13 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   FirebaseService firebase = FirebaseService();
+  AuthService authService = AuthService(firebase);
   AppModel appModel = AppModel(firebase);
 
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider.value(value: firebase),
+      Provider.value(value: authService),
       ChangeNotifierProvider.value(value: appModel),
     ],
     child: QuicheApp(),
@@ -98,6 +101,7 @@ class _QuicheAppState extends State<QuicheApp> {
     const blackCoffee = Color(0xFF3A2E39);
     const lightGray = Color(0xFFEBE6E7);
     const isabelline = Color(0xFFF4EDEA);
+    // TODO export into AppTheme
 
     var myColorScheme = ColorScheme(
       primary: mediumSeaGreen,

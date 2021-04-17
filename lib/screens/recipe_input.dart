@@ -36,12 +36,11 @@ class CreateRecipeScreen extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(AppLocalizations.of(context)!.addRecipe_success),
           ));
-        } on Exception catch (exception, trace) {
+        } catch (e, trace) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-                AppLocalizations.of(context)!.addRecipe_failure(exception)),
+            content: Text(AppLocalizations.of(context)!.addRecipe_failure(e)),
           ));
-          context.read<FirebaseService>().recordError(exception, trace);
+          context.read<FirebaseService>().recordError(e, trace);
         }
       },
     );
@@ -74,12 +73,11 @@ class EditRecipeScreen extends StatelessWidget {
           ));
           // FIXME the context is wrong here, I should show
 
-        } on Exception catch (exception, trace) {
+        } catch (e, trace) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-                AppLocalizations.of(context)!.editRecipe_failure(exception)),
+            content: Text(AppLocalizations.of(context)!.editRecipe_failure(e)),
           ));
-          context.read<FirebaseService>().recordError(exception, trace);
+          context.read<FirebaseService>().recordError(e, trace);
         }
       },
     );

@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/routing/app_route_path.dart';
 import 'package:projectquiche/routing/inner_router_delegate.dart';
+import 'package:projectquiche/screens/my_profile.dart';
 import 'package:provider/provider.dart';
 
 /// Parent of the main navigation UI (now: drawer, later: bottom nav bar)
@@ -39,6 +40,12 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
     }
 
     return Scaffold(
+        appBar: appModel.currentSpace == AppSpace.myProfile
+            ? PreferredSize(
+                child: HeroHeader(),
+                preferredSize: Size(500, 500), // FIXME this was picked randomly
+              )
+            : null,
         bottomNavigationBar: Container(
           color: Theme.of(context).colorScheme.surface,
           child: Row(

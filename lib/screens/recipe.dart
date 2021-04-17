@@ -139,12 +139,11 @@ class RecipeScreen extends StatelessWidget {
       ));
 
       context.read<AppModel>().cancelViewingRecipe();
-    } on Exception catch (exception, stack) {
+    } catch (e, trace) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content:
-            Text(AppLocalizations.of(context)!.moveToBin_failure(exception)),
+        content: Text(AppLocalizations.of(context)!.moveToBin_failure(e)),
       ));
-      service.recordError(exception, stack);
+      service.recordError(e, trace);
     }
   }
 }
