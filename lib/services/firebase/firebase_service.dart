@@ -145,15 +145,21 @@ class FirebaseService extends ChangeNotifier {
     try {
       await _maybeFakeWait();
 
+      final avatarUrl =
+          selectedAvatar == AvatarType.social ? _firebaseUser?.photoURL : null;
+
       await MyFirestore.users().doc(_firebaseUser!.uid).set({
         MyFirestore.fieldUsername: username,
-        MyFirestore.fieldAvatarUrl: selectedAvatar == AvatarType.social
-            ? _firebaseUser?.photoURL
-            : null,
+        MyFirestore.fieldAvatarUrl: avatarUrl,
         MyFirestore.fieldAvatarSymbol: selectedAvatar.code,
       });
 
-      _appUser = AppUser(uid: _firebaseUser!.uid, username: username);
+      _appUser = AppUser(
+        uid: _firebaseUser!.uid,
+        username: username,
+        avatarType: AvatarType.from(selectedAvatar.code),
+        avatarUrl: avatarUrl,
+      );
 
       notifyListeners();
     } catch (e, trace) {
