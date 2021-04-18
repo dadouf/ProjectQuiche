@@ -16,8 +16,8 @@ class MyProfileScreen extends StatelessWidget {
     final firebaseUser = FirebaseAuth.instance.currentUser;
 
     return ListView(
+      padding: EdgeInsets.only(top: 32),
       children: [
-        // HeroHeader(),
         if (firebaseUser?.email != null)
           ListTile(
             leading: Icon(Icons.email),
@@ -68,15 +68,12 @@ class HeroHeader extends StatelessWidget {
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        SizedBox(
-          height: 170, // TODO ideally we don't need to hardcode this
-          child: Padding(
-            padding: EdgeInsets.only(bottom: avatarRadius),
-            child: ClipPath(
-              clipper: CurvedBottomClipper(),
-              child: Container(
-                color: Color(0xFFB71540),
-              ),
+        Padding(
+          padding: EdgeInsets.only(bottom: avatarRadius),
+          child: ClipPath(
+            clipper: CurvedBottomClipper(),
+            child: Container(
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
         ),
@@ -84,26 +81,40 @@ class HeroHeader extends StatelessWidget {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              SizedBox(height: 24),
               Text(
                 user.username,
                 style: TextStyle(color: Colors.white, fontSize: 20),
               ),
-              SizedBox(height: 16),
-              _buildAvatar(user),
+              SizedBox(height: 24),
+              Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0x30505050),
+                        spreadRadius: 1,
+                        blurRadius: 10,
+                        offset: Offset(0, 2), // changes position of shadow
+                      )
+                    ],
+                  ),
+                  child: _buildAvatar(user, context)),
             ],
           ),
       ],
     );
   }
 
-  Widget _buildAvatar(AppUser user) {
+  Widget _buildAvatar(AppUser user, BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final icon = user.avatarType?.icon;
 
     if (icon != null) {
       return IconAvatar(
         icon: icon,
-        color: Color(0xFFB71540),
-        backgroundColor: Color(0xFFFFFAFA),
+        color: colorScheme.primary,
+        backgroundColor: colorScheme.surface,
         radius: avatarRadius,
       );
     } else if (user.avatarUrl != null) {

@@ -4,6 +4,7 @@ import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/routing/app_route_path.dart';
 import 'package:projectquiche/routing/inner_router_delegate.dart';
 import 'package:projectquiche/screens/my_profile.dart';
+import 'package:projectquiche/ui/app_theme.dart';
 import 'package:provider/provider.dart';
 
 /// Parent of the main navigation UI (now: drawer, later: bottom nav bar)
@@ -43,11 +44,11 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
         appBar: appModel.currentSpace == AppSpace.myProfile
             ? PreferredSize(
                 child: HeroHeader(),
-                preferredSize: Size(500, 500), // FIXME this was picked randomly
+                preferredSize: Size.fromHeight(kToolbarHeight * 3),
               )
             : null,
         bottomNavigationBar: Container(
-          color: Theme.of(context).colorScheme.surface,
+          color: Theme.of(context).colorScheme.primary,
           child: Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -107,19 +108,23 @@ class SpaceTab extends StatelessWidget {
     return Expanded(
       child: SizedBox(
         height: 60,
-        child: TextButton(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                color:
-                    appModel.currentSpace == space ? null : Color(0xFF999999),
-              ),
-              if (appModel.currentSpace == space) Text(title),
-            ],
+        child: Theme(
+          data: AppTheme.boldColorScheme.toTheme(),
+          child: TextButton(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  color: appModel.currentSpace == space
+                      ? null
+                      : AppColors.disabledNavIcon,
+                ),
+                if (appModel.currentSpace == space) Text(title),
+              ],
+            ),
+            onPressed: () => appModel.currentSpace = space,
           ),
-          onPressed: () => appModel.currentSpace = space,
         ),
       ),
     );

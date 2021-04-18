@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
-import 'package:projectquiche/utils/app_icons.dart';
+import 'package:projectquiche/ui/app_icons.dart';
 
 class AppUser {
   final String uid;

@@ -7,7 +7,7 @@ import 'package:projectquiche/routing/app_route_parser.dart';
 import 'package:projectquiche/routing/app_router_delegate.dart';
 import 'package:projectquiche/services/auth_service.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
-import 'package:projectquiche/utils/theme.dart';
+import 'package:projectquiche/ui/app_theme.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
@@ -51,78 +51,10 @@ class _QuicheAppState extends State<QuicheApp> {
 
   @override
   Widget build(BuildContext context) {
-    // const darkLiverHorses = Color(0xFF564138);
-    // const myrtleGreen = Color(0xFF38726C);
-    // const sunglow = Color(0xFFFFC914);
-    // const lightPeriwinkle = Color(0xFFC7CCDB);
-    // const snow = Color(0xFFFCF7F8);
-    // var myColorScheme = ColorScheme(
-    //   primary: myrtleGreen,
-    //   primaryVariant: myrtleGreen,
-    //   secondary: sunglow,
-    //   secondaryVariant: sunglow,
-    //   surface: lightPeriwinkle,
-    //   background: snow,
-    //   error: Colors.red,
-    //   onPrimary: Colors.white,
-    //   onSecondary: Colors.black,
-    //   onSurface: Colors.black,
-    //   onBackground: Colors.black,
-    //   onError: Colors.black,
-    //   brightness: Brightness.light,
-    // );
-
-    // const usafaBlue = Color(0xFF26547C);
-    // const maximumBlueGreen = Color(0xFF62BEC1);
-    // const roseMadder = Color(0xFFDF2935);
-    // const lavenderBlush = Color(0xFFEEE5E9);
-    // const lavenderBlushDarker = Color(0xFFE6DCDF);
-    // const darkSienna = Color(0xFF32161F);
-    //
-    // var myColorScheme = ColorScheme(
-    //   primary: usafaBlue,
-    //   primaryVariant: usafaBlue,
-    //   secondary: maximumBlueGreen,
-    //   secondaryVariant: maximumBlueGreen,
-    //   surface: lavenderBlushDarker,
-    //   background: lavenderBlush,
-    //   error: roseMadder,
-    //   onPrimary: Colors.white,
-    //   onSecondary: Colors.black,
-    //   onSurface: Colors.black,
-    //   onBackground: darkSienna,
-    //   onError: Colors.black,
-    //   brightness: Brightness.light,
-    // );
-
-    // Keep it synced with Android (values/colors.xml) and iOS (LaunchScreen.storyboard)
-    const mediumSeaGreen = Color(0xFFB71540);
-    const redSalsa = Color(0xFFF85A33);
-    const blackCoffee = Color(0xFF3A2E39);
-    const lightGray = Color(0xFFFFFAFA);
-    const isabelline = Color(0xFFF4EDEA);
-    // TODO export into AppTheme
-
-    var myColorScheme = ColorScheme(
-      primary: mediumSeaGreen,
-      primaryVariant: mediumSeaGreen,
-      secondary: mediumSeaGreen,
-      secondaryVariant: mediumSeaGreen,
-      surface: lightGray,
-      background: isabelline,
-      error: redSalsa,
-      onPrimary: Colors.white,
-      onSecondary: Colors.white,
-      onSurface: blackCoffee,
-      onBackground: blackCoffee,
-      onError: blackCoffee,
-      brightness: Brightness.light,
-    );
-
     return MaterialApp.router(
       routeInformationParser: routeParser,
       routerDelegate: routerDelegate,
-      theme: myColorScheme.toTheme(),
+      theme: AppTheme.colorScheme.toTheme(),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
     );

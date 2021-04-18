@@ -5,6 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:projectquiche/models/recipe.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
+import 'package:projectquiche/ui/app_theme.dart';
 import 'package:provider/provider.dart';
 
 class ExploreRecipesScreen extends StatefulWidget {
@@ -74,7 +75,7 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
                 child: Text(
                   AppLocalizations.of(context)!.loadMore,
                   style: TextStyle(
-                    color: Color(0x60000000),
+                    color: AppColors.hintOnLight,
                     fontSize: 14,
                   ),
                 ),

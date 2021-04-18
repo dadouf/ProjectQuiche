@@ -8,8 +8,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:projectquiche/models/app_user.dart';
 import 'package:projectquiche/services/auth_service.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
-import 'package:projectquiche/utils/app_icons.dart';
-import 'package:projectquiche/utils/theme.dart';
+import 'package:projectquiche/ui/app_icons.dart';
+import 'package:projectquiche/ui/app_theme.dart';
 import 'package:projectquiche/widgets/avatar.dart';
 import 'package:projectquiche/widgets/spinning.dart';
 import 'package:provider/provider.dart';
@@ -27,22 +27,13 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
   Widget build(BuildContext context) {
     const edgeInsets = EdgeInsets.all(16);
 
-    final originalScheme = Theme.of(context).colorScheme;
-    final boldColorScheme = originalScheme.copyWith(
-      background: originalScheme.primary,
-      onBackground: originalScheme.onPrimary,
-      primary: originalScheme.background,
-      onPrimary: originalScheme.onBackground,
-      brightness: Brightness.dark,
-    );
-
     final firebaseUser =
         context.select((FirebaseService firebase) => firebase.firebaseUser);
     final appUser =
         context.select((FirebaseService firebase) => firebase.appUser);
 
     return Theme(
-      data: boldColorScheme.toTheme(),
+      data: AppTheme.boldColorScheme.toTheme(),
       child: Builder(
         builder: (context) {
           return Scaffold(
@@ -121,10 +112,14 @@ class SelectableBox extends StatelessWidget {
       borderRadius: borderRadius,
       child: Container(
           decoration: ShapeDecoration(
-              color: Color(isSelected ? 0x40FFFFFF : 0),
+              color: isSelected
+                  ? AppColors.selectedBackgroundOnDark
+                  : Colors.transparent,
               shape: RoundedRectangleBorder(
                   side: BorderSide(
-                    color: Color(isSelected ? 0x50FFFFFF : 0),
+                    color: isSelected
+                        ? AppColors.selectedBorderOnDark
+                        : Colors.transparent,
                     width: 2.0,
                   ),
                   borderRadius: borderRadius)),
