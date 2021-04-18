@@ -7,6 +7,8 @@ import 'package:projectquiche/models/app_user.dart';
 import 'package:projectquiche/models/recipe.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
+import 'package:projectquiche/ui/app_theme.dart';
+import 'package:projectquiche/widgets/avatar.dart';
 import 'package:provider/provider.dart';
 
 class RecipeScreen extends StatelessWidget {
@@ -16,19 +18,20 @@ class RecipeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var titleStyle = TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
+    var textStyle = TextStyle(fontSize: 16);
     var defaultPadding = const EdgeInsets.all(16.0);
 
     List<Widget>? actions =
-    _recipe.createdByUid == FirebaseAuth.instance.currentUser?.uid
-        ? [
-      IconButton(
-          icon: Icon(Icons.edit),
-          onPressed: () => _onEditButtonClicked(context)),
-      IconButton(
-          icon: Icon(Icons.delete),
-          onPressed: () => _onDeleteButtonClicked(context)),
-    ]
-        : null;
+        _recipe.createdByUid == FirebaseAuth.instance.currentUser?.uid
+            ? [
+                IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () => _onEditButtonClicked(context)),
+                IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () => _onDeleteButtonClicked(context)),
+              ]
+            : null;
 
     return Scaffold(
       appBar: AppBar(
@@ -46,7 +49,10 @@ class RecipeScreen extends StatelessWidget {
           ),
           Padding(
             padding: defaultPadding,
-            child: Text(_recipe.ingredients ?? "None"),
+            child: Text(
+              _recipe.ingredients ?? "None",
+              style: textStyle,
+            ),
           ),
           Padding(
             padding: defaultPadding,
@@ -57,7 +63,10 @@ class RecipeScreen extends StatelessWidget {
           ),
           Padding(
             padding: defaultPadding,
-            child: Text(_recipe.steps ?? "None"),
+            child: Text(
+              _recipe.steps ?? "None",
+              style: textStyle,
+            ),
           ),
           Padding(
             padding: defaultPadding,
@@ -65,7 +74,10 @@ class RecipeScreen extends StatelessWidget {
           ),
           Padding(
             padding: defaultPadding,
-            child: Text(_recipe.tips ?? "None"),
+            child: Text(
+              _recipe.tips ?? "None",
+              style: textStyle,
+            ),
           ),
           Divider(),
           Padding(
@@ -79,7 +91,8 @@ class RecipeScreen extends StatelessWidget {
 
   Widget _buildRecipeFooter(BuildContext context) {
     if (_recipe.createdByUid == FirebaseAuth.instance.currentUser?.uid) {
-      return _buildCreatedByOn(context, AppLocalizations.of(context)!.me);
+      return _buildCreatedByOn(context, AppLocalizations.of(context)!.me,
+          context.read<AppModel>().currentUser);
     } else {
       return FutureBuilder(
           future: MyFirestore.users().doc(_recipe.createdByUid).get(),
@@ -90,25 +103,35 @@ class RecipeScreen extends StatelessWidget {
             } else {
               try {
                 final user = AppUser.fromDocument(snapshot.data!);
-                return _buildCreatedByOn(context, user.username);
+                return _buildCreatedByOn(context, user.username, user);
               } catch (e) {
                 return _buildCreatedByOn(
-                    context, AppLocalizations.of(context)!.unknownUser);
+                    context, AppLocalizations.of(context)!.unknownUser, null);
               }
             }
           });
     }
   }
 
-  Widget _buildCreatedByOn(BuildContext context, String name) {
+  Widget _buildCreatedByOn(BuildContext context, String name, AppUser? user) {
+    final textStyle = TextStyle(color: AppColors.hintOnLight, fontSize: 14);
+
+    final Widget text;
     if (_recipe.creationDate != null) {
-      return Text(AppLocalizations.of(context)!.created_by_on(
-        name,
-        _recipe.creationDate!,
-      ));
+      text = Text(
+        AppLocalizations.of(context)!
+            .created_by_on(name, _recipe.creationDate!),
+        style: textStyle,
+      );
     } else {
-      return Text(AppLocalizations.of(context)!.created_by(name));
+      text = Text(AppLocalizations.of(context)!.created_by(name),
+          style: textStyle);
     }
+
+    return ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: user != null ? AvatarWidget(user: user, radius: 15) : null,
+        title: text);
   }
 
   void _onEditButtonClicked(BuildContext context) {

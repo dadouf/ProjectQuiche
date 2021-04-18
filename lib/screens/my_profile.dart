@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:package_info/package_info.dart';
 import 'package:projectquiche/models/app_model.dart';
-import 'package:projectquiche/models/app_user.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/widgets/avatar.dart';
 import 'package:provider/provider.dart';
@@ -99,32 +98,11 @@ class HeroHeader extends StatelessWidget {
                       )
                     ],
                   ),
-                  child: _buildAvatar(user, context)),
+                  child: AvatarWidget(user: user, radius: avatarRadius)),
             ],
           ),
       ],
     );
-  }
-
-  Widget _buildAvatar(AppUser user, BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final icon = user.avatarType?.icon;
-
-    if (icon != null) {
-      return IconAvatar(
-        icon: icon,
-        color: colorScheme.primary,
-        backgroundColor: colorScheme.surface,
-        radius: avatarRadius,
-      );
-    } else if (user.avatarUrl != null) {
-      return CircleAvatar(
-        radius: avatarRadius,
-        foregroundImage: NetworkImage(user.avatarUrl!),
-      );
-    } else {
-      return Container();
-    }
   }
 }
 
