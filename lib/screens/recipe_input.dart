@@ -172,6 +172,7 @@ class _RecipeInputPageState extends State<RecipeInputPage>
         bottom: TabBar(
           controller: _tabController,
           tabs: _tabs,
+          isScrollable: true,
         ),
       ),
       body: Padding(
