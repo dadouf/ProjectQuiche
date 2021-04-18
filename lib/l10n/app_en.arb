@@ -9,12 +9,23 @@
   "ingredients": "Ingredients",
   "steps": "Steps",
   "tips": "Tips",
-  "created_by": "Created by {person}",
+  "created_by": "Added by {person}",
   "@created_by": {
     "placeholders": {
       "person": {}
     }
   },
+  "created_by_on": "Added by {person} on {date}",
+  "@created_by_on": {
+    "placeholders": {
+      "person": {},
+      "date": {
+        "type": "DateTime",
+        "format": "yMd"
+      }
+    }
+  },
+  "unknownUser": "an unknown user",
   "me": "me",
   "addRecipe": "Add recipe",
   "addRecipe_success": "Recipe successfully saved",

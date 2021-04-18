@@ -7,17 +7,17 @@ class Recipe {
   final String? ingredients;
   final String? steps;
   final String? tips;
-  final String? createdByName;
   final String? createdByUid;
+  final DateTime? creationDate;
 
   const Recipe({
-    this.id,
-    this.name,
-    this.ingredients,
-    this.steps,
-    this.tips,
-    this.createdByName,
-    this.createdByUid,
+    required this.id,
+    required this.name,
+    required this.ingredients,
+    required this.steps,
+    required this.tips,
+    required this.createdByUid,
+    required this.creationDate,
   });
 
   toJson() {
@@ -37,8 +37,8 @@ class Recipe {
       ingredients: parseMultiLineString(data[MyFirestore.fieldIngredients]),
       steps: parseMultiLineString(data[MyFirestore.fieldSteps]),
       tips: parseMultiLineString(data[MyFirestore.fieldTips]),
-      createdByName: data[MyFirestore.fieldCreatedBy][MyFirestore.fieldName],
       createdByUid: data[MyFirestore.fieldCreatedBy][MyFirestore.fieldUid],
+      creationDate: data[MyFirestore.fieldCreationDate].toDate(),
     );
   }
 }

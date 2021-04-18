@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:projectquiche/models/app_model.dart';
+import 'package:projectquiche/models/app_user.dart';
 import 'package:projectquiche/models/recipe.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
@@ -17,16 +19,16 @@ class RecipeScreen extends StatelessWidget {
     var defaultPadding = const EdgeInsets.all(16.0);
 
     List<Widget>? actions =
-        _recipe.createdByUid == FirebaseAuth.instance.currentUser?.uid
-            ? [
-                IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () => _onEditButtonClicked(context)),
-                IconButton(
-                    icon: Icon(Icons.delete),
-                    onPressed: () => _onDeleteButtonClicked(context)),
-              ]
-            : null;
+    _recipe.createdByUid == FirebaseAuth.instance.currentUser?.uid
+        ? [
+      IconButton(
+          icon: Icon(Icons.edit),
+          onPressed: () => _onEditButtonClicked(context)),
+      IconButton(
+          icon: Icon(Icons.delete),
+          onPressed: () => _onDeleteButtonClicked(context)),
+    ]
+        : null;
 
     return Scaffold(
       appBar: AppBar(
@@ -35,11 +37,6 @@ class RecipeScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          Padding(
-            padding: defaultPadding,
-            child: Text(AppLocalizations.of(context)!
-                .created_by(_getRecipeCreator(context))),
-          ),
           Padding(
             padding: defaultPadding,
             child: Text(
@@ -70,18 +67,47 @@ class RecipeScreen extends StatelessWidget {
             padding: defaultPadding,
             child: Text(_recipe.tips ?? "None"),
           ),
+          Divider(),
+          Padding(
+            padding: defaultPadding,
+            child: _buildRecipeFooter(context),
+          ),
         ],
       ),
     );
   }
 
-  String _getRecipeCreator(BuildContext context) {
+  Widget _buildRecipeFooter(BuildContext context) {
     if (_recipe.createdByUid == FirebaseAuth.instance.currentUser?.uid) {
-      return AppLocalizations.of(context)!.me;
-    } else if (_recipe.createdByName != null) {
-      return _recipe.createdByName!;
+      return _buildCreatedByOn(context, AppLocalizations.of(context)!.me);
     } else {
-      return "User ${_recipe.createdByUid}";
+      return FutureBuilder(
+          future: MyFirestore.users().doc(_recipe.createdByUid).get(),
+          builder:
+              (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else {
+              try {
+                final user = AppUser.fromDocument(snapshot.data!);
+                return _buildCreatedByOn(context, user.username);
+              } catch (e) {
+                return _buildCreatedByOn(
+                    context, AppLocalizations.of(context)!.unknownUser);
+              }
+            }
+          });
+    }
+  }
+
+  Widget _buildCreatedByOn(BuildContext context, String name) {
+    if (_recipe.creationDate != null) {
+      return Text(AppLocalizations.of(context)!.created_by_on(
+        name,
+        _recipe.creationDate!,
+      ));
+    } else {
+      return Text(AppLocalizations.of(context)!.created_by(name));
     }
   }
 
