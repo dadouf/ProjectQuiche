@@ -16,7 +16,7 @@ class MyRecipesScreen extends StatefulWidget {
 
   final Query _query = MyFirestore.recipes()
       .where(MyFirestore.fieldStatus, isEqualTo: "active")
-      .where("${MyFirestore.fieldCreatedBy}.${MyFirestore.fieldUid}",
+      .where("${MyFirestore.fieldOriginalCreator}.${MyFirestore.fieldUid}",
           isEqualTo: FirebaseAuth.instance.currentUser?.uid)
       .orderBy(MyFirestore.fieldName);
 

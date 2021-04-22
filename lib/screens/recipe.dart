@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -22,7 +21,7 @@ class RecipeScreen extends StatelessWidget {
     var defaultPadding = const EdgeInsets.all(16.0);
 
     List<Widget>? actions =
-        _recipe.createdByUid == FirebaseAuth.instance.currentUser?.uid
+        _recipe.originalCreator?.uid == FirebaseAuth.instance.currentUser?.uid
             ? [
                 IconButton(
                     icon: Icon(Icons.edit),
@@ -90,41 +89,29 @@ class RecipeScreen extends StatelessWidget {
   }
 
   Widget _buildRecipeFooter(BuildContext context) {
-    if (_recipe.createdByUid == FirebaseAuth.instance.currentUser?.uid) {
+    if (_recipe.originalCreator?.uid ==
+        FirebaseAuth.instance.currentUser?.uid) {
       return _buildCreatedByOn(context, AppLocalizations.of(context)!.me,
           context.read<AppModel>().currentUser);
     } else {
-      return FutureBuilder(
-          future: MyFirestore.users().doc(_recipe.createdByUid).get(),
-          builder:
-              (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else {
-              try {
-                final user = AppUser.fromDocument(snapshot.data!);
-                return _buildCreatedByOn(context, user.username, user);
-              } catch (e) {
-                return _buildCreatedByOn(
-                    context, AppLocalizations.of(context)!.unknownUser, null);
-              }
-            }
-          });
+      return _buildCreatedByOn(
+          context, _recipe.originalCreator?.username, _recipe.originalCreator);
     }
   }
 
-  Widget _buildCreatedByOn(BuildContext context, String name, AppUser? user) {
+  Widget _buildCreatedByOn(BuildContext context, String? name, AppUser? user) {
     final textStyle = TextStyle(color: AppColors.hintOnLight, fontSize: 14);
-
+    final displayName = name ?? AppLocalizations.of(context)!.unknownUser;
     final Widget text;
+
     if (_recipe.creationDate != null) {
       text = Text(
         AppLocalizations.of(context)!
-            .created_by_on(name, _recipe.creationDate!),
+            .created_by_on(displayName, _recipe.creationDate!),
         style: textStyle,
       );
     } else {
-      text = Text(AppLocalizations.of(context)!.created_by(name),
+      text = Text(AppLocalizations.of(context)!.created_by(displayName),
           style: textStyle);
     }
 

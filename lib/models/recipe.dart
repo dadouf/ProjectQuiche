@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:projectquiche/models/app_user.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
 
 class Recipe {
@@ -7,7 +8,7 @@ class Recipe {
   final String? ingredients;
   final String? steps;
   final String? tips;
-  final String? createdByUid;
+  final AppUser? originalCreator;
   final DateTime? creationDate;
 
   const Recipe({
@@ -16,7 +17,7 @@ class Recipe {
     required this.ingredients,
     required this.steps,
     required this.tips,
-    required this.createdByUid,
+    required this.originalCreator,
     required this.creationDate,
   });
 
@@ -37,7 +38,15 @@ class Recipe {
       ingredients: parseMultiLineString(data[MyFirestore.fieldIngredients]),
       steps: parseMultiLineString(data[MyFirestore.fieldSteps]),
       tips: parseMultiLineString(data[MyFirestore.fieldTips]),
-      createdByUid: data[MyFirestore.fieldCreatedBy][MyFirestore.fieldUid],
+      originalCreator: AppUser(
+        uid: data[MyFirestore.fieldOriginalCreator][MyFirestore.fieldUid],
+        username: data[MyFirestore.fieldOriginalCreator]
+            [MyFirestore.fieldUsername],
+        avatarType: AvatarType.from(data[MyFirestore.fieldOriginalCreator]
+            [MyFirestore.fieldAvatarSymbol]),
+        avatarUrl: data[MyFirestore.fieldOriginalCreator]
+            [MyFirestore.fieldAvatarUrl],
+      ),
       creationDate: data[MyFirestore.fieldCreationDate].toDate(),
     );
   }

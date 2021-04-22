@@ -127,7 +127,7 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
       var additionalDocs = snapshot.docs
           // Filter out user's own recipes (because we can't do it in the query)
           .where((element) =>
-      element.data()[MyFirestore.fieldCreatedBy]
+      element.data()[MyFirestore.fieldOriginalCreator]
                   [MyFirestore.fieldUid] !=
               FirebaseAuth.instance.currentUser?.uid);
 

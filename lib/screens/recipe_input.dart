@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:projectquiche/models/app_model.dart';
@@ -15,23 +14,29 @@ class CreateRecipeScreen extends StatelessWidget {
     return RecipeInputPage(
       title: AppLocalizations.of(context)!.addRecipe,
       onRecipeSave: ({required name, ingredients, steps, tips}) async {
+        final appModel = context.read<AppModel>();
+
         try {
+          final user = appModel.currentUser!;
+
           await MyFirestore.recipes().add({
             MyFirestore.fieldName: name,
             MyFirestore.fieldIngredients: ingredients,
             MyFirestore.fieldSteps: steps,
             MyFirestore.fieldTips: tips,
-            MyFirestore.fieldCreatedBy: {
-              MyFirestore.fieldUid: FirebaseAuth.instance.currentUser?.uid,
-              MyFirestore.fieldName:
-                  FirebaseAuth.instance.currentUser?.displayName
+            MyFirestore.fieldOriginalCreator: {
+              // TODO serialize via user.toJson() or something
+              MyFirestore.fieldUid: user.uid,
+              MyFirestore.fieldUsername: user.username,
+              MyFirestore.fieldAvatarSymbol: user.avatarType?.code,
+              MyFirestore.fieldAvatarUrl: user.avatarUrl,
             },
             MyFirestore.fieldCreationDate: DateTime.now(),
             MyFirestore.fieldStatus: "active",
             MyFirestore.fieldVisibility: "public",
           });
 
-          context.read<AppModel>().completeEditing();
+          appModel.completeEditing();
 
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(AppLocalizations.of(context)!.addRecipe_success),
