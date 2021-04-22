@@ -40,4 +40,9 @@ class UnknownRoutePath extends AppRoutePath {
   String toString() => "UnknownRoutePath";
 }
 
-enum AppSpace { myRecipes, exploreRecipes, myProfile }
+enum AppSpace {
+  myRecipes,
+  exploreRecipes,
+  myProfile,
+  groups,
+}

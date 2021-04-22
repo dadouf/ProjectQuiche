@@ -86,6 +86,8 @@ class AppRouteParser extends RouteInformationParser<AppRoutePath> {
         return "/recipes/explore";
       case AppSpace.myProfile:
         return "/me";
+      case AppSpace.groups:
+        return "/groups";
     }
   }
 }

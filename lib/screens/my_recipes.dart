@@ -15,8 +15,7 @@ class MyRecipesScreen extends StatefulWidget {
   final Function(Recipe recipe) onRecipeTap;
 
   final Query _query = MyFirestore.recipes()
-      // Note: "isNotEqualTo: true" isn't allowed
-      .where(MyFirestore.fieldMovedToBin, isEqualTo: false)
+      .where(MyFirestore.fieldStatus, isEqualTo: "active")
       .where("${MyFirestore.fieldCreatedBy}.${MyFirestore.fieldUid}",
           isEqualTo: FirebaseAuth.instance.currentUser?.uid)
       .orderBy(MyFirestore.fieldName);
@@ -32,7 +31,6 @@ class _MyRecipesScreenState extends State<MyRecipesScreen> {
   @override
   void initState() {
     super.initState();
-
     _stream = widget._query.snapshots();
   }
 
@@ -75,9 +73,10 @@ class _MyRecipesScreenState extends State<MyRecipesScreen> {
 
             var docs = snapshot.data!.docs;
             if (docs.isNotEmpty) {
+              // TODO consider using ListView builder: maybe more efficient?
               return new ListView(
                 children: docs.map((DocumentSnapshot document) {
-                  var recipe = Recipe.fromDocument(document);
+                  final recipe = Recipe.fromDocument(document);
                   return ListTile(
                     title: Text(recipe.name ?? "Untitled"),
                     onTap: () {

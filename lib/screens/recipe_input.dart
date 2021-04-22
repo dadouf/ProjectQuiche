@@ -27,7 +27,7 @@ class CreateRecipeScreen extends StatelessWidget {
                   FirebaseAuth.instance.currentUser?.displayName
             },
             MyFirestore.fieldCreationDate: DateTime.now(),
-            MyFirestore.fieldMovedToBin: false,
+            MyFirestore.fieldStatus: "active",
             MyFirestore.fieldVisibility: "public",
           });
 

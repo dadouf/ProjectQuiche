@@ -9,13 +9,16 @@ class MyFirestore {
   static CollectionReference users() =>
       FirebaseFirestore.instance.collection("users_v0");
 
+  static CollectionReference groups() =>
+      FirebaseFirestore.instance.collection("groups_v0");
+
   // TODO scope field names so they can be found more easily
 
   //
   // Recipe
   //
 
-  static const String fieldMovedToBin = "moved_to_bin";
+  static const String fieldStatus = "status";
   static const String fieldVisibility = "visibility";
   static const String fieldCreatedBy = "created_by";
   static const String fieldUid = "uid";

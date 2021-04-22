@@ -11,6 +11,7 @@ class MyAnalytics {
   static const pageEditRecipe = "EditRecipe";
   static const pageCreateRecipe = "CreateRecipe";
   static const pageMyProfile = "Profile";
+  static const pageGroups = "Groups";
 
   static String pageFromSpace(AppSpace currentSpace) {
     switch (currentSpace) {
@@ -20,6 +21,8 @@ class MyAnalytics {
         return pageExploreRecipes;
       case AppSpace.myProfile:
         return pageMyProfile;
+      case AppSpace.groups:
+        return pageGroups;
     }
   }
 }

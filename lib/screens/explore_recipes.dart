@@ -21,8 +21,8 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
   static const pageLimit = 20;
 
   Query _currentQuery = MyFirestore.recipes()
-      // Non-deleted recipes. Note: can't do `moved_to_bin != true`
-      .where(MyFirestore.fieldMovedToBin, isEqualTo: false)
+      // Non-deleted recipes
+      .where(MyFirestore.fieldStatus, isEqualTo: "active")
       // Public recipes
       .where(MyFirestore.fieldVisibility, isEqualTo: "public")
       // Note: Can't filter out user's own recipes so we do it in the client later

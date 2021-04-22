@@ -7,6 +7,7 @@ import 'package:projectquiche/models/recipe.dart';
 import 'package:projectquiche/routing/app_route_path.dart';
 import 'package:projectquiche/routing/app_router_delegate.dart';
 import 'package:projectquiche/screens/explore_recipes.dart';
+import 'package:projectquiche/screens/groups.dart';
 import 'package:projectquiche/screens/my_profile.dart';
 import 'package:projectquiche/screens/my_recipes.dart';
 import 'package:projectquiche/services/firebase/analytics_keys.dart';
@@ -48,11 +49,18 @@ class InnerRouterDelegate extends RouterDelegate<AppRoutePath>
               onRecipeTap: (recipe) => _handleRecipeTapped(context, recipe),
             ),
           ),
-        ] else if (currentSpace == AppSpace.myProfile) ...[
+        ] else
+          if (currentSpace == AppSpace.myProfile) ...[
           InstantTransitionPage(
             name: MyAnalytics.pageMyProfile,
             key: ValueKey("MyProfilePage"),
             child: MyProfileScreen(),
+          ),
+        ] else if (currentSpace == AppSpace.groups) ...[
+          InstantTransitionPage(
+            name: MyAnalytics.pageGroups,
+            key: ValueKey("GroupsPage"),
+            child: GroupsScreen(),
           ),
         ]
       ],

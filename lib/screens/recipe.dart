@@ -179,7 +179,7 @@ class RecipeScreen extends StatelessWidget {
     try {
       await MyFirestore.recipes()
           .doc(_recipe.id)
-          .update({MyFirestore.fieldMovedToBin: true});
+          .update({MyFirestore.fieldStatus: "binned"});
 
       service.logMoveToBin();
 

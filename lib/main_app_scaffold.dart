@@ -64,6 +64,11 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
                 title: AppLocalizations.of(context)!.exploreRecipes,
               ),
               SpaceTab(
+                space: AppSpace.groups,
+                icon: Icons.group,
+                title: AppLocalizations.of(context)!.groups,
+              ),
+              SpaceTab(
                 space: AppSpace.myProfile,
                 icon: Icons.person,
                 title: AppLocalizations.of(context)!.myProfile,
@@ -107,7 +112,7 @@ class SpaceTab extends StatelessWidget {
 
     return Expanded(
       child: SizedBox(
-        height: 60,
+        height: 75,
         child: Theme(
           data: AppTheme.boldColorScheme.toTheme(),
           child: TextButton(
@@ -120,7 +125,11 @@ class SpaceTab extends StatelessWidget {
                       ? null
                       : AppColors.disabledNavIcon,
                 ),
-                if (appModel.currentSpace == space) Text(title),
+                if (appModel.currentSpace == space)
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                  ),
               ],
             ),
             onPressed: () => appModel.currentSpace = space,
