@@ -33,13 +33,13 @@ class AvatarType {
 
   const AvatarType._(this.code, this.icon);
 
-  static const social = AvatarType._("social", null);
+  static const custom = AvatarType._("custom", null);
   static const chef_hat = AvatarType._("chef_hat", AppIcons.chef_hat);
   static const salt_and_pepper =
       AvatarType._("salt_and_pepper", AppIcons.salt_and_pepper);
   static const food_tray = AvatarType._("food_tray", AppIcons.food_tray);
 
-  static const values = [social, chef_hat, salt_and_pepper, food_tray];
+  static const values = [custom, chef_hat, salt_and_pepper, food_tray];
 
   static AvatarType? from(String? avatarSymbol) {
     return values.firstWhere((element) => element.code == avatarSymbol);

@@ -20,7 +20,7 @@ class ExploreRecipesScreen extends StatefulWidget {
 class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
   static const pageLimit = 20;
 
-  Query _currentQuery = MyFirestore.recipes()
+  Query _currentQuery = MyFirestore.allRecipes()
       // Non-deleted recipes
       .where(MyFirestore.fieldStatus, isEqualTo: "active")
       // Public recipes
@@ -127,8 +127,7 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
       var additionalDocs = snapshot.docs
           // Filter out user's own recipes (because we can't do it in the query)
           .where((element) =>
-      element.data()[MyFirestore.fieldOriginalCreator]
-                  [MyFirestore.fieldUid] !=
+      element.data()[MyFirestore.fieldUserId] !=
               FirebaseAuth.instance.currentUser?.uid);
 
       // If the number of docs in the snapshot is < limit we already know we're reached the end

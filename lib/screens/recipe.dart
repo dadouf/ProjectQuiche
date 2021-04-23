@@ -164,7 +164,7 @@ class RecipeScreen extends StatelessWidget {
   Future<void> _deleteRecipe(BuildContext context) async {
     final service = context.read<FirebaseService>();
     try {
-      await MyFirestore.recipes()
+      await MyFirestore.myRecipes()
           .doc(_recipe.id)
           .update({MyFirestore.fieldStatus: "binned"});
 

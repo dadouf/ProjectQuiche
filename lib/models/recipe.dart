@@ -39,13 +39,11 @@ class Recipe {
       steps: parseMultiLineString(data[MyFirestore.fieldSteps]),
       tips: parseMultiLineString(data[MyFirestore.fieldTips]),
       originalCreator: AppUser(
-        uid: data[MyFirestore.fieldOriginalCreator][MyFirestore.fieldUid],
-        username: data[MyFirestore.fieldOriginalCreator]
-            [MyFirestore.fieldUsername],
-        avatarType: AvatarType.from(data[MyFirestore.fieldOriginalCreator]
-            [MyFirestore.fieldAvatarSymbol]),
-        avatarUrl: data[MyFirestore.fieldOriginalCreator]
-            [MyFirestore.fieldAvatarUrl],
+        uid: data[MyFirestore.fieldCreator][MyFirestore.fieldUserId],
+        username: data[MyFirestore.fieldCreator][MyFirestore.fieldUsername],
+        avatarType: AvatarType.from(
+            data[MyFirestore.fieldCreator][MyFirestore.fieldAvatarSymbol]),
+        avatarUrl: data[MyFirestore.fieldCreator][MyFirestore.fieldAvatarUrl],
       ),
       creationDate: data[MyFirestore.fieldCreationDate].toDate(),
     );

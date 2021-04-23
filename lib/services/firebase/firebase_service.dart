@@ -146,7 +146,7 @@ class FirebaseService extends ChangeNotifier {
       await _maybeFakeWait();
 
       final avatarUrl =
-          selectedAvatar == AvatarType.social ? _firebaseUser?.photoURL : null;
+          selectedAvatar == AvatarType.custom ? _firebaseUser?.photoURL : null;
 
       await MyFirestore.users().doc(_firebaseUser!.uid).set({
         MyFirestore.fieldUsername: username,

@@ -4,8 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 class MyFirestore {
   MyFirestore._();
 
-  static CollectionReference recipes() => FirebaseFirestore.instance.collection(
-      "/users_v1/${FirebaseAuth.instance.currentUser?.uid}/recipes_v1");
+  static CollectionReference myRecipes() =>
+      FirebaseFirestore.instance.collection(
+          "/users_v1/${FirebaseAuth.instance.currentUser?.uid}/recipes_v1");
+
+  static Query allRecipes() =>
+      FirebaseFirestore.instance.collectionGroup("recipes_v1");
 
   static CollectionReference users() =>
       FirebaseFirestore.instance.collection("users_v1");
@@ -21,7 +25,7 @@ class MyFirestore {
 
   static const String fieldStatus = "status";
   static const String fieldVisibility = "visibility";
-  static const String fieldOriginalCreator = "original_creator";
+  static const String fieldCreator = "creator";
   static const String fieldName = "name";
   static const String fieldCreationDate = "creation_date";
   static const String fieldIngredients = "ingredients";
@@ -32,7 +36,7 @@ class MyFirestore {
   // User
   //
 
-  static const String fieldUid = "uid";
+  static const String fieldUserId = "user_id";
   static const String fieldUsername = "username";
   static const String fieldAvatarUrl = "avatar_url";
   static const String fieldAvatarSymbol = "avatar_symbol";

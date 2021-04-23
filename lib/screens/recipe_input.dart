@@ -19,14 +19,15 @@ class CreateRecipeScreen extends StatelessWidget {
         try {
           final user = appModel.currentUser!;
 
-          await MyFirestore.recipes().add({
+          await MyFirestore.myRecipes().add({
+            MyFirestore.fieldUserId: user.uid,
             MyFirestore.fieldName: name,
             MyFirestore.fieldIngredients: ingredients,
             MyFirestore.fieldSteps: steps,
             MyFirestore.fieldTips: tips,
-            MyFirestore.fieldOriginalCreator: {
+            MyFirestore.fieldCreator: {
               // TODO serialize via user.toJson() or something
-              MyFirestore.fieldUid: user.uid,
+              MyFirestore.fieldUserId: user.uid,
               MyFirestore.fieldUsername: user.username,
               MyFirestore.fieldAvatarSymbol: user.avatarType?.code,
               MyFirestore.fieldAvatarUrl: user.avatarUrl,
@@ -64,7 +65,7 @@ class EditRecipeScreen extends StatelessWidget {
       initialRecipe: recipe,
       onRecipeSave: ({required name, ingredients, steps, tips}) async {
         try {
-          await MyFirestore.recipes().doc(recipe.id).update({
+          await MyFirestore.myRecipes().doc(recipe.id).update({
             MyFirestore.fieldName: name,
             MyFirestore.fieldIngredients: ingredients,
             MyFirestore.fieldSteps: steps,

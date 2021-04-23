@@ -237,8 +237,8 @@ class _CreateProfileWidgetState extends State<CreateProfileWidget> {
                 // FIXME this displays black while it loads
                 foregroundImage: NetworkImage(firebaseUser!.photoURL!),
               ),
-              isSelected: _selectedAvatar == AvatarType.social,
-              onTap: () => setState(() => _selectedAvatar = AvatarType.social),
+              isSelected: _selectedAvatar == AvatarType.custom,
+              onTap: () => setState(() => _selectedAvatar = AvatarType.custom),
             ),
           SelectableBox.iconAvatar(
             icon: AppIcons.chef_hat,
