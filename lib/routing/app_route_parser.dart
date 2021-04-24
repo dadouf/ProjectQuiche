@@ -54,7 +54,7 @@ class AppRouteParser extends RouteInformationParser<AppRoutePath> {
 
     if (path is RecipeRoutePath) {
       if (path.recipeId != null) {
-        if (path.isEditing) {
+        if (path.isWriting) {
           result = RouteInformation(location: "/recipes/${path.recipeId}/edit");
         } else {
           result = RouteInformation(location: "/recipes/${path.recipeId}");

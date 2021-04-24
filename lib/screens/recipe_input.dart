@@ -11,7 +11,7 @@ class CreateRecipeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RecipeInputPage(
+    return RecipeInputScreen(
       title: AppLocalizations.of(context)!.addRecipe,
       onRecipeSave: ({required name, ingredients, steps, tips}) async {
         final appModel = context.read<AppModel>();
@@ -60,7 +60,7 @@ class EditRecipeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RecipeInputPage(
+    return RecipeInputScreen(
       title: AppLocalizations.of(context)!.editRecipe,
       initialRecipe: recipe,
       onRecipeSave: ({required name, ingredients, steps, tips}) async {
@@ -90,7 +90,7 @@ class EditRecipeScreen extends StatelessWidget {
   }
 }
 
-class RecipeInputPage extends StatefulWidget {
+class RecipeInputScreen extends StatefulWidget {
   final String title;
   final Recipe? initialRecipe;
   final void Function({
@@ -100,7 +100,7 @@ class RecipeInputPage extends StatefulWidget {
     required String? tips,
   }) onRecipeSave;
 
-  const RecipeInputPage(
+  const RecipeInputScreen(
       {required this.title,
       this.initialRecipe,
       required this.onRecipeSave,
@@ -108,10 +108,10 @@ class RecipeInputPage extends StatefulWidget {
       : super(key: key);
 
   @override
-  _RecipeInputPageState createState() => _RecipeInputPageState();
+  _RecipeInputScreenState createState() => _RecipeInputScreenState();
 }
 
-class _RecipeInputPageState extends State<RecipeInputPage>
+class _RecipeInputScreenState extends State<RecipeInputScreen>
     with SingleTickerProviderStateMixin {
   // Note: right now 1 tab = 1 field, but this will change
 

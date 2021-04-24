@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projectquiche/models/app_user.dart';
+import 'package:projectquiche/models/group.dart';
 import 'package:projectquiche/models/recipe.dart';
 import 'package:projectquiche/routing/app_route_path.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
@@ -23,9 +24,9 @@ class AppModel extends ChangeNotifier {
     });
   }
 
-  // ------------
-  // Init + Auth
-  // ------------
+  // ===========================================================================
+  // INIT + AUTH
+  // ===========================================================================
 
   /// The app has bootstrapped when it has received the first callback for a
   /// Firebase user? plus -- if user != null -- the first callback for an AppUser?
@@ -35,21 +36,15 @@ class AppModel extends ChangeNotifier {
 
   void _reset() {
     _currentRecipe = null;
-    _isCreatingOrEditing = false;
+    _isWritingRecipe = false;
     _currentSpace = AppSpace.myRecipes;
 
     // Do not notifyListeners, the caller of reset() takes care of it
   }
 
-  // ----------
-  // Navigation
-  // ----------
-
-  Recipe? get currentRecipe => _currentRecipe;
-  Recipe? _currentRecipe;
-
-  bool get isCreatingOrEditing => _isCreatingOrEditing;
-  bool _isCreatingOrEditing = false;
+  // ===========================================================================
+  // NAVIGATION
+  // ===========================================================================
 
   AppSpace get currentSpace => _currentSpace;
   AppSpace _currentSpace = AppSpace.myRecipes;
@@ -59,26 +54,37 @@ class AppModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // -------
+  // Recipes
+  // -------
+
+  Recipe? get currentRecipe => _currentRecipe;
+  Recipe? _currentRecipe;
+
+  /// Writing = Creating | Updating
+  bool get isWritingRecipe => _isWritingRecipe;
+  bool _isWritingRecipe = false;
+
   void startCreatingRecipe() {
     _currentRecipe = null;
-    _isCreatingOrEditing = true;
+    _isWritingRecipe = true;
     notifyListeners();
   }
 
   void startViewingRecipe(Recipe recipe) {
     _currentRecipe = recipe;
-    _isCreatingOrEditing = false;
+    _isWritingRecipe = false;
     notifyListeners();
   }
 
   void startEditingRecipe(Recipe recipe) {
     _currentRecipe = recipe;
-    _isCreatingOrEditing = true;
+    _isWritingRecipe = true;
     notifyListeners();
   }
 
-  void cancelCreatingOrEditingRecipe() {
-    _isCreatingOrEditing = false;
+  void cancelWritingRecipe() {
+    _isWritingRecipe = false;
     notifyListeners();
   }
 
@@ -88,7 +94,7 @@ class AppModel extends ChangeNotifier {
   }
 
   void completeEditing() {
-    _isCreatingOrEditing = false;
+    _isWritingRecipe = false;
 
     // Until we find a way to update the Recipe page we've just edited,
     // go all the way back to Home.
@@ -99,7 +105,7 @@ class AppModel extends ChangeNotifier {
 
   void goToRecipeList(AppSpaceRoutePath path) {
     _currentRecipe = null;
-    _isCreatingOrEditing = false;
+    _isWritingRecipe = false;
     _currentSpace = path.space;
 
     notifyListeners();
@@ -107,9 +113,36 @@ class AppModel extends ChangeNotifier {
 
   void goToRecipe(RecipeRoutePath path) {
     _currentRecipe = null; // path.recipeId; // TODO lookup by ID!
-    _isCreatingOrEditing = path.isEditing;
+    _isWritingRecipe = path.isWriting;
     _currentSpace = AppSpace.exploreRecipes; // unknown
 
+    notifyListeners();
+  }
+
+  // ------
+  // Groups
+  // ------
+
+  Group? get currentGroup => _currentGroup;
+  Group? _currentGroup;
+
+  /// Writing = Creating | Updating
+  bool get isWritingGroup => _isWritingGroup;
+  bool _isWritingGroup = false;
+
+  void startCreatingGroup() {
+    _currentGroup = null;
+    _isWritingGroup = true;
+    notifyListeners();
+  }
+
+  void cancelWritingGroup() {
+    _isWritingGroup = false;
+    notifyListeners();
+  }
+
+  void cancelViewingGroup() {
+    _currentGroup = null;
     notifyListeners();
   }
 }

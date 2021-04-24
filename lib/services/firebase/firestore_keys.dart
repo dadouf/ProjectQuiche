@@ -20,14 +20,19 @@ class MyFirestore {
   // TODO scope field names so they can be found more easily
 
   //
+  // Reused fields
+  //
+
+  static const String fieldCreator = "creator";
+  static const String fieldCreationDate = "creation_date";
+  static const String fieldStatus = "status";
+
+  //
   // Recipe
   //
 
-  static const String fieldStatus = "status";
   static const String fieldVisibility = "visibility";
-  static const String fieldCreator = "creator";
   static const String fieldName = "name";
-  static const String fieldCreationDate = "creation_date";
   static const String fieldIngredients = "ingredients";
   static const String fieldSteps = "steps";
   static const String fieldTips = "tips";
@@ -40,4 +45,11 @@ class MyFirestore {
   static const String fieldUsername = "username";
   static const String fieldAvatarUrl = "avatar_url";
   static const String fieldAvatarSymbol = "avatar_symbol";
+
+  //
+  // Group
+  //
+  static const String fieldCoverUrl = "cover_url";
+  static const String fieldMembers = "members";
+  static const String fieldAcceptsNewMembers = "accepts_new_members";
 }

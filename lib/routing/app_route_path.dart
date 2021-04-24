@@ -15,19 +15,36 @@ class AppSpaceRoutePath extends AppRoutePath {
 
 class RecipeRoutePath extends AppRoutePath {
   final String? recipeId;
-  final bool isEditing;
+  final bool isWriting;
 
-  const RecipeRoutePath.view(String this.recipeId) : isEditing = false;
+  const RecipeRoutePath.view(String this.recipeId) : isWriting = false;
 
-  const RecipeRoutePath.edit(String this.recipeId) : isEditing = true;
+  const RecipeRoutePath.edit(String this.recipeId) : isWriting = true;
 
   const RecipeRoutePath.create()
       : recipeId = null,
-        isEditing = true;
+        isWriting = true;
 
   @override
   String toString() =>
-      "RecipeRoutePath{recipeId: '$recipeId', isEditing: $isEditing}";
+      "RecipeRoutePath{recipeId: '$recipeId', isWriting: $isWriting}";
+}
+
+class GroupRoutePath extends AppRoutePath {
+  final String? groupId;
+  final bool isWriting;
+
+  const GroupRoutePath.view(String this.groupId) : isWriting = false;
+
+  const GroupRoutePath.edit(String this.groupId) : isWriting = true;
+
+  const GroupRoutePath.create()
+      : groupId = null,
+        isWriting = true;
+
+  @override
+  String toString() =>
+      "GroupRoutePath{groupId: '$groupId', isWriting: $isWriting}";
 }
 
 class AuthRoutePath extends AppRoutePath {

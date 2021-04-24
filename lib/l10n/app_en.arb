@@ -2,6 +2,7 @@
   "signInWithGoogle": "Sign in with Google",
   "signInWithApple": "Sign in with Apple",
   "add": "Add",
+  "create": "Create",
   "myRecipes": "My Cookbook",
   "exploreRecipes": "Explore Recipes",
   "groups": "Groups",
@@ -75,5 +76,21 @@
   },
   "myRecipes_empty": "You don't have any recipes. Start adding some now!",
   "exploreRecipes_empty": "There are no recipes right now",
-  "loadMore": "Load more"
+  "loadMore": "Load more",
+  "createGroup": "Create group",
+  "createGroup_success": "Group successfully saved",
+  "createGroup_failure": "Failed to save group: {exception}",
+  "@createGroup_failure": {
+    "placeholders": {
+      "exception": {}
+    }
+  },
+  "editGroup": "Edit group",
+  "editGroup_success": "Group successfully saved",
+  "editGroup_failure": "Failed to save group: {exception}",
+  "@editGroup_failure": {
+    "placeholders": {
+      "exception": {}
+    }
+  }
 }

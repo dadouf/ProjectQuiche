@@ -5,10 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:projectquiche/main_app_scaffold.dart';
 import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/models/app_user.dart';
+import 'package:projectquiche/models/group.dart';
 import 'package:projectquiche/models/recipe.dart';
 import 'package:projectquiche/routing/app_route_path.dart';
 import 'package:projectquiche/routing/inner_router_delegate.dart';
 import 'package:projectquiche/screens/authenticate.dart';
+import 'package:projectquiche/screens/group.dart';
+import 'package:projectquiche/screens/group_input.dart';
 import 'package:projectquiche/screens/recipe.dart';
 import 'package:projectquiche/screens/recipe_input.dart';
 import 'package:projectquiche/screens/splash.dart';
@@ -46,13 +49,13 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
       result = AuthRoutePath();
     } else {
       if (appModel.currentRecipe == null) {
-        if (appModel.isCreatingOrEditing) {
+        if (appModel.isWritingRecipe) {
           result = RecipeRoutePath.create();
         } else {
           result = AppSpaceRoutePath(space: appModel.currentSpace);
         }
       } else {
-        if (appModel.isCreatingOrEditing) {
+        if (appModel.isWritingRecipe) {
           result = RecipeRoutePath.edit(appModel.currentRecipe!.id!);
         } else {
           result = RecipeRoutePath.view(appModel.currentRecipe!.id!);
@@ -71,8 +74,12 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
     // TODO select to avoid rebuilds?
     bool hasBootstrapped = appModel.hasBootstrapped;
     AppUser? user = appModel.currentUser;
+
     Recipe? currentRecipe = appModel.currentRecipe;
-    bool isCreatingOrEditing = appModel.isCreatingOrEditing;
+    bool isWritingRecipe = appModel.isWritingRecipe;
+
+    Group? currentGroup = appModel.currentGroup;
+    bool isWritingGroup = appModel.isWritingGroup;
 
     return Navigator(
       key: navigatorKey,
@@ -107,26 +114,55 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
             child: MainAppScaffold(),
           ),
 
-          // View page + Edit page
+          //
+          // RECIPE
+          //
           if (currentRecipe != null) ...[
+            // View
             MaterialPage(
                 name: MyAnalytics.pageViewRecipe,
                 key: ValueKey(currentRecipe),
                 child: RecipeScreen(currentRecipe)),
-            if (isCreatingOrEditing)
+
+            // Edit
+            if (isWritingRecipe)
               MaterialPage(
                   name: MyAnalytics.pageEditRecipe,
                   key: ValueKey("$currentRecipe-edit"),
                   child: EditRecipeScreen(currentRecipe)),
-
-            // Create recipe page
-          ] else if (isCreatingOrEditing) ...[
+          ] else if (isWritingRecipe) ...[
+            // Create
             MaterialPage(
               name: MyAnalytics.pageCreateRecipe,
               key: ValueKey("NewRecipePage"),
               child: CreateRecipeScreen(),
             ),
-          ]
+          ],
+
+          //
+          // GROUP
+          //
+          if (currentGroup != null) ...[
+            // View
+            MaterialPage(
+                name: MyAnalytics.pageViewGroup,
+                key: ValueKey(currentGroup),
+                child: GroupScreen(currentGroup)),
+
+            // Edit
+            if (isWritingGroup)
+              MaterialPage(
+                  name: MyAnalytics.pageEditRecipe,
+                  key: ValueKey("$currentGroup-edit"),
+                  child: EditGroupScreen(currentGroup)),
+          ] else if (isWritingGroup) ...[
+            // Create
+            MaterialPage(
+              name: MyAnalytics.pageCreateRecipe,
+              key: ValueKey("NewGroupPage"),
+              child: CreateGroupScreen(),
+            ),
+          ],
         ],
       ],
       onPopPage: (route, result) {
@@ -137,13 +173,23 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
           return false;
         }
 
-        if (appModel.isCreatingOrEditing) {
-          appModel.cancelCreatingOrEditingRecipe();
+        if (appModel.isWritingRecipe) {
+          appModel.cancelWritingRecipe();
           return true;
         }
 
         if (appModel.currentRecipe != null) {
           appModel.cancelViewingRecipe();
+          return true;
+        }
+
+        if (appModel.isWritingGroup) {
+          appModel.cancelWritingGroup();
+          return true;
+        }
+
+        if (appModel.currentGroup != null) {
+          appModel.cancelViewingGroup();
           return true;
         }
 

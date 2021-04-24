@@ -33,8 +33,11 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
   Widget build(BuildContext context) {
     AppModel appModel = context.read<AppModel>();
 
-    // Claim priority if this is the top screen
-    if (appModel.currentRecipe == null && !appModel.isCreatingOrEditing) {
+    // Claim priority if this is the top screen TODO this condition is error prone
+    if (appModel.currentRecipe == null &&
+        !appModel.isWritingRecipe &&
+        appModel.currentGroup == null &&
+        !appModel.isWritingGroup) {
       _backButtonDispatcher?.takePriority();
     } else {
       Router.of(context).backButtonDispatcher?.takePriority();
@@ -82,15 +85,25 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
         ),
         floatingActionButton: appModel.currentSpace == AppSpace.myRecipes
             ? FloatingActionButton.extended(
-          label: Text(AppLocalizations.of(context)!.add),
+                label: Text(AppLocalizations.of(context)!.add),
                 icon: Icon(Icons.edit_outlined),
                 onPressed: _addRecipe,
               )
-            : null);
+            : appModel.currentSpace == AppSpace.groups
+                ? FloatingActionButton.extended(
+                    label: Text(AppLocalizations.of(context)!.add),
+                    icon: Icon(Icons.add),
+                    onPressed: _addGroup,
+                  )
+                : null);
   }
 
   void _addRecipe() {
     context.read<AppModel>().startCreatingRecipe();
+  }
+
+  void _addGroup() {
+    context.read<AppModel>().startCreatingGroup();
   }
 }
 

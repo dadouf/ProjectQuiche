@@ -4,24 +4,27 @@ import 'package:projectquiche/services/firebase/firestore_keys.dart';
 
 class Recipe {
   final String? id;
+
+  final AppUser? creator;
+  final DateTime? creationDate;
+
   final String? name;
   final String? ingredients;
   final String? steps;
   final String? tips;
-  final AppUser? originalCreator;
-  final DateTime? creationDate;
 
   const Recipe({
     required this.id,
+    required this.creator,
+    required this.creationDate,
     required this.name,
     required this.ingredients,
     required this.steps,
     required this.tips,
-    required this.originalCreator,
-    required this.creationDate,
   });
 
   toJson() {
+    // TODO there are more fields
     return {
       MyFirestore.fieldName: name,
       MyFirestore.fieldIngredients: ingredients,
@@ -34,11 +37,7 @@ class Recipe {
     var data = doc.data()!;
     return Recipe(
       id: doc.id,
-      name: data[MyFirestore.fieldName],
-      ingredients: parseMultiLineString(data[MyFirestore.fieldIngredients]),
-      steps: parseMultiLineString(data[MyFirestore.fieldSteps]),
-      tips: parseMultiLineString(data[MyFirestore.fieldTips]),
-      originalCreator: AppUser(
+      creator: AppUser(
         uid: data[MyFirestore.fieldCreator][MyFirestore.fieldUserId],
         username: data[MyFirestore.fieldCreator][MyFirestore.fieldUsername],
         avatarType: AvatarType.from(
@@ -46,6 +45,10 @@ class Recipe {
         avatarUrl: data[MyFirestore.fieldCreator][MyFirestore.fieldAvatarUrl],
       ),
       creationDate: data[MyFirestore.fieldCreationDate].toDate(),
+      name: data[MyFirestore.fieldName],
+      ingredients: parseMultiLineString(data[MyFirestore.fieldIngredients]),
+      steps: parseMultiLineString(data[MyFirestore.fieldSteps]),
+      tips: parseMultiLineString(data[MyFirestore.fieldTips]),
     );
   }
 }
