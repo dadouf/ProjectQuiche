@@ -1,8 +1,8 @@
 {
   "signInWithGoogle": "Sign in with Google",
   "signInWithApple": "Sign in with Apple",
-  "add": "Add",
-  "create": "Create",
+  "recipe_add_button": "Add",
+  "group_add_button": "Create",
   "myRecipes": "My Cookbook",
   "exploreRecipes": "Explore Recipes",
   "groups": "Groups",
@@ -45,7 +45,7 @@
       "exception": {}
     }
   },
-  "name": "Title",
+  "recipe_name": "Title",
   "required": "Required",
   "ingredients_hint": "- 20g butter\n- 4 eggs\n...",
   "steps_hint": "1. Preheat oven to 220°C\n2. Cut stuff\n...",
@@ -75,6 +75,7 @@
     }
   },
   "myRecipes_empty": "You don't have any recipes. Start adding some now!",
+  "groups_empty": "You don't belong to any group. Creating one now to invite your friends and family!",
   "exploreRecipes_empty": "There are no recipes right now",
   "loadMore": "Load more",
   "createGroup": "Create group",
@@ -92,5 +93,6 @@
     "placeholders": {
       "exception": {}
     }
-  }
+  },
+  "group_name": "Name"
 }

@@ -25,6 +25,13 @@ class AppUser {
       avatarType: AvatarType.from(data[MyFirestore.fieldAvatarSymbol]),
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        MyFirestore.fieldUserId: uid,
+        MyFirestore.fieldUsername: username,
+        MyFirestore.fieldAvatarSymbol: avatarType?.code,
+        MyFirestore.fieldAvatarUrl: avatarUrl,
+      };
 }
 
 class AvatarType {

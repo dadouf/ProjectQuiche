@@ -93,7 +93,7 @@ class AppModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void completeEditing() {
+  void completeWritingRecipe() {
     _isWritingRecipe = false;
 
     // Until we find a way to update the Recipe page we've just edited,
@@ -143,6 +143,16 @@ class AppModel extends ChangeNotifier {
 
   void cancelViewingGroup() {
     _currentGroup = null;
+    notifyListeners();
+  }
+
+  void completeWritingGroup() {
+    _isWritingGroup = false;
+
+    // Until we find a way to update the Group page we've just edited,
+    // go all the way back to Home.
+    _currentGroup = null;
+
     notifyListeners();
   }
 }

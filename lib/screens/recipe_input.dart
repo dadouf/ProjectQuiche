@@ -21,23 +21,17 @@ class CreateRecipeScreen extends StatelessWidget {
 
           await MyFirestore.myRecipes().add({
             MyFirestore.fieldUserId: user.uid,
+            MyFirestore.fieldCreator: user.toJson(),
+            MyFirestore.fieldCreationDate: DateTime.now(),
+            MyFirestore.fieldStatus: "active",
+            MyFirestore.fieldVisibility: "public",
             MyFirestore.fieldName: name,
             MyFirestore.fieldIngredients: ingredients,
             MyFirestore.fieldSteps: steps,
             MyFirestore.fieldTips: tips,
-            MyFirestore.fieldCreator: {
-              // TODO serialize via user.toJson() or something
-              MyFirestore.fieldUserId: user.uid,
-              MyFirestore.fieldUsername: user.username,
-              MyFirestore.fieldAvatarSymbol: user.avatarType?.code,
-              MyFirestore.fieldAvatarUrl: user.avatarUrl,
-            },
-            MyFirestore.fieldCreationDate: DateTime.now(),
-            MyFirestore.fieldStatus: "active",
-            MyFirestore.fieldVisibility: "public",
           });
 
-          appModel.completeEditing();
+          appModel.completeWritingRecipe();
 
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(AppLocalizations.of(context)!.addRecipe_success),
@@ -72,7 +66,7 @@ class EditRecipeScreen extends StatelessWidget {
             MyFirestore.fieldTips: tips,
           });
 
-          context.read<AppModel>().completeEditing();
+          context.read<AppModel>().completeWritingRecipe();
 
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(AppLocalizations.of(context)!.editRecipe_success),
@@ -191,7 +185,7 @@ class _RecipeInputScreenState extends State<RecipeInputScreen>
               focusNode: _focusNodes[0],
               controller: _recipeName,
               decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.name),
+                  labelText: AppLocalizations.of(context)!.recipe_name),
               textCapitalization: TextCapitalization.sentences,
               validator: (value) {
                 if (_validateName()) {

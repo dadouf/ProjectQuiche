@@ -2,7 +2,7 @@
   "helloWorld": "Hola Mundo!",
   "signInWithGoogle": "Iniciar sesión con Google",
   "signInWithApple": "Iniciar sesión con Apple",
-  "add": "Añadir",
+  "recipe_add_button": "Añadir",
   "myRecipes": "Mis recetas",
   "exploreRecipes": "Explorar",
   "myProfile": "Mi perfil"

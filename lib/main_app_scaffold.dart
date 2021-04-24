@@ -85,13 +85,13 @@ class _MainAppScaffoldState extends State<MainAppScaffold> with RouteAware {
         ),
         floatingActionButton: appModel.currentSpace == AppSpace.myRecipes
             ? FloatingActionButton.extended(
-                label: Text(AppLocalizations.of(context)!.add),
+                label: Text(AppLocalizations.of(context)!.recipe_add_button),
                 icon: Icon(Icons.edit_outlined),
                 onPressed: _addRecipe,
               )
             : appModel.currentSpace == AppSpace.groups
                 ? FloatingActionButton.extended(
-                    label: Text(AppLocalizations.of(context)!.add),
+          label: Text(AppLocalizations.of(context)!.group_add_button),
                     icon: Icon(Icons.add),
                     onPressed: _addGroup,
                   )

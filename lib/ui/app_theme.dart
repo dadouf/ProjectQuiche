@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-   AppTheme._();
+  AppTheme._();
 
   static const colorScheme = ColorScheme(
     // Keep primary synced with Android (values/colors.xml) and iOS (LaunchScreen.storyboard)
@@ -69,6 +69,7 @@ extension ColorSchemeToTheme on ColorScheme {
       snackBarTheme: baseTheme.snackBarTheme.copyWith(
         contentTextStyle: TextStyle(color: Colors.white),
       ),
+      toggleableActiveColor: this.primary, // Checkbox...
     );
   }
 }

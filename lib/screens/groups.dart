@@ -1,28 +1,57 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:projectquiche/models/app_user.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:projectquiche/models/group.dart';
+import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
+import 'package:provider/provider.dart';
 
 class GroupsScreen extends StatelessWidget {
-  final Query _query = MyFirestore.groups();
+  final Query _query = MyFirestore.groups()
+      .where("members", arrayContains: FirebaseAuth.instance.currentUser?.uid);
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _query.snapshots(),
-      builder: (context, snapshot) {
-        try {
-          return ListView(
-              children: snapshot.data!.docs.map((e) {
-            final user = AppUser.fromDocument(e);
-            return ListTile(
-              title: Text(user.username),
+        stream: _query.snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            context
+                .read<FirebaseService>()
+                .recordError(snapshot.error, snapshot.stackTrace);
+            return Container(
+              alignment: Alignment.center,
+              padding: EdgeInsets.all(16),
+              child: Text(
+                AppLocalizations.of(context)!
+                    .screenLoadError(snapshot.error ?? "Unknown"),
+                textAlign: TextAlign.center,
+              ),
             );
-          }).toList());
-        } catch (e) {
-          return Center(child: Text("Nothing to show yet"));
-        }
-      },
-    );
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          var docs = snapshot.data!.docs;
+          if (docs.isNotEmpty) {
+            return ListView(
+                children: snapshot.data!.docs.map((e) {
+              final group = Group.fromDocument(e);
+              return ListTile(
+                title: Text(group.name ?? "Unknown"),
+              );
+            }).toList());
+          } else {
+            return Center(
+              child: Text(
+                AppLocalizations.of(context)!.myRecipes_empty,
+                textAlign: TextAlign.center,
+              ),
+            );
+          }
+        });
   }
 }

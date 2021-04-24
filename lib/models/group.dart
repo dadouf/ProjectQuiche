@@ -38,7 +38,7 @@ class Group {
       creationDate: data[MyFirestore.fieldCreationDate].toDate(),
       name: data[MyFirestore.fieldName],
       coverUrl: data[MyFirestore.fieldCoverUrl],
-      members: data[MyFirestore.fieldMembers],
+      members: List<String>.from(data[MyFirestore.fieldMembers]),
       acceptsNewMembers: data[MyFirestore.fieldAcceptsNewMembers],
     );
   }
