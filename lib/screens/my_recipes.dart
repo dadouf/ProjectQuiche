@@ -79,9 +79,7 @@ class _MyRecipesScreenState extends State<MyRecipesScreen> {
                   final recipe = Recipe.fromDocument(document);
                   return ListTile(
                     title: Text(recipe.name ?? "Untitled"),
-                    onTap: () {
-                      widget.onRecipeTap(recipe);
-                    },
+                    onTap: () => widget.onRecipeTap(recipe),
                   );
                 }).toList(),
               );
@@ -106,9 +104,7 @@ class _MyRecipesScreenState extends State<MyRecipesScreen> {
       safePrint(
           "Skip refresh: we already have data and are listening to changes");
     } else {
-      setState(() {
-        _stream = widget._query.snapshots();
-      });
+      setState(() => _stream = widget._query.snapshots());
     }
   }
 }

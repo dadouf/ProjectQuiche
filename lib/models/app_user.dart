@@ -26,6 +26,13 @@ class AppUser {
     );
   }
 
+  static fromJson(Map<String, dynamic> data) => AppUser(
+        uid: data[MyFirestore.fieldUserId],
+        username: data[MyFirestore.fieldUsername],
+        avatarType: AvatarType.from(data[MyFirestore.fieldAvatarSymbol]),
+        avatarUrl: data[MyFirestore.fieldAvatarUrl],
+      );
+
   Map<String, dynamic> toJson() => {
         MyFirestore.fieldUserId: uid,
         MyFirestore.fieldUsername: username,

@@ -93,7 +93,6 @@ class InnerRouterDelegate extends RouterDelegate<AppRoutePath>
 
   void _handleRecipeTapped(BuildContext context, Recipe recipe) {
     context.read<AppModel>().startViewingRecipe(recipe);
-    notifyListeners();
   }
 }
 

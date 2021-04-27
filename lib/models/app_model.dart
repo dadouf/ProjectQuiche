@@ -136,6 +136,12 @@ class AppModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void startViewingGroup(Group group) {
+    _currentGroup = group;
+    _isWritingGroup = false;
+    notifyListeners();
+  }
+
   void cancelWritingGroup() {
     _isWritingGroup = false;
     notifyListeners();

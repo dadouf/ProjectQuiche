@@ -28,13 +28,7 @@ class Group {
     var data = doc.data()!;
     return Group(
       id: doc.id,
-      creator: AppUser(
-        uid: data[MyFirestore.fieldCreator][MyFirestore.fieldUserId],
-        username: data[MyFirestore.fieldCreator][MyFirestore.fieldUsername],
-        avatarType: AvatarType.from(
-            data[MyFirestore.fieldCreator][MyFirestore.fieldAvatarSymbol]),
-        avatarUrl: data[MyFirestore.fieldCreator][MyFirestore.fieldAvatarUrl],
-      ),
+      creator: AppUser.fromJson(data[MyFirestore.fieldCreator]),
       creationDate: data[MyFirestore.fieldCreationDate].toDate(),
       name: data[MyFirestore.fieldName],
       coverUrl: data[MyFirestore.fieldCoverUrl],

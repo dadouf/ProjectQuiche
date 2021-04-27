@@ -2,12 +2,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/models/group.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
 import 'package:provider/provider.dart';
 
-class GroupsScreen extends StatelessWidget {
+class GroupsScreen extends StatefulWidget {
+  @override
+  _GroupsScreenState createState() => _GroupsScreenState();
+}
+
+class _GroupsScreenState extends State<GroupsScreen> {
   final Query _query = MyFirestore.groups()
       .where("members", arrayContains: FirebaseAuth.instance.currentUser?.uid);
 
@@ -42,6 +48,7 @@ class GroupsScreen extends StatelessWidget {
               final group = Group.fromDocument(e);
               return ListTile(
                 title: Text(group.name ?? "Unknown"),
+                onTap: () => _openGroup(context, group),
               );
             }).toList());
           } else {
@@ -53,5 +60,9 @@ class GroupsScreen extends StatelessWidget {
             );
           }
         });
+  }
+
+  _openGroup(BuildContext context, Group group) {
+    context.read<AppModel>().startViewingGroup(group);
   }
 }
