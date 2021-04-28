@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projectquiche/models/group.dart';
+import 'package:projectquiche/widgets/avatar.dart';
 
 class GroupScreen extends StatelessWidget {
   final Group _group;
@@ -8,50 +9,50 @@ class GroupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var titleStyle = TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
-    var textStyle = TextStyle(fontSize: 16);
-    var defaultPadding = const EdgeInsets.all(16.0);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_group.name ?? "Untitled"),
-        actions: [
-          IconButton(
-              icon: Icon(Icons.group_add),
-              onPressed: () => _onInviteButtonClicked(context))
-        ],
-      ),
-      body: ListView(
-        children: [
-          Padding(
-            padding: defaultPadding,
-            child: Text(
-              "Members",
-              style: titleStyle,
-            ),
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(_group.name ?? "Untitled"),
+          actions: [
+            IconButton(
+                icon: Icon(Icons.group_add),
+                onPressed: () => _onInviteButtonClicked(context))
+          ],
+          bottom: TabBar(
+            tabs: [
+              Tab(text: "Info"),
+              Tab(text: "Recipes"),
+              Tab(text: "Members"),
+            ],
+            isScrollable: true,
           ),
-          Padding(
-            padding: defaultPadding,
-            child: Text(
-              _group.members.toString(), // TODO show full User tile
-              style: textStyle,
+        ),
+        body: TabBarView(
+          children: [
+            ListView(
+              children: [
+                ListTile(title: Text("Created on ${_group.creationDate}")),
+                ListTile(title: Text("0 recipes")),
+                ListTile(title: Text("${_group.members.length} members")),
+              ],
             ),
-          ),
-          Padding(
-            padding: defaultPadding,
-            child: Text(
-              "Recipes",
-              style: titleStyle,
+            ListView(),
+            ListView.builder(
+              itemCount: _group.members.length,
+              itemBuilder: (BuildContext context, int index) {
+                var member = _group.members[index];
+                return ListTile(
+                  leading: AvatarWidget(user: member, radius: 15),
+                  title: Text(member.username),
+                  subtitle: member.userId == _group.creator.userId
+                      ? Text("Owner")
+                      : null,
+                );
+              },
             ),
-          ),
-          Padding(
-            padding: defaultPadding,
-            child: Text(
-              "TODO get recipes from repo", // TODO
-              style: textStyle,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

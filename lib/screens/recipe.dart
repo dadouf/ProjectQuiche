@@ -21,7 +21,7 @@ class RecipeScreen extends StatelessWidget {
     var defaultPadding = const EdgeInsets.all(16.0);
 
     List<Widget>? actions =
-        _recipe.creator?.uid == FirebaseAuth.instance.currentUser?.uid
+        _recipe.creator?.userId == FirebaseAuth.instance.currentUser?.uid
             ? [
                 IconButton(
                     icon: Icon(Icons.edit),
@@ -89,7 +89,7 @@ class RecipeScreen extends StatelessWidget {
   }
 
   Widget _buildRecipeFooter(BuildContext context) {
-    if (_recipe.creator?.uid == FirebaseAuth.instance.currentUser?.uid) {
+    if (_recipe.creator?.userId == FirebaseAuth.instance.currentUser?.uid) {
       return _buildCreatedByOn(context, AppLocalizations.of(context)!.me,
           context.read<AppModel>().currentUser);
     } else {

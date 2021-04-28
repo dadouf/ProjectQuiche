@@ -155,7 +155,7 @@ class FirebaseService extends ChangeNotifier {
       });
 
       _appUser = AppUser(
-        uid: _firebaseUser!.uid,
+        userId: _firebaseUser!.uid,
         username: username,
         avatarType: AvatarType.from(selectedAvatar.code),
         avatarUrl: avatarUrl,

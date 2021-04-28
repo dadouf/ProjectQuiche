@@ -51,5 +51,6 @@ class MyFirestore {
   //
   static const String fieldCoverUrl = "cover_url";
   static const String fieldMembers = "members";
+  static const String fieldMembersInfo = "members_info";
   static const String fieldAcceptsNewMembers = "accepts_new_members";
 }

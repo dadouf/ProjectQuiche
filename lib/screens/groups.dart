@@ -54,7 +54,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
           } else {
             return Center(
               child: Text(
-                AppLocalizations.of(context)!.myRecipes_empty,
+                AppLocalizations.of(context)!.groups_empty,
                 textAlign: TextAlign.center,
               ),
             );

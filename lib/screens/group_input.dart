@@ -23,7 +23,10 @@ class CreateGroupScreen extends StatelessWidget {
             MyFirestore.fieldStatus: "active",
             MyFirestore.fieldName: name,
             MyFirestore.fieldAcceptsNewMembers: acceptsNewMembers,
-            MyFirestore.fieldMembers: [user.uid],
+            MyFirestore.fieldMembers: [user.userId],
+            MyFirestore.fieldMembersInfo: {
+              user.userId: user.toJson(includeUserId: false)
+            },
           });
 
           appModel.completeWritingGroup();

@@ -4,41 +4,44 @@ import 'package:projectquiche/services/firebase/firestore_keys.dart';
 import 'package:projectquiche/ui/app_icons.dart';
 
 class AppUser {
-  final String uid;
+  final String userId;
   final String username;
   final String? avatarUrl;
   final AvatarType? avatarType;
 
   AppUser({
-    required this.uid,
+    required this.userId,
     required this.username,
     required this.avatarUrl,
     required this.avatarType,
   });
 
   static AppUser fromDocument(DocumentSnapshot doc) {
-    var data = doc.data()!;
-    return AppUser(
-      uid: doc.id,
-      username: data[MyFirestore.fieldUsername],
-      avatarUrl: data[MyFirestore.fieldAvatarUrl],
-      avatarType: AvatarType.from(data[MyFirestore.fieldAvatarSymbol]),
-    );
+    final data = doc.data()!;
+    return AppUser.fromJson(data, userId: doc.id);
   }
 
-  static fromJson(Map<String, dynamic> data) => AppUser(
-        uid: data[MyFirestore.fieldUserId],
-        username: data[MyFirestore.fieldUsername],
-        avatarType: AvatarType.from(data[MyFirestore.fieldAvatarSymbol]),
-        avatarUrl: data[MyFirestore.fieldAvatarUrl],
+  static AppUser fromJson(Map<String, dynamic> json, {String? userId}) =>
+      AppUser(
+        userId: userId ?? json[MyFirestore.fieldUserId],
+        username: json[MyFirestore.fieldUsername],
+        avatarType: AvatarType.from(json[MyFirestore.fieldAvatarSymbol]),
+        avatarUrl: json[MyFirestore.fieldAvatarUrl],
       );
 
-  Map<String, dynamic> toJson() => {
-        MyFirestore.fieldUserId: uid,
-        MyFirestore.fieldUsername: username,
-        MyFirestore.fieldAvatarSymbol: avatarType?.code,
-        MyFirestore.fieldAvatarUrl: avatarUrl,
-      };
+  Map<String, dynamic> toJson({bool includeUserId = true}) {
+    final json = {
+      MyFirestore.fieldUsername: username,
+      MyFirestore.fieldAvatarSymbol: avatarType?.code,
+      MyFirestore.fieldAvatarUrl: avatarUrl,
+    };
+
+    if (includeUserId) {
+      json[MyFirestore.fieldUserId] = userId;
+    }
+
+    return json;
+  }
 }
 
 class AvatarType {
