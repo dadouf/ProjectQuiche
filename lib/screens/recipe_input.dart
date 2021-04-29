@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:projectquiche/data/group.dart';
+import 'package:projectquiche/data/recipe.dart';
 import 'package:projectquiche/models/app_model.dart';
-import 'package:projectquiche/models/recipe.dart';
+import 'package:projectquiche/models/user_data_model.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
 import 'package:provider/provider.dart';
@@ -121,6 +123,9 @@ class _RecipeInputScreenState extends State<RecipeInputScreen>
 
   final _nameKey = GlobalKey<FormFieldState>();
 
+  RecipeVisibility _recipeVisibility = RecipeVisibility.private;
+  List<Group> _groupsToShareWith = [];
+
   @override
   void initState() {
     super.initState();
@@ -180,21 +185,94 @@ class _RecipeInputScreenState extends State<RecipeInputScreen>
         child: TabBarView(
           controller: _tabController,
           children: [
-            TextFormField(
-              key: _nameKey,
-              focusNode: _focusNodes[0],
-              controller: _recipeName,
-              decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.recipe_name),
-              textCapitalization: TextCapitalization.sentences,
-              validator: (value) {
-                if (_validateName()) {
-                  return null;
-                } else {
-                  return AppLocalizations.of(context)!.required;
-                }
-              },
-              autovalidateMode: AutovalidateMode.onUserInteraction,
+            ListView(
+              children: [
+                TextFormField(
+                  key: _nameKey,
+                  focusNode: _focusNodes[0],
+                  controller: _recipeName,
+                  decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.recipe_name),
+                  textCapitalization: TextCapitalization.sentences,
+                  validator: (value) {
+                    if (_validateName()) {
+                      return null;
+                    } else {
+                      return AppLocalizations.of(context)!.required;
+                    }
+                  },
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                ),
+                SizedBox(height: 16),
+                DropdownButtonFormField<RecipeVisibility>(
+                  value: _recipeVisibility,
+                  decoration: InputDecoration(
+                      labelText: "Visibility", border: InputBorder.none),
+                  items: [
+                    DropdownMenuItem(
+                      child: Row(
+                        children: [
+                          Icon(Icons.person),
+                          SizedBox(width: 16),
+                          Text("Only me"),
+                        ],
+                      ),
+                      value: RecipeVisibility.private,
+                    ),
+                    DropdownMenuItem(
+                      child: Row(
+                        children: [
+                          Icon(Icons.people),
+                          SizedBox(width: 16),
+                          Text("Only these groups..."),
+                        ],
+                      ),
+                      value: RecipeVisibility.restricted,
+                    ),
+                    DropdownMenuItem(
+                      child: Row(
+                        children: [
+                          Icon(Icons.public),
+                          SizedBox(width: 16),
+                          Text("Public"),
+                        ],
+                      ),
+                      value: RecipeVisibility.public,
+                    ),
+                  ],
+                  onChanged: (value) {
+                    if (value == RecipeVisibility.restricted &&
+                        _recipeVisibility != RecipeVisibility.restricted) {
+                      // In case selection is cancelled, fallback to the previous option
+                      _selectGroupsForSharing(fallback: _recipeVisibility);
+                    }
+
+                    if (value != null) {
+                      setState(() {
+                        _recipeVisibility = value;
+
+                        if (_recipeVisibility != RecipeVisibility.restricted) {
+                          _groupsToShareWith.clear();
+                        }
+                      });
+                    }
+                  },
+                ),
+                if (_groupsToShareWith.isNotEmpty)
+                  Row(
+                    children: [
+                      Expanded(
+                          child: Text(_groupsToShareWith
+                              .map((e) => e.name)
+                              .join(", "))),
+                      ElevatedButton(
+                        onPressed: () => _selectGroupsForSharing(
+                            fallback: _recipeVisibility),
+                        child: Text("Change"),
+                      ),
+                    ],
+                  )
+              ],
             ),
             TextFormField(
               focusNode: _focusNodes[1],
@@ -232,6 +310,33 @@ class _RecipeInputScreenState extends State<RecipeInputScreen>
     );
   }
 
+  void _selectGroupsForSharing({required RecipeVisibility fallback}) async {
+    final groups = context.read<UserDataModel>().groups;
+
+    final List<Group>? result = await showDialog<List<Group>>(
+        context: context,
+        builder: (BuildContext context) => MultiSelectDialog<Group>(
+            items: groups,
+            itemDescriptor: (Group g) => g.name,
+            selectedItems: _groupsToShareWith));
+
+    print(result);
+
+    if (result == null) {
+      setState(() => _recipeVisibility = fallback);
+    } else if (result.isEmpty) {
+      setState(() {
+        _recipeVisibility = RecipeVisibility.private;
+        _groupsToShareWith = [];
+      });
+    } else {
+      setState(() {
+        _recipeVisibility = RecipeVisibility.restricted;
+        _groupsToShareWith = result;
+      });
+    }
+  }
+
   void _onSavePressed() {
     if (_validateForm()) {
       context.read<FirebaseService>().logSave();
@@ -264,13 +369,13 @@ class _RecipeInputScreenState extends State<RecipeInputScreen>
   void _onTabControllerEvent() {
     // Upon settling...
     if (!_tabController.indexIsChanging) {
-      // ... focus text field
-      // FIXME small issue (maybe in Flutter): this always capitalizes even if there is a current text (Android-only apparently)
-      _focusNodes[_tabController.index].requestFocus();
-
-      // ... show validation errors
       if (_tabController.index == 0) {
+        // ... show validation errors
         _displayValidationErrors();
+      } else {
+        // ... focus text field
+        // FIXME small issue (maybe in Flutter): this always capitalizes even if there is a current text (Android-only apparently)
+        _focusNodes[_tabController.index].requestFocus();
       }
     }
   }
@@ -279,3 +384,84 @@ class _RecipeInputScreenState extends State<RecipeInputScreen>
     _nameKey.currentState?.validate();
   }
 }
+
+class MultiSelectDialog<T> extends StatefulWidget {
+  final List<T> items;
+  final List<T> selectedItems;
+  final String Function(T item) itemDescriptor;
+
+  const MultiSelectDialog(
+      {Key? key,
+      required this.items,
+      required this.itemDescriptor,
+      this.selectedItems = const []})
+      : super(key: key);
+
+  @override
+  _MultiSelectDialogState<T> createState() => _MultiSelectDialogState();
+}
+
+class _MultiSelectDialogState<T> extends State<MultiSelectDialog<T>> {
+  late List<bool> selectionStates;
+
+  @override
+  void initState() {
+    super.initState();
+
+    selectionStates = List.filled(widget.items.length, false);
+
+    widget.selectedItems.forEach((element) {
+      final index = widget.items.indexOf(element);
+      selectionStates[index] = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text("Select groups"),
+      content: Scrollbar(
+        child: SingleChildScrollView(
+          child: Column(
+            children: widget.items
+                .asMap()
+                .entries
+                .map((MapEntry<int, T> indexedItem) {
+              final index = indexedItem.key;
+              final item = indexedItem.value;
+
+              return CheckboxListTile(
+                  value: selectionStates[index],
+                  title: Text(widget.itemDescriptor(item)),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => selectionStates[index] = value);
+                    }
+                  });
+            }).toList(),
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text("Cancel"),
+        ),
+        TextButton(
+          onPressed: () {
+            final List<T> selectedItems = widget.items
+                .asMap()
+                .entries
+                .where((indexedItem) => selectionStates[indexedItem.key])
+                .map((indexedItem) => indexedItem.value)
+                .toList();
+            Navigator.pop(context, selectedItems);
+          },
+          child: Text("Confirm"),
+        ),
+      ],
+    );
+  }
+}
+
+enum RecipeVisibility { private, restricted, public }

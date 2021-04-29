@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:projectquiche/models/app_user.dart';
-import 'package:projectquiche/models/group.dart';
-import 'package:projectquiche/models/recipe.dart';
+import 'package:projectquiche/data/app_user.dart';
+import 'package:projectquiche/data/group.dart';
+import 'package:projectquiche/data/recipe.dart';
 import 'package:projectquiche/routing/app_route_path.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 

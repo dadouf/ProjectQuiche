@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:projectquiche/data/app_user.dart';
+import 'package:projectquiche/data/recipe.dart';
 import 'package:projectquiche/models/app_model.dart';
-import 'package:projectquiche/models/app_user.dart';
-import 'package:projectquiche/models/recipe.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
 import 'package:projectquiche/ui/app_theme.dart';

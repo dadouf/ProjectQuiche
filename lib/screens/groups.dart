@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:projectquiche/data/group.dart';
 import 'package:projectquiche/models/app_model.dart';
-import 'package:projectquiche/models/group.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +14,7 @@ class GroupsScreen extends StatefulWidget {
 }
 
 class _GroupsScreenState extends State<GroupsScreen> {
+  // TODO use UserDataModel instead of this
   final Query _query = MyFirestore.groups()
       .where("members", arrayContains: FirebaseAuth.instance.currentUser?.uid);
 
@@ -47,7 +48,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                 children: snapshot.data!.docs.map((e) {
               final group = Group.fromDocument(e);
               return ListTile(
-                title: Text(group.name ?? "Unknown"),
+                title: Text(group.name),
                 onTap: () => _openGroup(context, group),
               );
             }).toList());

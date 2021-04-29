@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:projectquiche/models/group.dart';
+import 'package:projectquiche/data/group.dart';
 import 'package:projectquiche/widgets/avatar.dart';
 
 class GroupScreen extends StatelessWidget {
@@ -13,7 +13,7 @@ class GroupScreen extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_group.name ?? "Untitled"),
+          title: Text(_group.name),
           actions: [
             IconButton(
                 icon: Icon(Icons.group_add),

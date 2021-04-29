@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:projectquiche/models/app_model.dart';
+import 'package:projectquiche/models/user_data_model.dart';
 import 'package:projectquiche/routing/app_route_parser.dart';
 import 'package:projectquiche/routing/app_router_delegate.dart';
 import 'package:projectquiche/services/auth_service.dart';
@@ -16,12 +17,14 @@ Future<void> main() async {
   FirebaseService firebase = FirebaseService();
   AuthService authService = AuthService(firebase);
   AppModel appModel = AppModel(firebase);
+  UserDataModel userDataModel = UserDataModel(appModel);
 
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider.value(value: firebase),
       Provider.value(value: authService),
       ChangeNotifierProvider.value(value: appModel),
+      ChangeNotifierProvider.value(value: userDataModel),
     ],
     child: QuicheApp(),
   ));

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:projectquiche/models/app_user.dart';
+import 'package:projectquiche/data/app_user.dart';
 
 class AvatarWidget extends StatelessWidget {
   final AppUser user;

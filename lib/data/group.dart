@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:projectquiche/models/app_user.dart';
+import 'package:projectquiche/data/app_user.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
 
 class Group {
@@ -8,7 +8,7 @@ class Group {
   final AppUser creator;
   final DateTime? creationDate;
 
-  final String? name;
+  final String name;
   final String? coverUrl;
 
   final List<AppUser> members;
