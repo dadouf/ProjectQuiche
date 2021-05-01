@@ -71,12 +71,22 @@ class _MyRecipesScreenState extends State<MyRecipesScreen> {
               return Center(child: CircularProgressIndicator());
             }
 
-            var docs = snapshot.data!.docs;
-            if (docs.isNotEmpty) {
+            final docs = snapshot.data!.docs;
+            final List<Recipe> recipes = [];
+
+            docs.forEach((doc) {
+              // Protect against future data model changes
+              try {
+                recipes.add(Recipe.fromDocument(doc));
+              } catch (e, stackTrace) {
+                context.read<FirebaseService>().recordError(e, stackTrace);
+              }
+            });
+
+            if (recipes.isNotEmpty) {
               // TODO consider using ListView builder: maybe more efficient?
               return new ListView(
-                children: docs.map((DocumentSnapshot document) {
-                  final recipe = Recipe.fromDocument(document);
+                children: recipes.map((Recipe recipe) {
                   return ListTile(
                     title: Text(recipe.name ?? "Untitled"),
                     onTap: () => widget.onRecipeTap(recipe),

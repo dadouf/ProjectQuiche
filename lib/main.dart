@@ -17,7 +17,7 @@ Future<void> main() async {
   FirebaseService firebase = FirebaseService();
   AuthService authService = AuthService(firebase);
   AppModel appModel = AppModel(firebase);
-  UserDataModel userDataModel = UserDataModel(appModel);
+  UserDataModel userDataModel = UserDataModel(appModel, firebase);
 
   runApp(MultiProvider(
     providers: [
