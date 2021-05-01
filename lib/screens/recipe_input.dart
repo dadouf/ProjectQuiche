@@ -6,6 +6,7 @@ import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/models/user_data_model.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
+import 'package:projectquiche/widgets/dialogs.dart';
 import 'package:provider/provider.dart';
 
 class CreateRecipeScreen extends StatelessWidget {
@@ -15,7 +16,7 @@ class CreateRecipeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return RecipeInputScreen(
       title: AppLocalizations.of(context)!.addRecipe,
-      onRecipeSave: ({required name, ingredients, steps, tips}) async {
+      onRecipeCompleted: (Recipe writtenRecipe) async {
         final appModel = context.read<AppModel>();
 
         try {
@@ -26,11 +27,12 @@ class CreateRecipeScreen extends StatelessWidget {
             MyFirestore.fieldCreator: user.toJson(),
             MyFirestore.fieldCreationDate: DateTime.now(),
             MyFirestore.fieldStatus: "active",
-            MyFirestore.fieldVisibility: "public",
-            MyFirestore.fieldName: name,
-            MyFirestore.fieldIngredients: ingredients,
-            MyFirestore.fieldSteps: steps,
-            MyFirestore.fieldTips: tips,
+            MyFirestore.fieldIsPublic: writtenRecipe.isPublic,
+            MyFirestore.fieldSharedWithGroups: writtenRecipe.sharedWithGroups,
+            MyFirestore.fieldName: writtenRecipe.name,
+            MyFirestore.fieldIngredients: writtenRecipe.ingredients,
+            MyFirestore.fieldSteps: writtenRecipe.steps,
+            MyFirestore.fieldTips: writtenRecipe.tips,
           });
 
           appModel.completeWritingRecipe();
@@ -59,13 +61,15 @@ class EditRecipeScreen extends StatelessWidget {
     return RecipeInputScreen(
       title: AppLocalizations.of(context)!.editRecipe,
       initialRecipe: recipe,
-      onRecipeSave: ({required name, ingredients, steps, tips}) async {
+      onRecipeCompleted: (Recipe writtenRecipe) async {
         try {
           await MyFirestore.myRecipes().doc(recipe.id).update({
-            MyFirestore.fieldName: name,
-            MyFirestore.fieldIngredients: ingredients,
-            MyFirestore.fieldSteps: steps,
-            MyFirestore.fieldTips: tips,
+            MyFirestore.fieldName: writtenRecipe.name,
+            MyFirestore.fieldIngredients: writtenRecipe.ingredients,
+            MyFirestore.fieldSteps: writtenRecipe.steps,
+            MyFirestore.fieldTips: writtenRecipe.tips,
+            MyFirestore.fieldIsPublic: writtenRecipe.isPublic,
+            MyFirestore.fieldSharedWithGroups: writtenRecipe.sharedWithGroups,
           });
 
           context.read<AppModel>().completeWritingRecipe();
@@ -89,17 +93,12 @@ class EditRecipeScreen extends StatelessWidget {
 class RecipeInputScreen extends StatefulWidget {
   final String title;
   final Recipe? initialRecipe;
-  final void Function({
-    required String name,
-    required String? ingredients,
-    required String? steps,
-    required String? tips,
-  }) onRecipeSave;
+  final void Function(Recipe recipe) onRecipeCompleted;
 
   const RecipeInputScreen(
       {required this.title,
       this.initialRecipe,
-      required this.onRecipeSave,
+      required this.onRecipeCompleted,
       Key? key})
       : super(key: key);
 
@@ -123,8 +122,8 @@ class _RecipeInputScreenState extends State<RecipeInputScreen>
 
   final _nameKey = GlobalKey<FormFieldState>();
 
-  RecipeVisibility _recipeVisibility = RecipeVisibility.private;
-  List<Group> _groupsToShareWith = [];
+  late PerceivedRecipeVisibility _recipeVisibility;
+  List<Group?>? _sharedWithGroups;
 
   @override
   void initState() {
@@ -135,6 +134,14 @@ class _RecipeInputScreenState extends State<RecipeInputScreen>
         TextEditingController(text: widget.initialRecipe?.ingredients);
     _recipeSteps = TextEditingController(text: widget.initialRecipe?.steps);
     _recipeTips = TextEditingController(text: widget.initialRecipe?.tips);
+
+    if (widget.initialRecipe?.isPublic == true) {
+      _recipeVisibility = PerceivedRecipeVisibility.public;
+    } else if (widget.initialRecipe?.sharedWithGroups.isNotEmpty == true) {
+      _recipeVisibility = PerceivedRecipeVisibility.groups;
+    } else {
+      _recipeVisibility = PerceivedRecipeVisibility.private;
+    }
 
     _focusNodes = [FocusNode(), FocusNode(), FocusNode(), FocusNode()];
 
@@ -164,6 +171,15 @@ class _RecipeInputScreenState extends State<RecipeInputScreen>
       Tab(text: AppLocalizations.of(context)!.steps),
       Tab(text: AppLocalizations.of(context)!.tips),
     ];
+
+    if (_sharedWithGroups == null) {
+      final groupIds = widget.initialRecipe?.sharedWithGroups ?? [];
+      final userGroups = context.read<UserDataModel>().groups;
+      _sharedWithGroups = groupIds
+          .map((groupId) =>
+              userGroups.firstWhere((userGroup) => userGroup.id == groupId))
+          .toList();
+    }
   }
 
   @override
@@ -204,7 +220,7 @@ class _RecipeInputScreenState extends State<RecipeInputScreen>
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                 ),
                 SizedBox(height: 16),
-                DropdownButtonFormField<RecipeVisibility>(
+                DropdownButtonFormField<PerceivedRecipeVisibility>(
                   value: _recipeVisibility,
                   decoration: InputDecoration(
                       labelText: "Visibility", border: InputBorder.none),
@@ -217,7 +233,7 @@ class _RecipeInputScreenState extends State<RecipeInputScreen>
                           Text("Only me"),
                         ],
                       ),
-                      value: RecipeVisibility.private,
+                      value: PerceivedRecipeVisibility.private,
                     ),
                     DropdownMenuItem(
                       child: Row(
@@ -227,7 +243,7 @@ class _RecipeInputScreenState extends State<RecipeInputScreen>
                           Text("Only these groups..."),
                         ],
                       ),
-                      value: RecipeVisibility.restricted,
+                      value: PerceivedRecipeVisibility.groups,
                     ),
                     DropdownMenuItem(
                       child: Row(
@@ -237,12 +253,12 @@ class _RecipeInputScreenState extends State<RecipeInputScreen>
                           Text("Public"),
                         ],
                       ),
-                      value: RecipeVisibility.public,
+                      value: PerceivedRecipeVisibility.public,
                     ),
                   ],
                   onChanged: (value) {
-                    if (value == RecipeVisibility.restricted &&
-                        _recipeVisibility != RecipeVisibility.restricted) {
+                    if (value == PerceivedRecipeVisibility.groups &&
+                        _recipeVisibility != PerceivedRecipeVisibility.groups) {
                       // In case selection is cancelled, fallback to the previous option
                       _selectGroupsForSharing(fallback: _recipeVisibility);
                     }
@@ -251,25 +267,29 @@ class _RecipeInputScreenState extends State<RecipeInputScreen>
                       setState(() {
                         _recipeVisibility = value;
 
-                        if (_recipeVisibility != RecipeVisibility.restricted) {
-                          _groupsToShareWith.clear();
+                        if (_recipeVisibility !=
+                            PerceivedRecipeVisibility.groups) {
+                          _sharedWithGroups?.clear();
                         }
                       });
                     }
                   },
                 ),
-                if (_groupsToShareWith.isNotEmpty)
+                if (_sharedWithGroups?.isNotEmpty == true)
                   Row(
                     children: [
+                      SizedBox(width: 24 + 16),
                       Expanded(
-                          child: Text(_groupsToShareWith
-                              .map((e) => e.name)
-                              .join(", "))),
-                      ElevatedButton(
+                          child: Text(_sharedWithGroups
+                                  ?.map((e) => e?.name ?? "Unknown")
+                                  .join(", ") ??
+                              "Unknown")),
+                      TextButton(
                         onPressed: () => _selectGroupsForSharing(
                             fallback: _recipeVisibility),
-                        child: Text("Change"),
+                        child: Text("SELECT"),
                       ),
+                      SizedBox(width: 24),
                     ],
                   )
               ],
@@ -310,15 +330,18 @@ class _RecipeInputScreenState extends State<RecipeInputScreen>
     );
   }
 
-  void _selectGroupsForSharing({required RecipeVisibility fallback}) async {
+  void _selectGroupsForSharing(
+      {required PerceivedRecipeVisibility fallback}) async {
     final groups = context.read<UserDataModel>().groups;
+    groups.sort((g1, g2) => g1.name.compareTo(g2.name));
 
-    final List<Group>? result = await showDialog<List<Group>>(
+    final List<Group?>? result = await showDialog<List<Group?>>(
         context: context,
-        builder: (BuildContext context) => MultiSelectDialog<Group>(
+        builder: (BuildContext context) => MultiSelectDialog<Group?>(
+            title: "Select groups",
             items: groups,
-            itemDescriptor: (Group g) => g.name,
-            selectedItems: _groupsToShareWith));
+            itemDescriptor: (Group? g) => g?.name ?? "Unknown",
+            selectedItems: _sharedWithGroups ?? []));
 
     print(result);
 
@@ -326,13 +349,13 @@ class _RecipeInputScreenState extends State<RecipeInputScreen>
       setState(() => _recipeVisibility = fallback);
     } else if (result.isEmpty) {
       setState(() {
-        _recipeVisibility = RecipeVisibility.private;
-        _groupsToShareWith = [];
+        _recipeVisibility = PerceivedRecipeVisibility.private;
+        _sharedWithGroups = [];
       });
     } else {
       setState(() {
-        _recipeVisibility = RecipeVisibility.restricted;
-        _groupsToShareWith = result;
+        _recipeVisibility = PerceivedRecipeVisibility.groups;
+        _sharedWithGroups = result;
       });
     }
   }
@@ -341,12 +364,16 @@ class _RecipeInputScreenState extends State<RecipeInputScreen>
     if (_validateForm()) {
       context.read<FirebaseService>().logSave();
 
-      widget.onRecipeSave(
+      final prospectiveRecipe = Recipe(
         name: _recipeName.text,
         ingredients: _recipeIngredients.text,
         steps: _recipeSteps.text,
         tips: _recipeTips.text,
+        isPublic: _recipeVisibility == PerceivedRecipeVisibility.public,
+        sharedWithGroups: _sharedWithGroups?.map((e) => e!.id).toList() ?? [],
       );
+
+      widget.onRecipeCompleted(prospectiveRecipe);
     } else {
       // Animate to the tab that needs to change
       _tabController.animateTo(0);
@@ -384,84 +411,3 @@ class _RecipeInputScreenState extends State<RecipeInputScreen>
     _nameKey.currentState?.validate();
   }
 }
-
-class MultiSelectDialog<T> extends StatefulWidget {
-  final List<T> items;
-  final List<T> selectedItems;
-  final String Function(T item) itemDescriptor;
-
-  const MultiSelectDialog(
-      {Key? key,
-      required this.items,
-      required this.itemDescriptor,
-      this.selectedItems = const []})
-      : super(key: key);
-
-  @override
-  _MultiSelectDialogState<T> createState() => _MultiSelectDialogState();
-}
-
-class _MultiSelectDialogState<T> extends State<MultiSelectDialog<T>> {
-  late List<bool> selectionStates;
-
-  @override
-  void initState() {
-    super.initState();
-
-    selectionStates = List.filled(widget.items.length, false);
-
-    widget.selectedItems.forEach((element) {
-      final index = widget.items.indexOf(element);
-      selectionStates[index] = true;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text("Select groups"),
-      content: Scrollbar(
-        child: SingleChildScrollView(
-          child: Column(
-            children: widget.items
-                .asMap()
-                .entries
-                .map((MapEntry<int, T> indexedItem) {
-              final index = indexedItem.key;
-              final item = indexedItem.value;
-
-              return CheckboxListTile(
-                  value: selectionStates[index],
-                  title: Text(widget.itemDescriptor(item)),
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() => selectionStates[index] = value);
-                    }
-                  });
-            }).toList(),
-          ),
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text("Cancel"),
-        ),
-        TextButton(
-          onPressed: () {
-            final List<T> selectedItems = widget.items
-                .asMap()
-                .entries
-                .where((indexedItem) => selectionStates[indexedItem.key])
-                .map((indexedItem) => indexedItem.value)
-                .toList();
-            Navigator.pop(context, selectedItems);
-          },
-          child: Text("Confirm"),
-        ),
-      ],
-    );
-  }
-}
-
-enum RecipeVisibility { private, restricted, public }

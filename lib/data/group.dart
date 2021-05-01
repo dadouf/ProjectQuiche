@@ -3,7 +3,7 @@ import 'package:projectquiche/data/app_user.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
 
 class Group {
-  final String? id;
+  final String id;
 
   final AppUser creator;
   final DateTime? creationDate;

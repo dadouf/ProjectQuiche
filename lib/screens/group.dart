@@ -33,7 +33,7 @@ class GroupScreen extends StatelessWidget {
             ListView(
               children: [
                 ListTile(title: Text("Created on ${_group.creationDate}")),
-                ListTile(title: Text("0 recipes")),
+                ListTile(title: Text("0 recipes")), // FIXME
                 ListTile(title: Text("${_group.members.length} members")),
               ],
             ),

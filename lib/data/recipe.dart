@@ -13,25 +13,20 @@ class Recipe {
   final String? steps;
   final String? tips;
 
+  final bool isPublic;
+  final List<String> sharedWithGroups;
+
   const Recipe({
-    required this.id,
-    required this.creator,
-    required this.creationDate,
+    this.id,
+    this.creator,
+    this.creationDate,
     required this.name,
     required this.ingredients,
     required this.steps,
     required this.tips,
+    required this.isPublic,
+    required this.sharedWithGroups,
   });
-
-  toJson() {
-    // TODO there are more fields
-    return {
-      MyFirestore.fieldName: name,
-      MyFirestore.fieldIngredients: ingredients,
-      MyFirestore.fieldSteps: steps,
-      MyFirestore.fieldTips: tips,
-    };
-  }
 
   static Recipe fromDocument(DocumentSnapshot doc) {
     var data = doc.data()!;
@@ -43,6 +38,9 @@ class Recipe {
       ingredients: parseMultiLineString(data[MyFirestore.fieldIngredients]),
       steps: parseMultiLineString(data[MyFirestore.fieldSteps]),
       tips: parseMultiLineString(data[MyFirestore.fieldTips]),
+      isPublic: data[MyFirestore.fieldIsPublic],
+      sharedWithGroups:
+          List<String>.from(data[MyFirestore.fieldSharedWithGroups]),
     );
   }
 }
@@ -51,3 +49,7 @@ class Recipe {
 /// Instead, we store the "\n" as two literal characters. Upon receiving it,
 /// we transform it into a multi-line string.
 String? parseMultiLineString(String? str) => str?.replaceAll("\\n", "\n");
+
+/// Recipe visibility from the user perspective. This is more tied to the UX
+/// than to the data model, although the two are related.
+enum PerceivedRecipeVisibility { private, groups, public }

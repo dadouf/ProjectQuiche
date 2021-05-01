@@ -24,7 +24,7 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
       // Non-deleted recipes
       .where(MyFirestore.fieldStatus, isEqualTo: "active")
       // Public recipes
-      .where(MyFirestore.fieldVisibility, isEqualTo: "public")
+      .where(MyFirestore.fieldIsPublic, isEqualTo: true)
       // Note: Can't filter out user's own recipes so we do it in the client later
       // Recent recipes
       .orderBy(MyFirestore.fieldCreationDate, descending: true)

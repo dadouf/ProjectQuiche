@@ -31,7 +31,8 @@ class MyFirestore {
   // Recipe
   //
 
-  static const String fieldVisibility = "visibility";
+  static const String fieldIsPublic = "is_public";
+  static const String fieldSharedWithGroups = "shared_with_groups";
   static const String fieldName = "name";
   static const String fieldIngredients = "ingredients";
   static const String fieldSteps = "steps";
