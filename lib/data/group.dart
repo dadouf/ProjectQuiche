@@ -30,9 +30,13 @@ class Group {
     final memberIds = List<String>.from(data[MyFirestore.fieldMembers]);
     final membersInfo = data[MyFirestore.fieldMembersInfo];
 
-    final members = memberIds
-        .map((uid) => AppUser.fromJson(membersInfo[uid], userId: uid))
-        .toList();
+    final members = memberIds.map((uid) {
+      try {
+        return AppUser.fromJson(membersInfo[uid], userId: uid);
+      } catch (e) {
+        return AppUser.unknown(uid);
+      }
+    }).toList();
 
     return Group(
       id: doc.id,

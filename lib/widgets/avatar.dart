@@ -30,7 +30,7 @@ class AvatarWidget extends StatelessWidget {
         foregroundImage: NetworkImage(user.avatarUrl!),
       );
     } else {
-      return Container();
+      return SizedBox(width: rad * 2, height: rad * 2);
     }
   }
 }

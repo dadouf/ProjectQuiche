@@ -47,6 +47,9 @@ class FirebaseService extends ChangeNotifier {
       await _maybeFakeWait();
 
       await Firebase.initializeApp();
+
+      // _useFirebaseEmulator();
+
       safePrint("FirebaseService: init complete");
     } catch (e, trace) {
       safePrint("FirebaseService: failed to init Firebase: $e, $trace");
@@ -221,5 +224,16 @@ class FirebaseService extends ChangeNotifier {
       recordError(e, trace);
       rethrow;
     }
+  }
+
+  void _useFirebaseEmulator() {
+    if (kReleaseMode) return;
+
+    final serverIp = "192.168.86.184"; // change to local computer
+
+    FirebaseFirestore.instance.settings =
+        Settings(host: "$serverIp:8080", sslEnabled: false);
+    FirebaseFunctions.instance
+        .useFunctionsEmulator(origin: "http://$serverIp:5001");
   }
 }

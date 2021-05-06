@@ -42,6 +42,13 @@ class AppUser {
 
     return json;
   }
+
+  factory AppUser.unknown(String uid) => AppUser(
+        userId: uid,
+        username: "Unknown user", // TODO localize
+        avatarUrl: null,
+        avatarType: null,
+      );
 }
 
 class AvatarType {

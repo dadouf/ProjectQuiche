@@ -173,12 +173,18 @@ class _RecipeInputScreenState extends State<RecipeInputScreen>
     ];
 
     if (_sharedWithGroups == null) {
-      final groupIds = widget.initialRecipe?.sharedWithGroups ?? [];
+      final List<Group> groups = [];
+
       final userGroups = context.read<UserDataModel>().groups;
-      _sharedWithGroups = groupIds
-          .map((groupId) =>
-              userGroups.firstWhere((userGroup) => userGroup.id == groupId))
-          .toList();
+      widget.initialRecipe?.sharedWithGroups.forEach((groupId) {
+        try {
+          final group =
+              userGroups.firstWhere((userGroup) => userGroup.id == groupId);
+          groups.add(group);
+        } catch (e) {}
+      });
+
+      _sharedWithGroups = groups;
     }
   }
 
