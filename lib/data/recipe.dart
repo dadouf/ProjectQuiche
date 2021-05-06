@@ -28,8 +28,8 @@ class Recipe {
     required this.sharedWithGroups,
   });
 
-  static Recipe fromDocument(DocumentSnapshot doc) {
-    var data = doc.data()!;
+  static Recipe fromDocument(DocumentSnapshot<Map<String, dynamic>> doc) {
+    final Map<String, dynamic> data = doc.data()!;
     return Recipe(
       id: doc.id,
       creator: AppUser.fromJson(data[MyFirestore.fieldCreator]),
@@ -42,6 +42,12 @@ class Recipe {
       sharedWithGroups:
           List<String>.from(data[MyFirestore.fieldSharedWithGroups]),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      // TODO
+    };
   }
 }
 

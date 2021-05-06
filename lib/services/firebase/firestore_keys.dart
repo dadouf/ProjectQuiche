@@ -4,18 +4,37 @@ import 'package:firebase_auth/firebase_auth.dart';
 class MyFirestore {
   MyFirestore._();
 
-  static CollectionReference myRecipes() =>
+  // TODO consider using withConverter but this requires to always deal with
+  // full objects (no partial updates)
+
+  static CollectionReference<Map<String, dynamic>> myRecipes() =>
       FirebaseFirestore.instance.collection(
           "/users_v1/${FirebaseAuth.instance.currentUser?.uid}/recipes_v1");
 
-  static Query allRecipes() =>
+  /*.withConverter(
+        fromFirestore: (snapshot, _) => Recipe.fromDocument(snapshot),
+        toFirestore: (Recipe recipe, _) => recipe.toJson(),
+      );*/
+
+  // No converter available :(( see: https://github.com/FirebaseExtended/flutterfire/pull/6015
+  static Query<Map<String, dynamic>> allRecipes() =>
       FirebaseFirestore.instance.collectionGroup("recipes_v1");
 
-  static CollectionReference users() =>
+  static CollectionReference<Map<String, dynamic>> users() =>
       FirebaseFirestore.instance.collection("users_v1");
 
-  static CollectionReference groups() =>
+  /*.withConverter(
+            fromFirestore: (snapshot, _) => AppUser.fromDocument(snapshot),
+            toFirestore: (AppUser user, _) => user.toJson(),
+          );*/
+
+  static CollectionReference<Map<String, dynamic>> groups() =>
       FirebaseFirestore.instance.collection("groups_v0");
+
+  /*.withConverter(
+            fromFirestore: (snapshot, _) => Group.fromDocument(snapshot),
+            toFirestore: (Group group, _) => group.toJson(),
+          );*/
 
   // TODO scope field names so they can be found more easily
 

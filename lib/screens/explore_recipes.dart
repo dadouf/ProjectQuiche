@@ -20,7 +20,7 @@ class ExploreRecipesScreen extends StatefulWidget {
 class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
   static const pageLimit = 20;
 
-  Query _currentQuery = MyFirestore.allRecipes()
+  Query<Map<String, dynamic>> _currentQuery = MyFirestore.allRecipes()
       // Non-deleted recipes
       .where(MyFirestore.fieldStatus, isEqualTo: "active")
       // Public recipes
@@ -134,7 +134,8 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
       var mayHaveMoreDocs = snapshot.docs.length == pageLimit;
 
       var additionalRecipes = additionalDocs
-          .map((DocumentSnapshot document) => Recipe.fromDocument(document))
+          .map((DocumentSnapshot<Map<String, dynamic>> document) =>
+              Recipe.fromDocument(document))
           .toList();
 
       setState(() {

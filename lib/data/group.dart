@@ -24,8 +24,8 @@ class Group {
     required this.acceptsNewMembers,
   });
 
-  static Group fromDocument(DocumentSnapshot doc) {
-    var data = doc.data()!;
+  static Group fromDocument(DocumentSnapshot<Map<String, dynamic>> doc) {
+    final Map<String, dynamic> data = doc.data()!;
 
     final memberIds = List<String>.from(data[MyFirestore.fieldMembers]);
     final membersInfo = data[MyFirestore.fieldMembersInfo];
@@ -43,5 +43,11 @@ class Group {
       members: members,
       acceptsNewMembers: data[MyFirestore.fieldAcceptsNewMembers],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      // TODO
+    };
   }
 }

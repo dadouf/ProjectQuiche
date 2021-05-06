@@ -14,7 +14,7 @@ class MyRecipesScreen extends StatefulWidget {
 
   final Function(Recipe recipe) onRecipeTap;
 
-  final Query _query = MyFirestore.myRecipes()
+  final Query<Map<String, dynamic>> _query = MyFirestore.myRecipes()
       .where(MyFirestore.fieldStatus, isEqualTo: "active")
       .where(MyFirestore.fieldUserId,
           isEqualTo: FirebaseAuth.instance.currentUser?.uid)
@@ -25,8 +25,8 @@ class MyRecipesScreen extends StatefulWidget {
 }
 
 class _MyRecipesScreenState extends State<MyRecipesScreen> {
-  late Stream<QuerySnapshot> _stream;
-  AsyncSnapshot<QuerySnapshot>? _latestSnapshot;
+  late Stream<QuerySnapshot<Map<String, dynamic>>> _stream;
+  AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>? _latestSnapshot;
 
   @override
   void initState() {
@@ -40,11 +40,11 @@ class _MyRecipesScreenState extends State<MyRecipesScreen> {
       builder: (context, constraints) => RefreshIndicator(
         color: Theme.of(context).colorScheme.primary,
         onRefresh: () => _refreshData(showSnackBar: true),
-        child: StreamBuilder<QuerySnapshot>(
+        child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
           stream: _stream,
           // TODO this throws an error in the console when logging out because permission
-          builder:
-              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          builder: (BuildContext context,
+              AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
             // No need to wrap in setState because this doesn't impact the UI.
             // It's used for business logic on refresh.
             _latestSnapshot = snapshot;

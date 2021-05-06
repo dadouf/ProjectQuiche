@@ -16,7 +16,7 @@ class AppUser {
     required this.avatarType,
   });
 
-  static AppUser fromDocument(DocumentSnapshot doc) {
+  static AppUser fromDocument(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data()!;
     return AppUser.fromJson(data, userId: doc.id);
   }

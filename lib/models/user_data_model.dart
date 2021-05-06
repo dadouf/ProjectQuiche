@@ -58,7 +58,7 @@ class UserDataModel extends ChangeNotifier {
     _groupsSubscription = MyFirestore.groups()
         .where("members", arrayContains: _appUser?.userId)
         .snapshots()
-        .listen((QuerySnapshot snapshot) {
+        .listen((QuerySnapshot<Map<String, dynamic>> snapshot) {
       final List<Group> incomingGroups = [];
       snapshot.docs.forEach((doc) {
         // Protect against future data model changes
