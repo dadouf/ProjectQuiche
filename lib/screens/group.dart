@@ -4,6 +4,7 @@ import 'package:projectquiche/data/recipe.dart';
 import 'package:projectquiche/models/user_data_model.dart';
 import 'package:projectquiche/widgets/avatar.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class GroupScreen extends StatefulWidget {
   final Group _group;
@@ -104,6 +105,6 @@ class _GroupScreenState extends State<GroupScreen> {
   }
 
   _onInviteButtonClicked(BuildContext context) {
-    // TODO share link out
+    Share.share('Join my group on Project Quiche: https://davidferrand.com');
   }
 }

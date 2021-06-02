@@ -218,6 +218,8 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
       appModel.goToRecipeList(path);
     } else if (path is RecipeRoutePath) {
       appModel.goToRecipe(path);
+    } else if (path is GroupRoutePath) {
+      appModel.goToGroup(path);
     }
   }
 }

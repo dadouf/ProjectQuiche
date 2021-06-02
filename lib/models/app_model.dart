@@ -161,4 +161,12 @@ class AppModel extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  void goToGroup(GroupRoutePath path) {
+    _currentGroup = null; // path.groupId; // TODO lookup by ID!
+    _isWritingGroup = path.isWriting;
+    _currentSpace = AppSpace.groups;
+
+    notifyListeners();
+  }
 }
