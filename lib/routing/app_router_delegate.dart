@@ -41,33 +41,35 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
 
   @override
   AppRoutePath? get currentConfiguration {
-    AppRoutePath? result;
-
-    if (!appModel.hasBootstrapped) {
-      result = null;
-    } else if (appModel.currentUser == null) {
-      result = AuthRoutePath();
-    } else {
-      if (appModel.currentRecipe == null) {
-        if (appModel.isWritingRecipe) {
-          result = RecipeRoutePath.create();
-        } else {
-          result = AppSpaceRoutePath(space: appModel.currentSpace);
-        }
-      } else {
-        if (appModel.isWritingRecipe) {
-          result = RecipeRoutePath.edit(appModel.currentRecipe!.id!);
-        } else {
-          result = RecipeRoutePath.view(appModel.currentRecipe!.id!);
-        }
-      }
-
-      // TODO group
-    }
-
+    AppRoutePath? result = _modelToPath();
     // safePrint("currentConfiguration: $result");
-
     return result;
+  }
+
+  AppRoutePath? _modelToPath() {
+    if (!appModel.hasBootstrapped) {
+      return null;
+    } else if (appModel.currentUser == null) {
+      return AuthRoutePath();
+    } else if (appModel.currentRecipe != null) {
+      if (appModel.isWritingRecipe) {
+        return RecipeRoutePath.edit(appModel.currentRecipe!.id!);
+      } else {
+        return RecipeRoutePath.view(appModel.currentRecipe!.id!);
+      }
+    } else if (appModel.isWritingRecipe) {
+      return RecipeRoutePath.create();
+    } else if (appModel.currentGroup != null) {
+      if (appModel.isWritingGroup) {
+        return GroupRoutePath.edit(appModel.currentGroup!.id);
+      } else {
+        return GroupRoutePath.view(appModel.currentGroup!.id);
+      }
+    } else if (appModel.isWritingGroup) {
+      return GroupRoutePath.create();
+    } else {
+      return AppSpaceRoutePath(space: appModel.currentSpace);
+    }
   }
 
   // Return a navigator, configured to match the current app state

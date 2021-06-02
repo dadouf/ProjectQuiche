@@ -10,36 +10,9 @@ class AppRouteParser extends RouteInformationParser<AppRoutePath> {
 
     if (routeInformation.location != null) {
       final uri = Uri.parse(routeInformation.location!);
-      final parts = uri.pathSegments;
+      final List<String> parts = uri.pathSegments;
 
-      if (parts.length == 0) {
-        // /
-        result = AppRoutePath.initial();
-      } else if (parts.length == 1) {
-        if (parts[0] == "recipes") {
-          // /recipes
-          result = AppSpaceRoutePath();
-        } else if (parts[0] == "me") {
-          // /me
-          result = AppSpaceRoutePath(space: AppSpace.myProfile);
-        }
-      } else if (parts.length == 2) {
-        if (parts[0] == "recipes" && parts[1] == "my") {
-          // recipes/my
-          result = AppSpaceRoutePath(space: AppSpace.myRecipes);
-        } else if (parts[0] == "recipes" && parts[1] == "explore") {
-          // recipes/explore
-          result = AppSpaceRoutePath(space: AppSpace.exploreRecipes);
-        } else if (parts[0] == "recipes") {
-          final recipeId = parts[1];
-          result = RecipeRoutePath.view(recipeId);
-        }
-      } else if (parts.length == 3) {
-        if (parts[0] == "recipes" && parts[2] == "edit") {
-          final recipeId = parts[1];
-          result = RecipeRoutePath.edit(recipeId);
-        }
-      }
+      result = _routeToPath(parts);
     }
 
     safePrint(
@@ -48,34 +21,88 @@ class AppRouteParser extends RouteInformationParser<AppRoutePath> {
     return result ?? UnknownRoutePath();
   }
 
+  AppRoutePath? _routeToPath(List<String> parts) {
+    if (parts.length == 0) {
+      return AppRoutePath.initial();
+    } else if (parts[0] == "recipes") {
+      if (parts.length == 1) {
+        return AppSpaceRoutePath(); // default
+      } else if (parts[1] == "my") {
+        return AppSpaceRoutePath(space: AppSpace.myProfile);
+      } else if (parts[1] == "explore") {
+        return AppSpaceRoutePath(space: AppSpace.exploreRecipes);
+      } else if (parts[1] == "new") {
+        return RecipeRoutePath.create();
+      } else {
+        final recipeId = parts[1];
+        if (parts.length == 2) {
+          return RecipeRoutePath.view(recipeId);
+        } else if (parts[2] == "edit") {
+          return RecipeRoutePath.edit(recipeId);
+        }
+      }
+    } else if (parts[0] == "groups") {
+      if (parts.length == 1) {
+        return AppSpaceRoutePath(space: AppSpace.groups);
+      } else if (parts[1] == "new") {
+        return GroupRoutePath.create();
+      } else {
+        final groupId = parts[1];
+        if (parts.length == 2) {
+          return GroupRoutePath.view(groupId);
+        } else if (parts[2] == "edit") {
+          return GroupRoutePath.edit(groupId);
+        }
+      }
+    } else if (parts[0] == "me") {
+      return AppSpaceRoutePath(space: AppSpace.myProfile);
+    }
+  }
+
   @override
   RouteInformation? restoreRouteInformation(AppRoutePath path) {
-    RouteInformation? result;
+    RouteInformation? result = _pathToRoute(path);
 
+    safePrint("restoreRouteInformation: $path -> ${result?.toDebugString()}");
+
+    return result;
+  }
+
+  RouteInformation? _pathToRoute(AppRoutePath path) {
     if (path is RecipeRoutePath) {
       if (path.recipeId != null) {
         if (path.isWriting) {
-          result = RouteInformation(location: "/recipes/${path.recipeId}/edit");
+          return RouteInformation(location: "/recipes/${path.recipeId}/edit");
         } else {
-          result = RouteInformation(location: "/recipes/${path.recipeId}");
+          return RouteInformation(location: "/recipes/${path.recipeId}");
         }
       } else {
-        result = RouteInformation(location: "/recipes/new");
+        return RouteInformation(location: "/recipes/new");
+      }
+    }
+
+    if (path is GroupRoutePath) {
+      if (path.groupId != null) {
+        if (path.isWriting) {
+          return RouteInformation(location: "/groups/${path.groupId}/edit");
+        } else {
+          return RouteInformation(location: "/groups/${path.groupId}");
+        }
+      } else {
+        return RouteInformation(location: "/groups/new");
       }
     }
 
     if (path is AppSpaceRoutePath) {
       // FIXME this is broken
-      result = RouteInformation(location: _pathFromSpace(path.space));
+      return RouteInformation(location: _pathFromSpace(path.space));
     }
 
     if (path is AuthRoutePath) {
-      result = RouteInformation(location: "/sign_in");
+      return RouteInformation(location: "/sign_in");
     }
 
-    safePrint("restoreRouteInformation: $path -> ${result?.toDebugString()}");
-
-    return result;
+    return null;
   }
 
   static String _pathFromSpace(AppSpace currentSpace) {

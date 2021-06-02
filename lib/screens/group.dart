@@ -103,5 +103,7 @@ class _GroupScreenState extends State<GroupScreen> {
     );
   }
 
-  _onInviteButtonClicked(BuildContext context) {}
+  _onInviteButtonClicked(BuildContext context) {
+    // TODO share link out
+  }
 }
