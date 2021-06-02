@@ -53,6 +53,25 @@ class _GroupScreenState extends State<GroupScreen> {
                     title: Text("${widget._group.members.length} members")),
                 if (asMember)
                   ListTile(title: Text("${groupRecipes.length} recipes")),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(content: Text("TODO")));
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        "Leave group",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    style: ButtonStyle(
+                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(64.0),
+                    ))),
+                  ),
+                )
               ],
             ),
             ListView.builder(
