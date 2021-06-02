@@ -21,10 +21,7 @@
   "@created_by_on": {
     "placeholders": {
       "person": {},
-      "date": {
-        "type": "DateTime",
-        "format": "yMd"
-      }
+      "date": {}
     }
   },
   "unknownUser": "an unknown user",
