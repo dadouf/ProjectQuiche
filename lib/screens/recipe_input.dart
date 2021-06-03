@@ -4,8 +4,8 @@ import 'package:projectquiche/data/group.dart';
 import 'package:projectquiche/data/recipe.dart';
 import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/models/user_data_model.dart';
+import 'package:projectquiche/services/analytics_service.dart';
 import 'package:projectquiche/services/error_reporting_service.dart';
-import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
 import 'package:projectquiche/widgets/dialogs.dart';
 import 'package:provider/provider.dart';
@@ -369,7 +369,7 @@ class _RecipeInputScreenState extends State<RecipeInputScreen>
 
   void _onSavePressed() {
     if (_validateForm()) {
-      context.read<FirebaseService>().logSave();
+      context.read<AnalyticsService>().logSave();
 
       final prospectiveRecipe = Recipe(
         name: _recipeName.text,

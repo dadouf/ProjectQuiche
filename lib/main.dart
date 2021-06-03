@@ -6,6 +6,7 @@ import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/models/user_data_model.dart';
 import 'package:projectquiche/routing/app_route_parser.dart';
 import 'package:projectquiche/routing/app_router_delegate.dart';
+import 'package:projectquiche/services/analytics_service.dart';
 import 'package:projectquiche/services/auth_service.dart';
 import 'package:projectquiche/services/error_reporting_service.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
@@ -16,7 +17,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   ErrorReportingService errorReportingService = ErrorReportingService();
-  FirebaseService firebase = FirebaseService(errorReportingService);
+  AnalyticsService analyticsService = AnalyticsService();
+  FirebaseService firebase =
+      FirebaseService(errorReportingService, analyticsService);
   AuthService authService = AuthService(firebase, errorReportingService);
   AppModel appModel = AppModel(firebase);
   UserDataModel userDataModel =
@@ -29,6 +32,7 @@ Future<void> main() async {
       ChangeNotifierProvider.value(value: appModel),
       ChangeNotifierProvider.value(value: userDataModel),
       Provider.value(value: errorReportingService),
+      Provider.value(value: analyticsService),
     ],
     child: QuicheApp(),
   ));

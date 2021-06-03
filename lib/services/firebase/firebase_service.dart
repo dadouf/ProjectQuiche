@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
@@ -8,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:projectquiche/data/app_user.dart';
+import 'package:projectquiche/services/analytics_service.dart';
 import 'package:projectquiche/services/error_reporting_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
 import 'package:projectquiche/utils/safe_print.dart';
@@ -21,17 +21,7 @@ class FirebaseService extends ChangeNotifier {
   FirebaseAuth get _auth => FirebaseAuth.instance;
 
   final ErrorReportingService _errorReportingService;
-
-  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
-
-  FirebaseAnalytics? _analyticsInstance;
-
-  FirebaseAnalytics get _analytics {
-    if (_analyticsInstance == null) {
-      _analyticsInstance = FirebaseAnalytics();
-    }
-    return _analyticsInstance!;
-  }
+  final AnalyticsService _analyticsService;
 
   FirebaseFunctions get _functions => FirebaseFunctions.instance;
 
@@ -52,7 +42,7 @@ class FirebaseService extends ChangeNotifier {
   AppUser? get appUser => _appUser;
   AppUser? _appUser;
 
-  FirebaseService(this._errorReportingService);
+  FirebaseService(this._errorReportingService, this._analyticsService);
 
   Future<void> init() async {
     // Must initializeApp before ANY other Firebase calls
@@ -87,7 +77,7 @@ class FirebaseService extends ChangeNotifier {
       safePrint("FirebaseService: user changed $firebaseUser");
 
       _errorReportingService.setUserIdentifier(firebaseUser?.uid);
-      _analytics.setUserId(firebaseUser?.uid);
+      _analyticsService.setUserId(firebaseUser?.uid);
 
       _firebaseUser = firebaseUser;
 
@@ -132,9 +122,9 @@ class FirebaseService extends ChangeNotifier {
       final userCredential = await _auth.signInWithCredential(credential);
 
       if (userCredential.additionalUserInfo?.isNewUser == true) {
-        _analytics.logSignUp(signUpMethod: method);
+        _analyticsService.logSignUp(signUpMethod: method);
       } else {
-        _analytics.logLogin(loginMethod: method);
+        _analyticsService.logLogin(loginMethod: method);
       }
     } catch (e, trace) {
       _errorReportingService.recordError(e, trace);
@@ -143,7 +133,7 @@ class FirebaseService extends ChangeNotifier {
   }
 
   Future<void> signOut() async {
-    _analytics.logEvent(name: "logout");
+    _analyticsService.logLogout();
 
     _appUser = null;
 
@@ -194,24 +184,6 @@ class FirebaseService extends ChangeNotifier {
     }
   }
 
-  // ---------
-  // Analytics
-  // ---------
-
-  void logSave() {
-    _analytics.logEvent(name: "save_recipe");
-  }
-
-  void logMoveToBin() {
-    _analytics.logEvent(name: "move_to_bin");
-  }
-
-  void logLoadMore(int length, bool autoTriggered) {
-    _analytics.logEvent(name: "load_more_recipes", parameters: {
-      "loaded_count": length,
-      "auto_triggered": autoTriggered,
-    });
-  }
 
   // ---------------
   // Cloud Functions

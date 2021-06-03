@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:projectquiche/data/recipe.dart';
+import 'package:projectquiche/services/analytics_service.dart';
 import 'package:projectquiche/services/error_reporting_service.dart';
-import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
 import 'package:projectquiche/ui/app_theme.dart';
 import 'package:provider/provider.dart';
@@ -164,10 +164,10 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
   }
 
   void _maybeLoadMore(bool autoTriggered) {
-    FirebaseService service = context.read<FirebaseService>();
-
     if (_canLoadMore()) {
-      service.logLoadMore(_loadedRecipes?.length ?? 0, autoTriggered);
+      context
+          .read<AnalyticsService>()
+          .logLoadMore(_loadedRecipes?.length ?? 0, autoTriggered);
 
       _currentQuery = _currentQuery.startAfterDocument(_lastDocument!);
       _fetchMoreRecipes(showSnackBar: true);

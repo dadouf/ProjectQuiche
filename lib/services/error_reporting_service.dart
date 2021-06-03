@@ -1,6 +1,7 @@
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 
+/// Log errors and warnings to the backend
 class ErrorReportingService {
   FirebaseCrashlytics get _crashlytics => FirebaseCrashlytics.instance;
 

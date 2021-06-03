@@ -4,8 +4,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:projectquiche/data/app_user.dart';
 import 'package:projectquiche/data/recipe.dart';
 import 'package:projectquiche/models/app_model.dart';
+import 'package:projectquiche/services/analytics_service.dart';
 import 'package:projectquiche/services/error_reporting_service.dart';
-import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
 import 'package:projectquiche/ui/app_theme.dart';
 import 'package:projectquiche/widgets/avatar.dart';
@@ -162,13 +162,12 @@ class RecipeScreen extends StatelessWidget {
   /// Note: this is just setting a flag and not actually deleting the document,
   /// out of extra safety. TODO We will need an actual deletion strategy.
   Future<void> _deleteRecipe(BuildContext context) async {
-    final service = context.read<FirebaseService>();
     try {
       await MyFirestore.myRecipes()
           .doc(_recipe.id)
           .update({MyFirestore.fieldStatus: "binned"});
 
-      service.logMoveToBin();
+      context.read<AnalyticsService>().logMoveToBin();
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(AppLocalizations.of(context)!.moveToBin_success),
