@@ -6,15 +6,15 @@ import 'package:projectquiche/data/app_user.dart';
 import 'package:projectquiche/data/group.dart';
 import 'package:projectquiche/data/recipe.dart';
 import 'package:projectquiche/models/app_model.dart';
+import 'package:projectquiche/services/bootstrap_service.dart';
 import 'package:projectquiche/services/error_reporting_service.dart';
-import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
 import 'package:projectquiche/utils/safe_print.dart';
 
 /// Holds an AppUser's Recipes and Groups.
 /// This continuously listens for changes.
 class UserDataModel extends ChangeNotifier {
-  final FirebaseService firebaseService;
+  final BootstrapService firebaseService;
   final ErrorReportingService _errorReportingService;
 
   List<Recipe> recipes = [];
@@ -29,14 +29,14 @@ class UserDataModel extends ChangeNotifier {
   UserDataModel(
       AppModel appModel, this.firebaseService, this._errorReportingService) {
     appModel.addListener(() {
-      if (_appUser != appModel.currentUser) {
+      if (_appUser != appModel.user) {
         _stopListening();
 
         groups = [];
         safePrint("User changed: cleared groups");
 
-        _appUser = appModel.currentUser;
-        if (appModel.currentUser != null) {
+        _appUser = appModel.user;
+        if (appModel.user != null) {
           _startListening();
         }
       }

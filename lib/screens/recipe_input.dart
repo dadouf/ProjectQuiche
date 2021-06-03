@@ -21,7 +21,7 @@ class CreateRecipeScreen extends StatelessWidget {
         final appModel = context.read<AppModel>();
 
         try {
-          final user = appModel.currentUser!;
+          final user = appModel.user!;
 
           await MyFirestore.myRecipes().add({
             MyFirestore.fieldUserId: user.userId,

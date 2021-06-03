@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:package_info/package_info.dart';
 import 'package:projectquiche/models/app_model.dart';
-import 'package:projectquiche/services/firebase/firebase_service.dart';
+import 'package:projectquiche/services/identity_service.dart';
 import 'package:projectquiche/widgets/avatar.dart';
 import 'package:provider/provider.dart';
 
@@ -47,7 +47,7 @@ class MyProfileScreen extends StatelessWidget {
 
   Future<void> _logout(BuildContext context) async {
     try {
-      await context.read<FirebaseService>().signOut();
+      await context.read<IdentityService>().signOut();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("Failed to sign out: $e"),
@@ -62,7 +62,7 @@ class HeroHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.select((AppModel appModel) => appModel.currentUser);
+    final user = context.select((AppModel appModel) => appModel.user);
 
     return Stack(
       alignment: Alignment.bottomCenter,

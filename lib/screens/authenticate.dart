@@ -6,8 +6,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:projectquiche/data/app_user.dart';
-import 'package:projectquiche/services/auth_service.dart';
-import 'package:projectquiche/services/firebase/firebase_service.dart';
+import 'package:projectquiche/models/app_model.dart';
+import 'package:projectquiche/services/bootstrap_service.dart';
+import 'package:projectquiche/services/identity_service.dart';
 import 'package:projectquiche/ui/app_icons.dart';
 import 'package:projectquiche/ui/app_theme.dart';
 import 'package:projectquiche/widgets/avatar.dart';
@@ -28,9 +29,8 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
     const edgeInsets = EdgeInsets.all(16);
 
     final firebaseUser =
-        context.select((FirebaseService firebase) => firebase.firebaseUser);
-    final appUser =
-        context.select((FirebaseService firebase) => firebase.appUser);
+        context.select((AppModel appModel) => appModel.firebaseUser);
+    final user = context.select((AppModel appModel) => appModel.user);
 
     return Theme(
       data: AppTheme.boldColorScheme.toTheme(),
@@ -59,7 +59,7 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
                     if (firebaseUser == null) ...[
                       // Sign in buttons
                       Expanded(child: SignInOptionsWidget())
-                    ] else if (appUser == null) ...[
+                    ] else if (user == null) ...[
                       Expanded(child: CreateProfileWidget())
                     ] else ...[
                       // Note: in theory we should never get here because the app
@@ -174,11 +174,11 @@ class _SignInOptionsWidgetState extends State<SignInOptionsWidget> {
     _signInWith((authService) => authService.signInWithApple());
   }
 
-  Future<UserCredential?> _signInWith(Function(AuthService) method) async {
+  Future<UserCredential?> _signInWith(Function(IdentityService) method) async {
     setState(() => _isLoading = true);
 
     try {
-      await method(context.read<AuthService>());
+      await method(context.read<IdentityService>());
       // DO NOT setState here: keep showing the loading spinner until the firebaseUser/appUser change
 
     } catch (e) {
@@ -216,8 +216,9 @@ class _CreateProfileWidgetState extends State<CreateProfileWidget> {
       fontSize: 18,
     );
 
+    // firebaseUser is always non-null if this widget gets built
     final firebaseUser =
-        context.select((FirebaseService firebase) => firebase.firebaseUser);
+        context.select((AppModel appModel) => appModel.firebaseUser)!;
 
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       Text(
@@ -230,12 +231,12 @@ class _CreateProfileWidgetState extends State<CreateProfileWidget> {
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          if (firebaseUser?.photoURL != null)
+          if (firebaseUser.photoURL != null)
             SelectableBox(
               child: CircleAvatar(
                 radius: defaultAvatarRadius,
                 // FIXME this displays black while it loads
-                foregroundImage: NetworkImage(firebaseUser!.photoURL!),
+                foregroundImage: NetworkImage(firebaseUser.photoURL!),
               ),
               isSelected: _selectedAvatar == AvatarType.custom,
               onTap: () => setState(() => _selectedAvatar = AvatarType.custom),
@@ -292,7 +293,9 @@ class _CreateProfileWidgetState extends State<CreateProfileWidget> {
             child: Text("Cancel"),
           ),
           ElevatedButton(
-            onPressed: _selectedAvatar != null ? _completeProfile : null,
+            onPressed: _selectedAvatar != null
+                ? () => _completeProfile(firebaseUser)
+                : null,
             child: Text("Create profile"),
           ),
         ],
@@ -306,7 +309,7 @@ class _CreateProfileWidgetState extends State<CreateProfileWidget> {
 
     try {
       final proposedUsername =
-          await context.read<FirebaseService>().generateUsername();
+          await context.read<BootstrapService>().generateUsername();
 
       setState(() {
         _isFetchingUsername = false;
@@ -323,7 +326,7 @@ class _CreateProfileWidgetState extends State<CreateProfileWidget> {
 
   void _cancelProfile() async {
     try {
-      await context.read<FirebaseService>().signOut();
+      await context.read<IdentityService>().signOut();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("Failed to sign out: $e"),
@@ -331,12 +334,12 @@ class _CreateProfileWidgetState extends State<CreateProfileWidget> {
     }
   }
 
-  Future<void> _completeProfile() async {
+  Future<void> _completeProfile(User firebaseUser) async {
     setState(() => _isLoading = true);
     try {
       await context
-          .read<FirebaseService>()
-          .createProfile(_proposedUsername!, _selectedAvatar!);
+          .read<IdentityService>()
+          .createProfile(firebaseUser, _proposedUsername!, _selectedAvatar!);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("Failed to create profile: $e"),

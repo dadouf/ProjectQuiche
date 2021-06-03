@@ -15,7 +15,7 @@ class CreateGroupScreen extends StatelessWidget {
         final appModel = context.read<AppModel>();
 
         try {
-          final user = appModel.currentUser!;
+          final user = appModel.user!;
 
           await MyFirestore.groups().add({
             MyFirestore.fieldCreator: user.toJson(),

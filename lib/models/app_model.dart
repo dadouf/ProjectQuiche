@@ -1,44 +1,49 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:projectquiche/data/app_user.dart';
 import 'package:projectquiche/data/group.dart';
 import 'package:projectquiche/data/recipe.dart';
 import 'package:projectquiche/routing/app_route_path.dart';
-import 'package:projectquiche/services/firebase/firebase_service.dart';
 
 /// Hold the global app state. Things like: "is user signed in" and "what is
 /// the current page".
-/// When this grows, it might make sense to break up into multiple models, e.g.
-/// one for global app state (AppModel) and one for content state (RecipesModel).
+///
+/// The pattern enforced here is that the AppModel is standalone and does not
+/// listen to any dependency. Instead, other widgets and services update the
+/// AppModel, which in turns notifies its listeners.
 class AppModel extends ChangeNotifier {
-  final FirebaseService _firebase;
-
-  AppModel(this._firebase) {
-    _firebase.addListener(() {
-      if (_firebase.firebaseUser == null) {
-        // Reset state on log out
-        _reset();
-      }
-
-      // When FirebaseService notifies its listeners, AppModel will notify theirs
-      notifyListeners();
-    });
-  }
-
   // ===========================================================================
   // INIT + AUTH
 
   /// The app has bootstrapped when it has received the first callback for a
   /// Firebase user? plus -- if user != null -- the first callback for an AppUser?
-  bool get hasBootstrapped => _firebase.hasBootstrapped;
+  bool get hasBootstrapped => _hasBootstrapped;
+  bool _hasBootstrapped = false;
 
-  AppUser? get currentUser => _firebase.appUser;
+  /// User in the Firebase sense. You should almost never have to refer to this
+  /// because in most cases, after fully logging in there is a non-null [user]
+  /// that supersedes this.
+  User? get firebaseUser => _firebaseUser;
+  User? _firebaseUser;
 
-  void _reset() {
-    _currentRecipe = null;
-    _isWritingRecipe = false;
-    _currentSpace = AppSpace.myRecipes;
+  AppUser? get user => _user;
+  AppUser? _user;
 
-    // Do not notifyListeners, the caller of reset() takes care of it
+  void setUser(User? firebaseUser, AppUser? user) {
+    _hasBootstrapped = true;
+    _firebaseUser = firebaseUser;
+    _user = user;
+
+    if (user == null) {
+      // Also reset the app state: next user will see the Home screen after login
+      _currentRecipe = null;
+      _currentGroup = null;
+      _isWritingRecipe = false;
+      _isWritingGroup = false;
+      _currentSpace = AppSpace.myRecipes;
+    }
+
+    notifyListeners();
   }
 
   // ===========================================================================

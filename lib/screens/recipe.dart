@@ -92,7 +92,7 @@ class RecipeScreen extends StatelessWidget {
   Widget _buildRecipeFooter(BuildContext context) {
     if (_recipe.creator?.userId == FirebaseAuth.instance.currentUser?.uid) {
       return _buildCreatedByOn(context, AppLocalizations.of(context)!.me,
-          context.read<AppModel>().currentUser);
+          context.read<AppModel>().user);
     } else {
       return _buildCreatedByOn(
           context, _recipe.creator?.username, _recipe.creator);

@@ -49,7 +49,7 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
   AppRoutePath? _modelToPath() {
     if (!appModel.hasBootstrapped) {
       return null;
-    } else if (appModel.currentUser == null) {
+    } else if (appModel.user == null) {
       return AuthRoutePath();
     } else if (appModel.currentRecipe != null) {
       if (appModel.isWritingRecipe) {
@@ -77,7 +77,7 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
   Widget build(BuildContext context) {
     // TODO select to avoid rebuilds?
     bool hasBootstrapped = appModel.hasBootstrapped;
-    AppUser? user = appModel.currentUser;
+    AppUser? user = appModel.user;
 
     Recipe? currentRecipe = appModel.currentRecipe;
     bool isWritingRecipe = appModel.isWritingRecipe;
