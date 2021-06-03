@@ -4,6 +4,7 @@ import 'package:projectquiche/data/group.dart';
 import 'package:projectquiche/data/recipe.dart';
 import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/models/user_data_model.dart';
+import 'package:projectquiche/services/error_reporting_service.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
 import 'package:projectquiche/widgets/dialogs.dart';
@@ -44,7 +45,7 @@ class CreateRecipeScreen extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(AppLocalizations.of(context)!.addRecipe_failure(e)),
           ));
-          context.read<FirebaseService>().recordError(e, trace);
+          context.read<ErrorReportingService>().recordError(e, trace);
         }
       },
     );
@@ -83,7 +84,7 @@ class EditRecipeScreen extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(AppLocalizations.of(context)!.editRecipe_failure(e)),
           ));
-          context.read<FirebaseService>().recordError(e, trace);
+          context.read<ErrorReportingService>().recordError(e, trace);
         }
       },
     );

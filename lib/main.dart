@@ -7,6 +7,7 @@ import 'package:projectquiche/models/user_data_model.dart';
 import 'package:projectquiche/routing/app_route_parser.dart';
 import 'package:projectquiche/routing/app_router_delegate.dart';
 import 'package:projectquiche/services/auth_service.dart';
+import 'package:projectquiche/services/error_reporting_service.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/ui/app_theme.dart';
 import 'package:provider/provider.dart';
@@ -14,10 +15,12 @@ import 'package:provider/provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  FirebaseService firebase = FirebaseService();
-  AuthService authService = AuthService(firebase);
+  ErrorReportingService errorReportingService = ErrorReportingService();
+  FirebaseService firebase = FirebaseService(errorReportingService);
+  AuthService authService = AuthService(firebase, errorReportingService);
   AppModel appModel = AppModel(firebase);
-  UserDataModel userDataModel = UserDataModel(appModel, firebase);
+  UserDataModel userDataModel =
+      UserDataModel(appModel, firebase, errorReportingService);
 
   runApp(MultiProvider(
     providers: [
@@ -25,6 +28,7 @@ Future<void> main() async {
       Provider.value(value: authService),
       ChangeNotifierProvider.value(value: appModel),
       ChangeNotifierProvider.value(value: userDataModel),
+      Provider.value(value: errorReportingService),
     ],
     child: QuicheApp(),
   ));

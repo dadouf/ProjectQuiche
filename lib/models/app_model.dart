@@ -26,13 +26,10 @@ class AppModel extends ChangeNotifier {
 
   // ===========================================================================
   // INIT + AUTH
-  // ===========================================================================
 
   /// The app has bootstrapped when it has received the first callback for a
   /// Firebase user? plus -- if user != null -- the first callback for an AppUser?
   bool get hasBootstrapped => _firebase.hasBootstrapped;
-
-  Uri? get initialDeepLink => _firebase.initialDeepLink;
 
   AppUser? get currentUser => _firebase.appUser;
 
@@ -46,7 +43,6 @@ class AppModel extends ChangeNotifier {
 
   // ===========================================================================
   // NAVIGATION
-  // ===========================================================================
 
   AppSpace get currentSpace => _currentSpace;
   AppSpace _currentSpace = AppSpace.myRecipes;

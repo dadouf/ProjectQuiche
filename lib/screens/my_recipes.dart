@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:projectquiche/data/recipe.dart';
-import 'package:projectquiche/services/firebase/firebase_service.dart';
+import 'package:projectquiche/services/error_reporting_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
 import 'package:projectquiche/utils/safe_print.dart';
 import 'package:projectquiche/widgets/single_child_draggable_scroll_view.dart';
@@ -51,7 +51,7 @@ class _MyRecipesScreenState extends State<MyRecipesScreen> {
 
             if (snapshot.hasError) {
               context
-                  .read<FirebaseService>()
+                  .read<ErrorReportingService>()
                   .recordError(snapshot.error, snapshot.stackTrace);
               return SingleChildDraggableScrollView(
                 child: Container(
@@ -79,7 +79,9 @@ class _MyRecipesScreenState extends State<MyRecipesScreen> {
               try {
                 recipes.add(Recipe.fromDocument(doc));
               } catch (e, stackTrace) {
-                context.read<FirebaseService>().recordError(e, stackTrace);
+                context
+                    .read<ErrorReportingService>()
+                    .recordError(e, stackTrace);
               }
             });
 

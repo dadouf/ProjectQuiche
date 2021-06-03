@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:projectquiche/data/recipe.dart';
+import 'package:projectquiche/services/error_reporting_service.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
 import 'package:projectquiche/ui/app_theme.dart';
@@ -148,7 +149,7 @@ class _ExploreRecipesScreenState extends State<ExploreRecipesScreen> {
         }
       });
     } catch (e, trace) {
-      context.read<FirebaseService>().recordError(e, trace);
+      context.read<ErrorReportingService>().recordError(e, trace);
 
       if (showSnackBar) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(

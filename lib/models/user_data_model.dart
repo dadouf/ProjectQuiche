@@ -6,6 +6,7 @@ import 'package:projectquiche/data/app_user.dart';
 import 'package:projectquiche/data/group.dart';
 import 'package:projectquiche/data/recipe.dart';
 import 'package:projectquiche/models/app_model.dart';
+import 'package:projectquiche/services/error_reporting_service.dart';
 import 'package:projectquiche/services/firebase/firebase_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
 import 'package:projectquiche/utils/safe_print.dart';
@@ -14,6 +15,7 @@ import 'package:projectquiche/utils/safe_print.dart';
 /// This continuously listens for changes.
 class UserDataModel extends ChangeNotifier {
   final FirebaseService firebaseService;
+  final ErrorReportingService _errorReportingService;
 
   List<Recipe> recipes = [];
   List<Group> groups = []; // TODO protect write
@@ -24,7 +26,8 @@ class UserDataModel extends ChangeNotifier {
 
   AppUser? _appUser;
 
-  UserDataModel(AppModel appModel, this.firebaseService) {
+  UserDataModel(
+      AppModel appModel, this.firebaseService, this._errorReportingService) {
     appModel.addListener(() {
       if (_appUser != appModel.currentUser) {
         _stopListening();
@@ -60,7 +63,7 @@ class UserDataModel extends ChangeNotifier {
         try {
           incomingRecipes.add(Recipe.fromDocument(doc));
         } catch (e, stackTrace) {
-          firebaseService.recordError(e, stackTrace);
+          _errorReportingService.recordError(e, stackTrace);
         }
       });
 
@@ -86,7 +89,7 @@ class UserDataModel extends ChangeNotifier {
         try {
           incomingGroups.add(Group.fromDocument(doc));
         } catch (e, stackTrace) {
-          firebaseService.recordError(e, stackTrace);
+          _errorReportingService.recordError(e, stackTrace);
         }
       });
 

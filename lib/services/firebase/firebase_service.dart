@@ -3,20 +3,24 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:projectquiche/data/app_user.dart';
+import 'package:projectquiche/services/error_reporting_service.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
 import 'package:projectquiche/utils/safe_print.dart';
 
-/// TODO break into multiple services, each one dedicated to one thing
+/// TODO break into multiple services, each one dedicated to one thing:
+/// 1. BootstrapService (init Firebase, check deeplink)
+/// 2. ErrorReportingService
+/// 3. AnalyticsService
+/// 4. IdentityService (check Firebase user and AppUser)
 class FirebaseService extends ChangeNotifier {
   FirebaseAuth get _auth => FirebaseAuth.instance;
 
-  FirebaseCrashlytics get _crashlytics => FirebaseCrashlytics.instance;
+  final ErrorReportingService _errorReportingService;
 
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
@@ -48,6 +52,8 @@ class FirebaseService extends ChangeNotifier {
   AppUser? get appUser => _appUser;
   AppUser? _appUser;
 
+  FirebaseService(this._errorReportingService);
+
   Future<void> init() async {
     // Must initializeApp before ANY other Firebase calls
     try {
@@ -71,7 +77,7 @@ class FirebaseService extends ChangeNotifier {
         safePrint("ON DEEPLINK: ${deepLink?.toString()}");
       },
       onError: (OnLinkErrorException e) async {
-        recordError(e, null);
+        _errorReportingService.recordError(e, null);
       },
     );
 
@@ -80,9 +86,7 @@ class FirebaseService extends ChangeNotifier {
     _auth.userChanges().listen((User? firebaseUser) async {
       safePrint("FirebaseService: user changed $firebaseUser");
 
-      if (!kIsWeb) {
-        _crashlytics.setUserIdentifier(firebaseUser?.uid ?? "");
-      }
+      _errorReportingService.setUserIdentifier(firebaseUser?.uid);
       _analytics.setUserId(firebaseUser?.uid);
 
       _firebaseUser = firebaseUser;
@@ -98,7 +102,7 @@ class FirebaseService extends ChangeNotifier {
             _appUser = AppUser.fromDocument(userDoc);
           }
         } catch (e, trace) {
-          _crashlytics.recordError(e, trace);
+          _errorReportingService.recordError(e, trace);
         } finally {
           _hasBootstrapped = true;
         }
@@ -106,10 +110,7 @@ class FirebaseService extends ChangeNotifier {
       notifyListeners();
     });
 
-    if (!kIsWeb) {
-      // Pass Flutter errors to Crashlytics. This still prints to the console too.
-      FlutterError.onError = _crashlytics.recordFlutterError;
-    }
+    _errorReportingService.init();
   }
 
   /// Use this to test loading states. Uncomment prior to release.
@@ -136,7 +137,7 @@ class FirebaseService extends ChangeNotifier {
         _analytics.logLogin(loginMethod: method);
       }
     } catch (e, trace) {
-      recordError(e, trace);
+      _errorReportingService.recordError(e, trace);
       rethrow;
     }
   }
@@ -158,7 +159,7 @@ class FirebaseService extends ChangeNotifier {
 
       // ... will cause AppModel update because FirebaseService.isSignedIn will change
     } catch (e, trace) {
-      recordError(e, trace);
+      _errorReportingService.recordError(e, trace);
       rethrow;
     }
   }
@@ -188,26 +189,8 @@ class FirebaseService extends ChangeNotifier {
 
       notifyListeners();
     } catch (e, trace) {
-      recordError(e, trace);
+      _errorReportingService.recordError(e, trace);
       rethrow;
-    }
-  }
-
-  // -----------
-  // Crashlytics
-  // -----------
-
-  void recordError(dynamic exception, StackTrace? stack) {
-    if (!kIsWeb) {
-      _crashlytics.recordError(exception, stack);
-    }
-  }
-
-  /// Note: this is not terribly useful since the logs are only "included in the
-  /// next fatal or non-fatal report", but better than nothing.
-  void log(String message) {
-    if (!kIsWeb) {
-      _crashlytics.log(message);
     }
   }
 
@@ -243,7 +226,7 @@ class FirebaseService extends ChangeNotifier {
 
       return results.data["username"];
     } catch (e, trace) {
-      recordError(e, trace);
+      _errorReportingService.recordError(e, trace);
       rethrow;
     }
   }
