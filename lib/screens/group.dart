@@ -1,3 +1,4 @@
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:projectquiche/data/group.dart';
 import 'package:projectquiche/data/recipe.dart';
@@ -32,8 +33,7 @@ class _GroupScreenState extends State<GroupScreen> {
           title: Text(widget._group.name),
           actions: [
             IconButton(
-                icon: Icon(Icons.group_add),
-                onPressed: () => _onInviteButtonClicked(context))
+                icon: Icon(Icons.group_add), onPressed: _onInviteButtonClicked)
           ],
           bottom: TabBar(
             tabs: [
@@ -69,8 +69,8 @@ class _GroupScreenState extends State<GroupScreen> {
                     ),
                     style: ButtonStyle(
                         shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(64.0),
-                    ))),
+                          borderRadius: BorderRadius.circular(64.0),
+                        ))),
                   ),
                 )
               ],
@@ -104,7 +104,20 @@ class _GroupScreenState extends State<GroupScreen> {
     );
   }
 
-  _onInviteButtonClicked(BuildContext context) {
-    Share.share('Join my group on Project Quiche: https://davidferrand.com');
+  _onInviteButtonClicked() async {
+    final link = await _buildDynamicLink();
+    Share.share('Join my group on Project Quiche: $link');
+  }
+
+  Future<String> _buildDynamicLink() async {
+    final parameters = DynamicLinkParameters(
+      uriPrefix: "https://projectquichedev.page.link",
+      link: Uri.parse(
+          "https://davidferrand.com/projectquiche/groups/${widget._group.id}"),
+    );
+
+    final Uri dynamicUrl = await parameters.buildUrl();
+
+    return dynamicUrl.toString();
   }
 }

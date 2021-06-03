@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:projectquiche/routing/app_route_path.dart';
+import 'package:projectquiche/routing/app_router_delegate.dart';
 import 'package:projectquiche/utils/safe_print.dart';
 
+/// Transform a [RouteInformation] into an [AppRoutePath] and vice-versa.
+/// The easiest way to think of this is, in a browser context, the thing that
+/// links the URL in the bar with the page that's displayed.
+///
+/// Also see [AppRouterDelegate._modelToPath] and [AppRouterDelegate.setNewRoutePath]
+/// that transform the app state into an [AppRoutePath] and vice-versa.
 class AppRouteParser extends RouteInformationParser<AppRoutePath> {
   @override
   Future<AppRoutePath> parseRouteInformation(

@@ -4,6 +4,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -11,6 +12,7 @@ import 'package:projectquiche/data/app_user.dart';
 import 'package:projectquiche/services/firebase/firestore_keys.dart';
 import 'package:projectquiche/utils/safe_print.dart';
 
+/// TODO break into multiple services, each one dedicated to one thing
 class FirebaseService extends ChangeNotifier {
   FirebaseAuth get _auth => FirebaseAuth.instance;
 
@@ -29,10 +31,15 @@ class FirebaseService extends ChangeNotifier {
 
   FirebaseFunctions get _functions => FirebaseFunctions.instance;
 
+  FirebaseDynamicLinks get _dynamicLinks => FirebaseDynamicLinks.instance;
+
   /// false == Firebase hasn't init yet
   /// true == Firebase has init at least the first user (may be null or not)
   bool get hasBootstrapped => _hasBootstrapped;
   bool _hasBootstrapped = false;
+
+  Uri? get initialDeepLink => _initialDeepLink;
+  Uri? _initialDeepLink;
 
   User? get firebaseUser => _firebaseUser;
   User? _firebaseUser;
@@ -54,6 +61,21 @@ class FirebaseService extends ChangeNotifier {
     } catch (e, trace) {
       safePrint("FirebaseService: failed to init Firebase: $e, $trace");
     }
+
+    _initialDeepLink = (await _dynamicLinks.getInitialLink())?.link;
+    safePrint("INITIAL DEEPLINK: ${_initialDeepLink?.toString()}");
+
+    _dynamicLinks.onLink(
+      onSuccess: (PendingDynamicLinkData? dynamicLink) async {
+        final Uri? deepLink = dynamicLink?.link;
+        safePrint("ON DEEPLINK: ${deepLink?.toString()}");
+      },
+      onError: (OnLinkErrorException e) async {
+        recordError(e, null);
+      },
+    );
+
+    // TODO: update the App Model when receiving a deep link
 
     _auth.userChanges().listen((User? firebaseUser) async {
       safePrint("FirebaseService: user changed $firebaseUser");
