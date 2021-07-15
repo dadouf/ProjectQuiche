@@ -84,7 +84,6 @@ class BootstrapService {
 
     FirebaseFirestore.instance.settings =
         Settings(host: "$serverIp:8080", sslEnabled: false);
-    FirebaseFunctions.instance
-        .useFunctionsEmulator(origin: "http://$serverIp:5001");
+    FirebaseFunctions.instance.useFunctionsEmulator(serverIp, 5001);
   }
 }

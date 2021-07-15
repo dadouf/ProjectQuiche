@@ -32,11 +32,11 @@ dependencies:
   firebase_crashlytics: ^2.0.0
   # firebase_remote_config: ^0.10.0
   firebase_analytics: ^8.0.0-dev.2 # for null-safety
-  cloud_functions: ^1.0.3
+  cloud_functions: ^3.0.0
   firebase_dynamic_links: ^2.0.4
 
   # Firebase & Sign in
-  firebase_auth: ^1.0.1
+  firebase_auth: ^3.0.0
   google_sign_in: ^5.0.0
   sign_in_with_apple: ^3.0.0
 
