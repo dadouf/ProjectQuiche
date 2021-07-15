@@ -110,10 +110,13 @@ class _GroupScreenState extends State<GroupScreen> {
   }
 
   Future<String> _buildDynamicLink() async {
+    // TODO review the format of this
+    //  - if I don't use custom domain, then the link URL should be a valid link to a webpage
+    //  - if I use custom domain, then the URI prefix + link should be a valid link to a webpage
+    // The link part is what gets parsed by AppRouteParser, keep them in sync.
     final parameters = DynamicLinkParameters(
       uriPrefix: "https://projectquichedev.page.link",
-      link: Uri.parse(
-          "https://davidferrand.com/projectquiche/groups/${widget._group.id}"),
+      link: Uri.parse("https://davidferrand.com/groups/${widget._group.id}"),
     );
 
     final Uri dynamicUrl = await parameters.buildUrl();

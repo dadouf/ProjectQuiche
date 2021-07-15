@@ -20,16 +20,17 @@ Future<void> main() async {
 
   ErrorReportingService errorReportingService = ErrorReportingService();
   AnalyticsService analyticsService = AnalyticsService();
+
   IdentityService identityService =
       IdentityService(errorReportingService, analyticsService, appModel);
-  BootstrapService firebase =
-      BootstrapService(errorReportingService, identityService);
+  BootstrapService bootstrapService =
+      BootstrapService(appModel, errorReportingService, identityService);
   UserDataModel userDataModel =
-      UserDataModel(appModel, firebase, errorReportingService);
+      UserDataModel(appModel, bootstrapService, errorReportingService);
 
   runApp(MultiProvider(
     providers: [
-      Provider.value(value: firebase),
+      Provider.value(value: bootstrapService),
       Provider.value(value: identityService),
       ChangeNotifierProvider.value(value: appModel),
       ChangeNotifierProvider.value(value: userDataModel),

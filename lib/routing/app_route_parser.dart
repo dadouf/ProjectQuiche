@@ -15,8 +15,9 @@ class AppRouteParser extends RouteInformationParser<AppRoutePath> {
       RouteInformation routeInformation) async {
     AppRoutePath? result;
 
-    if (routeInformation.location != null) {
-      final uri = Uri.parse(routeInformation.location!);
+    final location = routeInformation.location;
+    if (location != null) {
+      final uri = Uri.parse(location);
       final List<String> parts = uri.pathSegments;
 
       result = _routeToPath(parts);
@@ -123,6 +124,19 @@ class AppRouteParser extends RouteInformationParser<AppRoutePath> {
       case AppSpace.groups:
         return "/groups";
     }
+  }
+
+  AppRoutePath? parseDeepLink(Uri? deepLink) {
+    AppRoutePath? result;
+
+    if (deepLink != null) {
+      final List<String> parts = deepLink.pathSegments;
+      result = _routeToPath(parts);
+    }
+
+    safePrint("parseDeepLink: ${deepLink.toString()} -> $result");
+
+    return result;
   }
 }
 

@@ -3,12 +3,14 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/foundation.dart';
+import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/services/error_reporting_service.dart';
 import 'package:projectquiche/services/identity_service.dart';
 import 'package:projectquiche/utils/safe_print.dart';
 
 /// Initialize the (fire)base first and then other services
 class BootstrapService {
+  final AppModel _appModel;
   final ErrorReportingService _errorReportingService;
   final IdentityService _identityService;
 
@@ -16,10 +18,8 @@ class BootstrapService {
 
   FirebaseDynamicLinks get _dynamicLinks => FirebaseDynamicLinks.instance;
 
-  Uri? get initialDeepLink => _initialDeepLink;
-  Uri? _initialDeepLink;
-
-  BootstrapService(this._errorReportingService, this._identityService);
+  BootstrapService(
+      this._appModel, this._errorReportingService, this._identityService);
 
   Future<void> init() async {
     // Must initializeApp before ANY other Firebase calls
@@ -35,20 +35,21 @@ class BootstrapService {
       safePrint("FirebaseService: failed to init Firebase: $e, $trace");
     }
 
-    _initialDeepLink = (await _dynamicLinks.getInitialLink())?.link;
-    safePrint("INITIAL DEEPLINK: ${_initialDeepLink?.toString()}");
+    final initialDeepLink = (await _dynamicLinks.getInitialLink())?.link;
+    safePrint("INITIAL DEEPLINK: ${initialDeepLink?.toString()}");
+    _appModel.followDeepLink(initialDeepLink);
 
     _dynamicLinks.onLink(
       onSuccess: (PendingDynamicLinkData? dynamicLink) async {
         final Uri? deepLink = dynamicLink?.link;
         safePrint("ON DEEPLINK: ${deepLink?.toString()}");
+        // Here, we could pass the link on to the AppModel to change it.
+        // _appModel.followDeepLink(initialDeepLink);
       },
       onError: (OnLinkErrorException e) async {
         _errorReportingService.recordError(e, null);
       },
     );
-
-    // TODO: update the App Model when receiving a deep link
 
     _identityService.init();
     _errorReportingService.init();

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:projectquiche/data/app_user.dart';
 import 'package:projectquiche/data/group.dart';
 import 'package:projectquiche/data/recipe.dart';
+import 'package:projectquiche/routing/app_route_parser.dart';
 import 'package:projectquiche/routing/app_route_path.dart';
 
 /// Hold the global app state. Things like: "is user signed in" and "what is
@@ -51,6 +52,24 @@ class AppModel extends ChangeNotifier {
 
   AppSpace get currentSpace => _currentSpace;
   AppSpace _currentSpace = AppSpace.myRecipes;
+
+  void followDeepLink(Uri? deepLink) {
+    final path = AppRouteParser().parseDeepLink(deepLink);
+
+    if (path != null) {
+      followPath(path);
+    }
+  }
+
+  void followPath(AppRoutePath path) {
+    if (path is AppSpaceRoutePath) {
+      _goToRecipeList(path);
+    } else if (path is RecipeRoutePath) {
+      _goToRecipe(path);
+    } else if (path is GroupRoutePath) {
+      _goToGroup(path);
+    }
+  }
 
   set currentSpace(AppSpace value) {
     _currentSpace = value;
@@ -106,7 +125,7 @@ class AppModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void goToRecipeList(AppSpaceRoutePath path) {
+  void _goToRecipeList(AppSpaceRoutePath path) {
     _currentRecipe = null;
     _isWritingRecipe = false;
     _currentSpace = path.space;
@@ -114,7 +133,7 @@ class AppModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void goToRecipe(RecipeRoutePath path) {
+  void _goToRecipe(RecipeRoutePath path) {
     _currentRecipe = null; // path.recipeId; // TODO lookup by ID!
     _isWritingRecipe = path.isWriting;
     _currentSpace = AppSpace.exploreRecipes; // unknown
@@ -165,7 +184,7 @@ class AppModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void goToGroup(GroupRoutePath path) {
+  void _goToGroup(GroupRoutePath path) {
     _currentGroup = null; // path.groupId; // TODO lookup by ID!
     _isWritingGroup = path.isWriting;
     _currentSpace = AppSpace.groups;
