@@ -5,6 +5,7 @@ import 'package:projectquiche/data/group.dart';
 import 'package:projectquiche/data/recipe.dart';
 import 'package:projectquiche/routing/app_route_parser.dart';
 import 'package:projectquiche/routing/app_route_path.dart';
+import 'package:projectquiche/services/firebase/firestore_keys.dart';
 
 /// Hold the global app state. Things like: "is user signed in" and "what is
 /// the current page".
@@ -133,8 +134,12 @@ class AppModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _goToRecipe(RecipeRoutePath path) {
-    _currentRecipe = null; // path.recipeId; // TODO lookup by ID!
+  Future<void> _goToRecipe(RecipeRoutePath path) async {
+    final recipeDoc = await MyFirestore.myRecipes().doc(path.recipeId).get();
+    final recipe = Recipe.fromDocument(recipeDoc);
+    // Comment diable cela marche-t-il avant que je log in?
+
+    _currentRecipe = recipe;
     _isWritingRecipe = path.isWriting;
     _currentSpace = AppSpace.exploreRecipes; // unknown
 
@@ -184,8 +189,12 @@ class AppModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _goToGroup(GroupRoutePath path) {
-    _currentGroup = null; // path.groupId; // TODO lookup by ID!
+  Future<void> _goToGroup(GroupRoutePath path) async {
+    final groupDoc = await MyFirestore.groups().doc(path.groupId).get();
+    final group = Group.fromDocument(groupDoc);
+    // Comment diable cela marche-t-il avant que je log in? :thinking_face:
+
+    _currentGroup = group;
     _isWritingGroup = path.isWriting;
     _currentSpace = AppSpace.groups;
 

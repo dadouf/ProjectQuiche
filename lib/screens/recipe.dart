@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:projectquiche/data/app_user.dart';
@@ -10,6 +11,7 @@ import 'package:projectquiche/services/firebase/firestore_keys.dart';
 import 'package:projectquiche/ui/app_theme.dart';
 import 'package:projectquiche/widgets/avatar.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class RecipeScreen extends StatelessWidget {
   const RecipeScreen(this._recipe, {Key? key}) : super(key: key);
@@ -21,17 +23,20 @@ class RecipeScreen extends StatelessWidget {
     var textStyle = TextStyle(fontSize: 16);
     var defaultPadding = const EdgeInsets.all(16.0);
 
-    List<Widget>? actions =
-        _recipe.creator?.userId == FirebaseAuth.instance.currentUser?.uid
-            ? [
-                IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () => _onEditButtonClicked(context)),
-                IconButton(
-                    icon: Icon(Icons.delete),
-                    onPressed: () => _onDeleteButtonClicked(context)),
-              ]
-            : null;
+    List<Widget> actions = [
+      IconButton(
+          icon: Icon(Icons.share),
+          onPressed: () => _onShareButtonClicked(context)),
+      if (_recipe.creator?.userId ==
+          FirebaseAuth.instance.currentUser?.uid) ...[
+        IconButton(
+            icon: Icon(Icons.edit),
+            onPressed: () => _onEditButtonClicked(context)),
+        IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () => _onDeleteButtonClicked(context)),
+      ]
+    ];
 
     return Scaffold(
       appBar: AppBar(
@@ -180,5 +185,25 @@ class RecipeScreen extends StatelessWidget {
       ));
       context.read<ErrorReportingService>().recordError(e, trace);
     }
+  }
+
+  Future<void> _onShareButtonClicked(BuildContext context) async {
+    final link = await _buildDynamicLink();
+    Share.share('Check my recipe on Project Quiche: $link');
+  }
+
+  Future<String> _buildDynamicLink() async {
+    // TODO review the format of this
+    //  - if I don't use custom domain, then the link URL should be a valid link to a webpage
+    //  - if I use custom domain, then the URI prefix + link should be a valid link to a webpage
+    // The link part is what gets parsed by AppRouteParser, keep them in sync.
+    final parameters = DynamicLinkParameters(
+      uriPrefix: "https://projectquichedev.page.link",
+      link: Uri.parse("https://davidferrand.com/recipes/${_recipe.id}"),
+    );
+
+    final Uri dynamicUrl = await parameters.buildUrl();
+
+    return dynamicUrl.toString();
   }
 }
