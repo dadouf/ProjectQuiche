@@ -24,9 +24,9 @@ class RecipeScreen extends StatelessWidget {
     var defaultPadding = const EdgeInsets.all(16.0);
 
     List<Widget> actions = [
-      IconButton(
-          icon: Icon(Icons.share),
-          onPressed: () => _onShareButtonClicked(context)),
+      // IconButton(
+      //     icon: Icon(Icons.share),
+      //     onPressed: () => _onShareButtonClicked(context)),
       if (_recipe.creator?.userId ==
           FirebaseAuth.instance.currentUser?.uid) ...[
         IconButton(

@@ -14,7 +14,7 @@ import 'package:projectquiche/utils/safe_print.dart';
 /// Holds an AppUser's Recipes and Groups.
 /// This continuously listens for changes.
 class UserDataModel extends ChangeNotifier {
-  final BootstrapService firebaseService;
+  final BootstrapService bootstrapService;
   final ErrorReportingService _errorReportingService;
 
   List<Recipe> recipes = [];
@@ -27,7 +27,7 @@ class UserDataModel extends ChangeNotifier {
   AppUser? _appUser;
 
   UserDataModel(
-      AppModel appModel, this.firebaseService, this._errorReportingService) {
+      AppModel appModel, this.bootstrapService, this._errorReportingService) {
     appModel.addListener(() {
       if (_appUser != appModel.user) {
         _stopListening();

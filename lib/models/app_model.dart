@@ -54,7 +54,7 @@ class AppModel extends ChangeNotifier {
   AppSpace get currentSpace => _currentSpace;
   AppSpace _currentSpace = AppSpace.myRecipes;
 
-  void followDeepLink(Uri? deepLink) {
+  void followDeepLink(Uri deepLink) {
     final path = AppRouteParser().parseDeepLink(deepLink);
 
     if (path != null) {
@@ -135,9 +135,9 @@ class AppModel extends ChangeNotifier {
   }
 
   Future<void> _goToRecipe(RecipeRoutePath path) async {
+    // FIXME this fails if I'm not logged in, also if I the recipe is not shared with me
     final recipeDoc = await MyFirestore.myRecipes().doc(path.recipeId).get();
     final recipe = Recipe.fromDocument(recipeDoc);
-    // Comment diable cela marche-t-il avant que je log in?
 
     _currentRecipe = recipe;
     _isWritingRecipe = path.isWriting;
@@ -192,7 +192,6 @@ class AppModel extends ChangeNotifier {
   Future<void> _goToGroup(GroupRoutePath path) async {
     final groupDoc = await MyFirestore.groups().doc(path.groupId).get();
     final group = Group.fromDocument(groupDoc);
-    // Comment diable cela marche-t-il avant que je log in? :thinking_face:
 
     _currentGroup = group;
     _isWritingGroup = path.isWriting;

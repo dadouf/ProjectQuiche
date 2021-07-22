@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:projectquiche/data/app_user.dart';
 import 'package:projectquiche/models/app_model.dart';
@@ -14,6 +15,8 @@ class IdentityService {
   final ErrorReportingService _errorReportingService;
   final AnalyticsService _analyticsService;
   final AppModel _appModel;
+
+  bool _initialDeepLinkChecked = false;
 
   FirebaseAuth get _auth => FirebaseAuth.instance;
 
@@ -37,6 +40,10 @@ class IdentityService {
           final userDoc = await MyFirestore.users().doc(firebaseUser.uid).get();
           if (userDoc.exists) {
             _appModel.setUser(firebaseUser, AppUser.fromDocument(userDoc));
+
+            // Now we're fully logged in: check if we are following a deeplink.
+            // This works for apps but won't for web.
+            _checkInitialDeepLinkIfNeeded();
           }
         } catch (e, trace) {
           _errorReportingService.recordError(e, trace);
@@ -44,6 +51,19 @@ class IdentityService {
         }
       }
     });
+  }
+
+  Future<void> _checkInitialDeepLinkIfNeeded() async {
+    if (!_initialDeepLinkChecked) {
+      _initialDeepLinkChecked = true;
+
+      final initialDeepLink =
+          (await FirebaseDynamicLinks.instance.getInitialLink())?.link;
+      if (initialDeepLink != null) {
+        safePrint("INITIAL DEEPLINK: ${initialDeepLink.toString()}");
+        _appModel.followDeepLink(initialDeepLink);
+      }
+    }
   }
 
   /// Prompt the Sign in with Google flow, then return to the app.

@@ -24,7 +24,7 @@ Future<void> main() async {
   IdentityService identityService =
       IdentityService(errorReportingService, analyticsService, appModel);
   BootstrapService bootstrapService =
-      BootstrapService(appModel, errorReportingService, identityService);
+      BootstrapService(errorReportingService, identityService);
   UserDataModel userDataModel =
       UserDataModel(appModel, bootstrapService, errorReportingService);
 
