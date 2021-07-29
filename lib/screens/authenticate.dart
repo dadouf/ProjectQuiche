@@ -216,6 +216,13 @@ class _CreateProfileWidgetState extends State<CreateProfileWidget> {
       fontSize: 18,
     );
 
+    // FIXME I get into the select user name flow with the following steps
+    //  1. Device with bad proxy settings (pointing at an IP, but Charles is off)
+    //  2. Fresh install, login via Google
+    //  3. Select a Google account that already exists
+    //  EXPECTED: failure, stay on first screen
+    //  ACTUAL: failure toast, but I get into the select user name flow!!
+
     // firebaseUser is always non-null if this widget gets built
     final firebaseUser =
         context.select((AppModel appModel) => appModel.firebaseUser)!;

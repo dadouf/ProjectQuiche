@@ -69,8 +69,8 @@ class _GroupScreenState extends State<GroupScreen> {
                     ),
                     style: ButtonStyle(
                         shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(64.0),
-                        ))),
+                      borderRadius: BorderRadius.circular(64.0),
+                    ))),
                   ),
                 )
               ],
@@ -117,6 +117,14 @@ class _GroupScreenState extends State<GroupScreen> {
     final parameters = DynamicLinkParameters(
       uriPrefix: "https://projectquichedev.page.link",
       link: Uri.parse("https://davidferrand.com/groups/${widget._group.id}"),
+      // TODO not sure whether these are necessary, but they sure seemed to help on Android 4.4
+      androidParameters: AndroidParameters(
+        packageName: 'com.davidferrand.projectquiche.debug',
+      ),
+      iosParameters: IosParameters(
+        bundleId: 'com.davidferrand.projectquiche.debug',
+        appStoreId: '962194608',
+      ),
     );
 
     final Uri dynamicUrl = await parameters.buildUrl();
