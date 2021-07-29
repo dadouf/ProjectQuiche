@@ -11,17 +11,30 @@
   "ingredients": "Ingredients",
   "steps": "Steps",
   "tips": "Tips",
-  "created_by": "Added by {person}",
-  "@created_by": {
+  "recipe_created_by": "Added by {person}",
+  "@recipe_created_by": {
     "placeholders": {
       "person": {}
     }
   },
-  "created_by_on": "Added by {person} on {date}",
-  "@created_by_on": {
+  "recipe_created_by_on": "Added by {person} on {date}",
+  "@recipe_created_by_on": {
     "placeholders": {
       "person": {},
-      "date": {}
+      "date": {
+        "type": "DateTime",
+        "format": "yMd"
+      }
+    }
+  },
+  "group_created_by_on": "Created by {person} on {date}",
+  "@group_created_by_on": {
+    "placeholders": {
+      "person": {},
+      "date": {
+        "type": "DateTime",
+        "format": "yMd"
+      }
     }
   },
   "unknownUser": "an unknown user",

@@ -112,11 +112,11 @@ class RecipeScreen extends StatelessWidget {
     if (_recipe.creationDate != null) {
       text = Text(
         AppLocalizations.of(context)!
-            .created_by_on(displayName, _recipe.creationDate!),
+            .recipe_created_by_on(displayName, _recipe.creationDate!),
         style: textStyle,
       );
     } else {
-      text = Text(AppLocalizations.of(context)!.created_by(displayName),
+      text = Text(AppLocalizations.of(context)!.recipe_created_by(displayName),
           style: textStyle);
     }
 

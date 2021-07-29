@@ -1,5 +1,6 @@
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:projectquiche/data/app_user.dart';
 import 'package:projectquiche/data/group.dart';
 import 'package:projectquiche/data/recipe.dart';
@@ -57,7 +58,10 @@ class _GroupScreenState extends State<GroupScreen> {
             ListView(
               children: [
                 ListTile(
-                    title: Text("Created on ${widget._group.creationDate}")),
+                    // TODO factor common logic for username vs "me" (in recipe and in group)
+                    title: Text(AppLocalizations.of(context)!
+                        .group_created_by_on(widget._group.creator.username,
+                            widget._group.creationDate!))),
                 ListTile(
                     title: Text("${widget._group.members.length} members")),
                 if (asMember)
