@@ -1,7 +1,9 @@
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:projectquiche/data/app_user.dart';
 import 'package:projectquiche/data/group.dart';
 import 'package:projectquiche/data/recipe.dart';
+import 'package:projectquiche/models/app_model.dart';
 import 'package:projectquiche/models/user_data_model.dart';
 import 'package:projectquiche/widgets/avatar.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +26,11 @@ class _GroupScreenState extends State<GroupScreen> {
             .where(
                 (recipe) => recipe.sharedWithGroups.contains(widget._group.id))
             .toList());
-    final asMember = groupRecipes.length > 0;
+
+    final AppUser? me = context.select((AppModel model) => model.user);
+
+    final asMember = me != null &&
+        widget._group.members.any((member) => member.userId == me.userId);
 
     return DefaultTabController(
       length: asMember ? 3 : 2,
@@ -32,8 +38,10 @@ class _GroupScreenState extends State<GroupScreen> {
         appBar: AppBar(
           title: Text(widget._group.name),
           actions: [
-            IconButton(
-                icon: Icon(Icons.group_add), onPressed: _onInviteButtonClicked)
+            if (asMember)
+              IconButton(
+                  icon: Icon(Icons.group_add),
+                  onPressed: _onInviteButtonClicked)
           ],
           bottom: TabBar(
             tabs: [
@@ -56,14 +64,11 @@ class _GroupScreenState extends State<GroupScreen> {
                   ListTile(title: Text("${groupRecipes.length} recipes")),
                 Center(
                   child: ElevatedButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text("TODO")));
-                    },
+                    onPressed: asMember ? _leaveGroup : _joinGroup,
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
-                        "Leave group",
+                        asMember ? "Leave group" : "Join group",
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
@@ -104,7 +109,7 @@ class _GroupScreenState extends State<GroupScreen> {
     );
   }
 
-  _onInviteButtonClicked() async {
+  Future<void> _onInviteButtonClicked() async {
     final link = await _buildDynamicLink();
     Share.share('Join my group on Project Quiche: $link');
   }
@@ -130,5 +135,15 @@ class _GroupScreenState extends State<GroupScreen> {
     final Uri dynamicUrl = await parameters.buildUrl();
 
     return dynamicUrl.toString();
+  }
+
+  _leaveGroup() {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text("TODO leave group")));
+  }
+
+  _joinGroup() {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text("TODO join group")));
   }
 }
